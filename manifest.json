@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+  "id": "obsidian-abbreviations-plugin",
+  "name": "Abbreviations and Acronyms",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Makes Obsidian can mark abbreviations and acronyms (terminology) automatically.",
+  "author": "dragonish",
+  "authorUrl": "https://github.com/dragonish",
+  "fundingUrl": "https://ko-fi.com/monogamy",
+  "isDesktopOnly": false
 }

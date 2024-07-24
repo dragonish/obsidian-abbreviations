@@ -1,25 +1,31 @@
 {
-	"name": "obsidian-abbreviations",
-	"version": "1.0.0",
-	"description": "Abbreviations and Acronyms",
-	"main": "main.js",
-	"scripts": {
-		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
-	},
-	"keywords": [],
-	"author": "dragonish",
-	"license": "MIT",
-	"devDependencies": {
-		"@types/node": "^20.14.11",
-		"@typescript-eslint/eslint-plugin": "7.17.0",
-		"@typescript-eslint/parser": "7.17.0",
-		"builtin-modules": "4.0.0",
-		"esbuild": "0.23.0",
-		"eslint": "8",
-		"obsidian": "latest",
-		"tslib": "2.6.3",
-		"typescript": "5.5.4"
-	}
+  "name": "obsidian-abbreviations",
+  "version": "1.0.0",
+  "description": "Abbreviations and Acronyms",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "version": "node version-bump.mjs && git add manifest.json versions.json",
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "dragonish",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.3.16",
+    "@types/mocha": "^10.0.7",
+    "@types/node": "^20.14.11",
+    "@typescript-eslint/eslint-plugin": "7.17.0",
+    "@typescript-eslint/parser": "7.17.0",
+    "builtin-modules": "4.0.0",
+    "chai": "^5.1.1",
+    "esbuild": "0.23.0",
+    "eslint": "8",
+    "mocha": "^10.7.0",
+    "obsidian": "latest",
+    "tslib": "2.6.3",
+    "tsx": "^4.16.2",
+    "typescript": "5.5.4"
+  }
 }
