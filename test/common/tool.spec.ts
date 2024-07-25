@@ -5,6 +5,7 @@ import {
   getWords,
   getAbbreviationInfo,
   queryAbbreviationTitle,
+  isAbbreviationsEmpty,
 } from "../../common/tool";
 import type { AbbreviationInfo } from "../../common/tool";
 
@@ -170,5 +171,29 @@ describe("common/tool", function () {
 
     expect(queryAbbreviationTitle("", abbrList)).to.be.null;
     expect(queryAbbreviationTitle("html", abbrList)).to.be.null;
+  });
+
+  it("isAbbreviationsEmpty", function () {
+    expect(isAbbreviationsEmpty([])).to.be.true;
+
+    const abbrList1: AbbreviationInfo[] = [
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+      },
+    ];
+    expect(isAbbreviationsEmpty(abbrList1)).to.be.false;
+
+    const abbrList2: AbbreviationInfo[] = [
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+      },
+      {
+        key: "HTML",
+        title: "",
+      },
+    ];
+    expect(isAbbreviationsEmpty(abbrList2)).to.be.true;
   });
 });

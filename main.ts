@@ -12,6 +12,7 @@ import {
   getWords,
   getAbbreviationInfo,
   queryAbbreviationTitle,
+  isAbbreviationsEmpty,
 } from "./common/tool";
 import type { AbbreviationInfo, MetadataAbbrType } from "./common/tool";
 
@@ -104,6 +105,10 @@ export default class AbbrPlugin extends Plugin {
           abbrInfo && abbrList.push(abbrInfo);
         });
       }
+    }
+
+    if (isAbbreviationsEmpty(abbrList)) {
+      return;
     }
 
     const eleList = element.findAll("p, li, h1, h2, h3, h4, h5, h6, th, td");

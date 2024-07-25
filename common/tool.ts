@@ -118,3 +118,26 @@ export function queryAbbreviationTitle(
   }
   return null;
 }
+
+/**
+ * Determines whether the abbreviation list is empty.
+ * - If the `title` is empty, the abbreviation is considered disabled.
+ * @param abbr
+ * @returns `true` if empty
+ */
+export function isAbbreviationsEmpty(abbr: AbbreviationInfo[]): boolean {
+  if (abbr.length === 0) {
+    return true;
+  }
+
+  const tempSet = new Set<string>();
+  for (const item of abbr) {
+    if (item.title) {
+      tempSet.add(item.key);
+    } else {
+      tempSet.delete(item.key);
+    }
+  }
+
+  return tempSet.size === 0;
+}
