@@ -49,7 +49,25 @@ export default class AbbrPlugin extends Plugin {
 
     // Register markdown post processor
     this.registerMarkdownPostProcessor((element, context) => {
-      const abbrList = this.getAbbrList(context.frontmatter);
+      let frontmatter: undefined | FrontMatterCache;
+      if (this.settings.metadataKeyword) {
+        frontmatter = context.frontmatter;
+        if (!frontmatter) {
+          //? It may be Tables or Callouts rendered in Live Preview.
+          if (
+            element.classList.contains("table-cell-wrapper") ||
+            element.classList.contains("markdown-rendered")
+          ) {
+            const file = this.app.workspace.getActiveFile();
+            if (file) {
+              frontmatter =
+                this.app.metadataCache.getFileCache(file)?.frontmatter;
+            }
+          }
+        }
+      }
+
+      const abbrList = this.getAbbrList(frontmatter);
       handlePreviewMarkdown(element, abbrList);
     });
 
