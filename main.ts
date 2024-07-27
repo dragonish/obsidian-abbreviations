@@ -7,7 +7,15 @@ import {
   Setting,
   TFile,
   debounce,
+  Editor,
 } from "obsidian";
+import { EditorView, ViewPlugin } from "@codemirror/view";
+import {
+  AbbrViewPlugin,
+  abbrDecorationsField,
+  editorModeField,
+  updateEditorMode,
+} from "./common/view";
 import {
   getWords,
   getAbbreviationInfo,
@@ -15,6 +23,11 @@ import {
   isAbbreviationsEmpty,
 } from "./common/tool";
 import type { AbbreviationInfo, MetadataAbbrType } from "./common/tool";
+import { abbrClassName } from "./common/data";
+
+interface ObsidianEditor extends Editor {
+  cm: EditorView;
+}
 
 interface AbbrPluginSettings {
   metadataKeyword: string;
@@ -32,7 +45,14 @@ export default class AbbrPlugin extends Plugin {
   async onload() {
     await this.loadSettings();
 
-    // register Markdown post processor
+    // Register editor extension
+    this.registerEditorExtension([
+      abbrDecorationsField,
+      editorModeField,
+      this.createAbbrViewPlugin(),
+    ]);
+
+    // Register markdown post processor
     this.registerMarkdownPostProcessor((element, context) => {
       this.handlePreviewMarkdown(element, context.frontmatter);
     });
@@ -58,6 +78,17 @@ export default class AbbrPlugin extends Plugin {
       )
     );
 
+    // Listen for editor mode changes
+    this.registerEvent(
+      this.app.workspace.on(
+        "active-leaf-change",
+        this.handleModeChange.bind(this)
+      )
+    );
+    this.registerEvent(
+      this.app.workspace.on("layout-change", this.handleModeChange.bind(this))
+    );
+
     this.addSettingTab(new AbbrSettingTab(this.app, this));
   }
 
@@ -73,6 +104,37 @@ export default class AbbrPlugin extends Plugin {
     this.debouncedSaveSettings();
   }
 
+  private createAbbrViewPlugin() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const plugin = this;
+    return ViewPlugin.fromClass(
+      class extends AbbrViewPlugin {
+        constructor(view: EditorView) {
+          super(view, () => plugin.getAbbrData.call(plugin));
+        }
+      }
+    );
+  }
+
+  private handleModeChange() {
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (view) {
+      const editor = view.editor;
+
+      //? "source" for editing view (Live Preview & Source mode),
+      //? "preview" for reading view.
+      const isLivePreview = view.getMode() === "source";
+
+      //* Get CodeMirror editor instance
+      const cmEditor = (editor as ObsidianEditor).cm;
+      if (cmEditor) {
+        cmEditor.dispatch({
+          effects: updateEditorMode.of(isLivePreview),
+        });
+      }
+    }
+  }
+
   private debouncedSaveSettings = debounce(
     async () => {
       this.rerenderPreviewMarkdown();
@@ -81,15 +143,7 @@ export default class AbbrPlugin extends Plugin {
     true
   );
 
-  /**
-   * Handle preview makrdown.
-   * @param element
-   * @param frontmatter
-   */
-  private handlePreviewMarkdown(
-    element: HTMLElement,
-    frontmatter?: FrontMatterCache
-  ) {
+  private getAbbrList(frontmatter?: FrontMatterCache): AbbreviationInfo[] {
     const abbrList = Object.assign([], this.settings.globalAbbreviations);
 
     if (this.settings.metadataKeyword) {
@@ -107,6 +161,31 @@ export default class AbbrPlugin extends Plugin {
       }
     }
 
+    return abbrList;
+  }
+
+  async getAbbrData(): Promise<AbbreviationInfo[]> {
+    let frontmatter: undefined | FrontMatterCache;
+    if (this.settings.metadataKeyword) {
+      const file = this.app.workspace.getActiveFile();
+      if (file) {
+        frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter;
+      }
+    }
+
+    return this.getAbbrList(frontmatter);
+  }
+
+  /**
+   * Handle preview makrdown.
+   * @param element
+   * @param frontmatter
+   */
+  private handlePreviewMarkdown(
+    element: HTMLElement,
+    frontmatter?: FrontMatterCache
+  ) {
+    const abbrList = this.getAbbrList(frontmatter);
     if (isAbbreviationsEmpty(abbrList)) {
       return;
     }
@@ -151,7 +230,7 @@ export default class AbbrPlugin extends Plugin {
           const abbrTitle = queryAbbreviationTitle(word.text, abbrList);
           if (abbrTitle) {
             const abbr = fragment.createEl("abbr", {
-              cls: "abbreviations-plugin-abbr-element",
+              cls: abbrClassName,
               title: abbrTitle,
               text: word.text,
             });

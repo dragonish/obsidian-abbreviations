@@ -1,7 +1,9 @@
 import "mocha";
 import { expect } from "chai";
 import {
+  isWhitespace,
   isSpecialOrWhitespace,
+  findCharCount,
   getWords,
   getAbbreviationInfo,
   queryAbbreviationTitle,
@@ -10,6 +12,15 @@ import {
 import type { AbbreviationInfo } from "../../common/tool";
 
 describe("common/tool", function () {
+  it("isWhitespace", function () {
+    expect(isWhitespace(" ")).to.be.true;
+    expect(isWhitespace("	")).to.be.true;
+    expect(isWhitespace("\t")).to.be.true;
+    expect(isWhitespace("\n")).to.be.true;
+    expect(isWhitespace("")).to.be.false;
+    expect(isWhitespace("0")).to.be.false;
+  });
+
   it("isSpecialOrWhitespace", function () {
     const list1 =
       " 	\"'`!~@#$%^&*()-_+=,.:;<>/?\\|[]{}，。“”（）《》，。：；？【】「」〔〕〖〗『』℃°\t\n";
@@ -25,7 +36,17 @@ describe("common/tool", function () {
     }
   });
 
+  it("findCharCount", function () {
+    expect(findCharCount("test", "t")).to.be.eq(2);
+    expect(findCharCount("test", "a")).to.be.eq(0);
+    expect(findCharCount("", "t")).to.be.eq(0);
+    expect(findCharCount("test", "")).to.be.eq(0);
+    expect(findCharCount("", "")).to.be.eq(0);
+  });
+
   it("getWords", function () {
+    expect(getWords("")).to.be.empty;
+
     expect(getWords("This is a test string.")).to.deep.eq([
       {
         text: "This",

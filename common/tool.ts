@@ -12,9 +12,18 @@ export interface AbbreviationInfo {
 export type MetadataAbbrType = string | Record<string, unknown>;
 
 /**
- * Detects whether it is  or a whitespace character.
+ * Detects whether it is a whitespace character.
  * @param char
- * @returns `true` if it is a a special character or a special character
+ * @returns `true` if it is a a special character
+ */
+export function isWhitespace(char: string) {
+  return /\s/.test(char);
+}
+
+/**
+ * Detects whether it is a special or a whitespace character.
+ * @param char
+ * @returns `true` if it is a a special character or a whitespace character
  */
 export function isSpecialOrWhitespace(char: string) {
   // Check for whitespace characters
@@ -29,6 +38,19 @@ export function isSpecialOrWhitespace(char: string) {
 
   // If it is not of the above categories, it is considered a special character
   return true;
+}
+
+/**
+ * Gets the number of a single specified character in a source.
+ * @param source
+ * @param character
+ * @returns
+ */
+export function findCharCount(source: string, character: string): number {
+  if (source && character) {
+    return source.split(character).length - 1;
+  }
+  return 0;
 }
 
 /**

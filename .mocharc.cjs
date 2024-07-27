@@ -1,5 +1,5 @@
 module.exports = {
-  ui: 'bdd',
-  spec: ['test/**/**.spec.ts'],
-  import: 'tsx',
+  ui: "bdd",
+  spec: ["test/common/tool.spec.ts", "test/**/**.spec.ts"],
+  import: "tsx",
 };
