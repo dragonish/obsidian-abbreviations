@@ -10,6 +10,7 @@ import { editorLivePreviewField } from "obsidian";
 import { isAbbreviationsEmpty, type AbbreviationInfo } from "./tool";
 import { Conversion } from "./conversion";
 import { abbrClassName } from "./data";
+import { handlePreviewMarkdown } from "./dom";
 
 /** A StateEffect for updating decorations */
 const updateAbbrDecorations = StateEffect.define<DecorationSet>();
@@ -89,6 +90,9 @@ export class AbbrViewPlugin implements PluginValue {
       view.dispatch({
         effects: updateAbbrDecorations.of(newDecorations),
       });
+
+      //? Render Tables and Callouts
+      handlePreviewMarkdown(view.dom, abbrData);
     } else {
       view.dispatch({
         effects: updateAbbrDecorations.of(Decoration.none),
