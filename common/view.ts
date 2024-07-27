@@ -7,7 +7,7 @@ import {
 } from "@codemirror/view";
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
 import { editorLivePreviewField } from "obsidian";
-import { isAbbreviationsEmpty, type AbbreviationInfo } from "./tool";
+import { type AbbreviationInfo } from "./tool";
 import { Conversion } from "./conversion";
 import { abbrClassName } from "./data";
 import { handlePreviewMarkdown } from "./dom";
@@ -81,9 +81,6 @@ export class AbbrViewPlugin implements PluginValue {
 
   private async updateDecorations(view: EditorView, isLivePreviwMode: boolean) {
     const abbrData = await this.getAbbrData();
-    if (isAbbreviationsEmpty(abbrData)) {
-      return;
-    }
 
     if (isLivePreviwMode) {
       const newDecorations = this.buildDecorations(view, abbrData);
