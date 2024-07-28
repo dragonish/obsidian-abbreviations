@@ -61,7 +61,7 @@ export function handlePreviewMarkdown(
   }
 
   const eleList = element.findAll(
-    "p, li, h1, h2, h3, h4, h5, h6, th, td, .table-cell-wrapper"
+    "p, li, h1, h2, h3, h4, h5, h6, th, td, .table-cell-wrapper, .callout-title-inner"
   );
   for (const ele of eleList) {
     const childNodes = ele.childNodes;
