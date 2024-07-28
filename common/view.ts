@@ -7,7 +7,7 @@ import {
 } from "@codemirror/view";
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
 import { editorLivePreviewField } from "obsidian";
-import { type AbbreviationInfo } from "./tool";
+import type { AbbrPluginData } from "./tool";
 import { Conversion } from "./conversion";
 import { abbrClassName } from "./data";
 import { handlePreviewMarkdown } from "./dom";
@@ -50,13 +50,10 @@ export const editorModeField = StateField.define<boolean>({
 });
 
 export class AbbrViewPlugin implements PluginValue {
-  getAbbrData: () => Promise<AbbreviationInfo[]>;
+  getPluginData: () => Promise<AbbrPluginData>;
 
-  constructor(
-    view: EditorView,
-    getAbbrData: () => Promise<AbbreviationInfo[]>
-  ) {
-    this.getAbbrData = getAbbrData;
+  constructor(view: EditorView, getPluginData: () => Promise<AbbrPluginData>) {
+    this.getPluginData = getPluginData;
     this.updateDecorations(view, view.state.field(editorLivePreviewField));
   }
 
@@ -80,56 +77,59 @@ export class AbbrViewPlugin implements PluginValue {
   }
 
   private async updateDecorations(view: EditorView, isLivePreviwMode: boolean) {
-    const abbrData = await this.getAbbrData();
+    const pluginData = await this.getPluginData();
 
     if (isLivePreviwMode) {
-      const newDecorations = this.buildDecorations(view, abbrData);
+      const builder = new RangeSetBuilder<Decoration>();
+      const doc = view.state.doc;
+
+      const conversion = new Conversion(
+        [...pluginData.globalAbbreviations],
+        pluginData.metadataKeyword
+      );
+
+      for (let i = 1; i < doc.lines + 1; i++) {
+        const line = doc.line(i);
+        const lineText = line.text;
+
+        if (i === 1) {
+          if (lineText === "---") {
+            conversion.setMetadataState();
+            continue;
+          } else {
+            //? For Table Cell
+            conversion.readAbbreviationsFromCache(pluginData.frontmatterCache);
+          }
+        }
+
+        const markWords = conversion.handler(lineText);
+        markWords.forEach((word) => {
+          const from = line.from + word.index;
+          const to = from + word.text.length;
+          const deco = Decoration.mark({
+            tagName: "abbr",
+            attributes: {
+              text: word.text,
+              title: word.title,
+              class: abbrClassName,
+            },
+          });
+          builder.add(from, to, deco);
+        });
+      }
+
+      const newDecorations = builder.finish();
+
       view.dispatch({
         effects: updateAbbrDecorations.of(newDecorations),
       });
 
       //? Render Tables and Callouts
-      handlePreviewMarkdown(view.dom, abbrData);
+      handlePreviewMarkdown(view.dom, conversion.abbreviations);
     } else {
       view.dispatch({
         effects: updateAbbrDecorations.of(Decoration.none),
       });
     }
-  }
-
-  private buildDecorations(
-    view: EditorView,
-    abbrData: AbbreviationInfo[]
-  ): DecorationSet {
-    const builder = new RangeSetBuilder<Decoration>();
-    const doc = view.state.doc;
-    const conversion = new Conversion(abbrData);
-
-    for (let i = 1; i < doc.lines + 1; i++) {
-      const line = doc.line(i);
-      const lineText = line.text;
-
-      if (i === 1 && lineText === "---") {
-        conversion.setMetadataState();
-        continue;
-      }
-
-      const markWords = conversion.handler(lineText);
-      markWords.forEach((word) => {
-        const from = line.from + word.index;
-        const to = from + word.text.length;
-        const deco = Decoration.mark({
-          tagName: "abbr",
-          attributes: {
-            text: word.text,
-            title: word.title,
-            class: abbrClassName,
-          },
-        });
-        builder.add(from, to, deco);
-      });
-    }
-
-    return builder.finish();
   }
 }

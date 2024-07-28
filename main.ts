@@ -16,17 +16,16 @@ import {
   editorModeField,
   updateEditorMode,
 } from "./common/view";
-import { getAbbreviationInfo } from "./common/tool";
-import type { AbbreviationInfo, MetadataAbbrType } from "./common/tool";
+import { calcAbbrList } from "./common/tool";
+import type {
+  AbbreviationInfo,
+  AbbrPluginSettings,
+  AbbrPluginData,
+} from "./common/tool";
 import { handlePreviewMarkdown } from "./common/dom";
 
 interface ObsidianEditor extends Editor {
   cm: EditorView;
-}
-
-interface AbbrPluginSettings {
-  metadataKeyword: string;
-  globalAbbreviations: AbbreviationInfo[];
 }
 
 const DEFAULT_SETTINGS: AbbrPluginSettings = {
@@ -44,7 +43,7 @@ export default class AbbrPlugin extends Plugin {
     this.registerEditorExtension([
       abbrDecorationsField,
       editorModeField,
-      this.createAbbrViewPlugin(),
+      this.createAbbrViewPlugin(this.getPluginData.bind(this)),
     ]);
 
     // Register markdown post processor
@@ -118,13 +117,11 @@ export default class AbbrPlugin extends Plugin {
     this.debouncedSaveSettings();
   }
 
-  private createAbbrViewPlugin() {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const plugin = this;
+  private createAbbrViewPlugin(getPluginData: () => Promise<AbbrPluginData>) {
     return ViewPlugin.fromClass(
       class extends AbbrViewPlugin {
         constructor(view: EditorView) {
-          super(view, () => plugin.getAbbrData.call(plugin));
+          super(view, getPluginData);
         }
       }
     );
@@ -158,36 +155,14 @@ export default class AbbrPlugin extends Plugin {
   );
 
   private getAbbrList(frontmatter?: FrontMatterCache): AbbreviationInfo[] {
-    const abbrList = Object.assign([], this.settings.globalAbbreviations);
+    const abbrList: AbbreviationInfo[] = Object.assign(
+      [],
+      this.settings.globalAbbreviations
+    );
 
-    if (this.settings.metadataKeyword) {
-      if (
-        frontmatter &&
-        Array.isArray(frontmatter[this.settings.metadataKeyword])
-      ) {
-        const list = frontmatter[
-          this.settings.metadataKeyword
-        ] as MetadataAbbrType[];
-        list.forEach((item) => {
-          const abbrInfo = getAbbreviationInfo(item);
-          abbrInfo && abbrList.push(abbrInfo);
-        });
-      }
-    }
-
+    const readList = calcAbbrList(frontmatter, this.settings.metadataKeyword);
+    abbrList.push(...readList);
     return abbrList;
-  }
-
-  async getAbbrData(): Promise<AbbreviationInfo[]> {
-    let frontmatter: undefined | FrontMatterCache;
-    if (this.settings.metadataKeyword) {
-      const file = this.app.workspace.getActiveFile();
-      if (file) {
-        frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter;
-      }
-    }
-
-    return this.getAbbrList(frontmatter);
   }
 
   /**
@@ -201,6 +176,24 @@ export default class AbbrPlugin extends Plugin {
         view.previewMode.rerender(true);
       }
     }
+  }
+
+  async getPluginData(): Promise<AbbrPluginData> {
+    const data: AbbrPluginData = {
+      metadataKeyword: this.settings.metadataKeyword,
+      globalAbbreviations: [...this.settings.globalAbbreviations],
+      frontmatterCache: undefined,
+    };
+
+    if (this.settings.metadataKeyword) {
+      const file = this.app.workspace.getActiveFile();
+      if (file) {
+        data.frontmatterCache =
+          this.app.metadataCache.getFileCache(file)?.frontmatter;
+      }
+    }
+
+    return data;
   }
 }
 

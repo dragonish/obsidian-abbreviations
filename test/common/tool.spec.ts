@@ -8,6 +8,7 @@ import {
   getAbbreviationInfo,
   queryAbbreviationTitle,
   isAbbreviationsEmpty,
+  calcAbbrList,
 } from "../../common/tool";
 import type { AbbreviationInfo } from "../../common/tool";
 
@@ -216,5 +217,43 @@ describe("common/tool", function () {
       },
     ];
     expect(isAbbreviationsEmpty(abbrList2)).to.be.true;
+  });
+
+  it("calcAbbrList", function () {
+    expect(calcAbbrList(undefined, undefined)).to.be.empty;
+    expect(calcAbbrList({}, "abbr")).to.be.empty;
+
+    const frontmatter1 = {
+      tags: ["Tag", "Test"],
+      abbr: ["HTML: HyperText Markup Language"],
+    };
+
+    expect(calcAbbrList(frontmatter1, "abbr")).to.deep.eq([
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+      },
+    ]);
+    expect(calcAbbrList(frontmatter1, "tags")).to.be.empty;
+    expect(calcAbbrList(frontmatter1, "other")).to.be.empty;
+    expect(calcAbbrList(frontmatter1, "")).to.be.empty;
+
+    const frontmatter2 = {
+      abbr: [
+        "HTML: HyperText Markup Language",
+        { CSS: "Cascading Style Sheets" },
+        "Tag",
+      ],
+    };
+    expect(calcAbbrList(frontmatter2, "abbr")).to.deep.eq([
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+      },
+      {
+        key: "CSS",
+        title: "Cascading Style Sheets",
+      },
+    ]);
   });
 });

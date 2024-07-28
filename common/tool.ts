@@ -11,6 +11,15 @@ export interface AbbreviationInfo {
 
 export type MetadataAbbrType = string | Record<string, unknown>;
 
+export interface AbbrPluginSettings {
+  metadataKeyword: string;
+  globalAbbreviations: AbbreviationInfo[];
+}
+
+export interface AbbrPluginData extends AbbrPluginSettings {
+  frontmatterCache?: Record<string, unknown>;
+}
+
 /**
  * Detects whether it is a whitespace character.
  * @param char
@@ -162,4 +171,32 @@ export function isAbbreviationsEmpty(abbr: AbbreviationInfo[]): boolean {
   }
 
   return tempSet.size === 0;
+}
+
+/**
+ * Calculate abbreviations.
+ * @param frontmatter
+ * @param keyword
+ * @returns
+ */
+export function calcAbbrList(
+  frontmatter?: Record<string, unknown>,
+  keyword?: string
+): AbbreviationInfo[] {
+  const abbrList: AbbreviationInfo[] = [];
+  if (
+    keyword &&
+    frontmatter &&
+    typeof frontmatter === "object" &&
+    frontmatter
+  ) {
+    if (Array.isArray(frontmatter[keyword])) {
+      const list = frontmatter[keyword] as MetadataAbbrType[];
+      list.forEach((item) => {
+        const abbrInfo = getAbbreviationInfo(item);
+        abbrInfo && abbrList.push(abbrInfo);
+      });
+    }
+  }
+  return abbrList;
 }

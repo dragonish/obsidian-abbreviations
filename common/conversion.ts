@@ -1,5 +1,6 @@
+import * as yaml from "js-yaml";
 import { MarkBuffer } from "./mark";
-import { queryAbbreviationTitle, findCharCount } from "./tool";
+import { queryAbbreviationTitle, findCharCount, calcAbbrList } from "./tool";
 import type { AbbreviationInfo } from "./tool";
 
 interface MarkItem {
@@ -19,30 +20,47 @@ interface Quotes {
 type SpecialState = "" | "metadata" | "codeBlocks" | "math";
 
 export class Conversion {
-  private readonly abbreviations: AbbreviationInfo[];
   private readonly mark: MarkBuffer;
 
-  private state: SpecialState = "";
+  abbreviations: AbbreviationInfo[];
 
-  private codeBlocks: CodeBlocks = {
-    graveCount: 0,
-  };
+  private abbreviationKeyword: string;
+  private metadataBuffer: string[];
 
-  private quotes: Quotes = {
-    level: 0,
-  };
+  private state: SpecialState;
 
-  private lastEmptyLine = true;
+  private codeBlocks: CodeBlocks;
+  private quotes: Quotes;
+  private lastEmptyLine: boolean;
 
   private static readonly METADATA = "---";
 
-  constructor(abbreviations: AbbreviationInfo[]) {
-    this.abbreviations = abbreviations;
+  constructor(abbreviations: AbbreviationInfo[], abbreviationKeyword: string) {
+    this.abbreviations = [...abbreviations];
+    this.abbreviationKeyword = abbreviationKeyword;
+    this.metadataBuffer = [];
+    this.state = "";
+    this.codeBlocks = {
+      graveCount: 0,
+    };
+    this.quotes = {
+      level: 0,
+    };
+    this.lastEmptyLine = true;
     this.mark = new MarkBuffer();
   }
 
   setMetadataState(): void {
     this.state = "metadata";
+  }
+
+  /**
+   * Read abbreviations from frontmatter cache.
+   * @param frontmatterCache
+   */
+  readAbbreviationsFromCache(frontmatterCache?: Record<string, unknown>) {
+    const list = calcAbbrList(frontmatterCache, this.abbreviationKeyword);
+    this.abbreviations.push(...list);
   }
 
   /**
@@ -107,7 +125,23 @@ export class Conversion {
     } else {
       if (this.state === "metadata") {
         if (text === Conversion.METADATA) {
+          if (this.abbreviationKeyword && this.metadataBuffer.length > 0) {
+            //* Calculate abbreviations
+            try {
+              const metadata = yaml.load(
+                this.metadataBuffer.join("\n")
+              ) as Record<string, unknown>;
+              if (typeof metadata === "object" && metadata) {
+                const list = calcAbbrList(metadata, this.abbreviationKeyword);
+                this.abbreviations.push(...list);
+              }
+            } catch {
+              //* Do nothing
+            }
+          }
           this.state = "";
+        } else if (this.abbreviationKeyword) {
+          this.metadataBuffer.push(text);
         }
       } else if (this.state === "codeBlocks") {
         const endCodeBlocks = text.match(/^([> ]*`{3,})([^`]*)$/);
