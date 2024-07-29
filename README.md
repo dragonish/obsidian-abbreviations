@@ -6,7 +6,7 @@
 
 This is a plugin for [Obsidian](https://obsidian.md).
 
-Makes Obsidian can mark abbreviations and acronyms (terminology) automatically.
+Implements automatic marking of abbreviations and acronyms (terminology).
 
 ## Usage
 
