@@ -130,14 +130,12 @@ export default class AbbrPlugin extends Plugin {
   private handleModeChange() {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (view) {
-      const editor = view.editor;
-
       //? "source" for editing view (Live Preview & Source mode),
       //? "preview" for reading view.
       const isLivePreview = view.getMode() === "source";
 
       //* Get CodeMirror editor instance
-      const cmEditor = (editor as ObsidianEditor).cm;
+      const cmEditor = (view.editor as ObsidianEditor).cm;
       if (cmEditor) {
         cmEditor.dispatch({
           effects: updateEditorMode.of(isLivePreview),
