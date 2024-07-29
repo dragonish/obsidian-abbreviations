@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: catthehacker/ubuntu:act-latest
+    env:
+      HTTP_PROXY: ${{ vars.PROXY }}
+      HTTPS_PROXY: ${{ vars.PROXY }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Build package
+        run: |
+          pnpm install
+          pnpm run build
+      - name: Get git tags
+        id: git_tags
+        run: |
+          current=$(git describe --abbrev=0 --tags)
+          echo "current=${current}" >> $GITHUB_OUTPUT
+          prev=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+          echo "prev=${prev}" >> $GITHUB_OUTPUT
+      - name: Create zip file
+        run: |
+          package_file=./package.json
+          plugin_name=$(cat $package_file | jq -r '.name')
+          mkdir -p release
+          zip "./release/${plugin_name}_v${{ steps.git_tags.outputs.current }}.zip" "main.js" "manifest.json"
+      - name: Create changelog text
+        id: changelog_text
+        uses: dragonish/tag-changelog@7ec9e81e765a457f012bf0747f7a5a60831899e2
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          config_file: ../.gitea/scripts/tag-changelog-config.cjs
+      - name: Create release
+        uses: akkuman/gitea-release-action@v1
+        env:
+          NODE_OPTIONS: '--experimental-fetch' # if nodejs < 18
+        with:
+          server_url: ${{ vars.SERVER }}
+          files: |-
+            release/**
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Release ${{ steps.git_tags.outputs.current }}
+          body: |
+            ${{ steps.changelog_text.outputs.changes }}
+
+            ---
+
+            ## Details
+
+            See: [${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }}](/${{ gitea.repository }}/compare/${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }})
