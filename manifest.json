@@ -1,9 +1,9 @@
 {
-  "id": "obsidian-abbreviations-plugin",
+  "id": "abbreviations-mark",
   "name": "Abbreviations and Acronyms",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Makes Obsidian can mark abbreviations and acronyms (terminology) automatically.",
+  "description": "Implements automatic marking of abbreviations and acronyms (terminology).",
   "author": "dragonish",
   "authorUrl": "https://github.com/dragonish",
   "fundingUrl": "https://ko-fi.com/monogamy",
