@@ -42,9 +42,11 @@ Use the abbreviation for key and the tooltip for value.
 Example:
 
 ```yaml
+---
 abbr:
   - HTML: HyperText Markup Language
   - CSS: Cascading Style Sheets
+---
 ```
 
 ## Settings
