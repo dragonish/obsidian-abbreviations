@@ -329,5 +329,22 @@ describe("common/mark", function () {
         position: 20,
       },
     ]);
+
+    expect(mark.handler("Well-being matters.")).to.deep.eq([
+      {
+        text: "Well-being",
+        position: 0,
+      },
+      {
+        text: "matters",
+        position: 11,
+      },
+    ]);
+    expect(mark.handler("R&D.")).to.deep.eq([
+      {
+        text: "R&D",
+        position: 0,
+      },
+    ]);
   });
 });

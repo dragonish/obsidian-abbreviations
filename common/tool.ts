@@ -31,10 +31,16 @@ export function isWhitespace(char: string) {
 
 /**
  * Detects whether it is a special or a whitespace character.
+ * - `-` and `&` not considered a special character
  * @param char
  * @returns `true` if it is a a special character or a whitespace character
  */
 export function isSpecialOrWhitespace(char: string) {
+  //! `-` and `&` not considered a special character
+  if ("-" === char || "&" === char) {
+    return false;
+  }
+
   // Check for whitespace characters
   if (/\s/.test(char)) {
     return true;

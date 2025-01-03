@@ -24,14 +24,14 @@ describe("common/tool", function () {
 
   it("isSpecialOrWhitespace", function () {
     const list1 =
-      " 	\"'`!~@#$%^&*()-_+=,.:;<>/?\\|[]{}，。“”（）《》，。：；？【】「」〔〕〖〗『』℃°\t\n";
+      " 	\"'`!~@#$%^*()_+=,.:;<>/?\\|[]{}，。“”（）《》，。：；？【】「」〔〕〖〗『』℃°\t\n";
     for (const item of list1) {
       expect(isSpecialOrWhitespace(item)).to.be.true;
     }
 
     expect(isSpecialOrWhitespace("")).to.be.true;
 
-    const list2 = "01a国國ひカ한";
+    const list2 = "01a国國ひカ한-&";
     for (const item of list2) {
       expect(isSpecialOrWhitespace(item)).to.be.false;
     }
@@ -138,6 +138,36 @@ describe("common/tool", function () {
       {
         text: "HTML",
         isSpecial: false,
+      },
+    ]);
+
+    expect(getWords("Well-being matters.")).to.deep.eq([
+      {
+        text: "Well-being",
+        isSpecial: false,
+      },
+      {
+        text: " ",
+        isSpecial: true,
+      },
+      {
+        text: "matters",
+        isSpecial: false,
+      },
+      {
+        text: ".",
+        isSpecial: true,
+      },
+    ]);
+
+    expect(getWords("R&D.")).to.deep.eq([
+      {
+        text: "R&D",
+        isSpecial: false,
+      },
+      {
+        text: ".",
+        isSpecial: true,
       },
     ]);
   });
@@ -253,6 +283,20 @@ describe("common/tool", function () {
       {
         key: "CSS",
         title: "Cascading Style Sheets",
+      },
+    ]);
+
+    const frontmatter3 = {
+      abbr: ["R&D: Research and Development", { "C-suite": "Corporate suite" }],
+    };
+    expect(calcAbbrList(frontmatter3, "abbr")).to.deep.eq([
+      {
+        key: "R&D",
+        title: "Research and Development",
+      },
+      {
+        key: "C-suite",
+        title: "Corporate suite",
       },
     ]);
   });
