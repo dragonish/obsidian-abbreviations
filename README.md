@@ -33,7 +33,7 @@ abbr:
 ```
 
 > [!TIP]
-> The advantage of this format is that abbreviations can be added or removed directly in display mode.
+> The advantage of this format is that abbreviations can be added or removed directly in Reading view.
 
 #### Key-value pairs
 
