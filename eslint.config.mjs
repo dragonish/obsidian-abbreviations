@@ -10,5 +10,8 @@ export default [
   ...tseslint.configs.recommended,
   {
     ignores: ["main.js"],
+    rules: {
+      "@typescript-eslint/no-unused-expressions": "off",
+    },
   },
 ];
