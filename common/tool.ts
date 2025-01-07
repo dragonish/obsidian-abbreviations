@@ -190,12 +190,7 @@ export function calcAbbrList(
   keyword?: string
 ): AbbreviationInfo[] {
   const abbrList: AbbreviationInfo[] = [];
-  if (
-    keyword &&
-    frontmatter &&
-    typeof frontmatter === "object" &&
-    frontmatter
-  ) {
+  if (keyword && typeof frontmatter === "object" && frontmatter) {
     if (Array.isArray(frontmatter[keyword])) {
       const list = frontmatter[keyword] as MetadataAbbrType[];
       list.forEach((item) => {
