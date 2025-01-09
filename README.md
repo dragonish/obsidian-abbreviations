@@ -8,17 +8,19 @@ This is a plugin for [Obsidian](https://obsidian.md).
 
 Implements automatic marking of abbreviations and acronyms (terminology).
 
+This plugin supports rendering in both editing view (*Live Preview*) and reading view.
+
 ## Usage
+
+### Properties
 
 Gets the abbreviations by reading the specified field in the note [properties(metadata)](https://help.obsidian.md/Editing+and+formatting/Properties), and automatically render the abbreviations in the note content.
 
-This plugin supports rendering in both editing view (*Live Preview*) and reading view.
-
-### Metadata format
+#### Metadata format
 
 You can use arrays of strings or key-value pairs.
 
-#### Strings
+##### Strings
 
 Use a colon (`:`) in the string to separate the abbreviation and the tooltip.
 
@@ -35,7 +37,7 @@ abbr:
 > [!TIP]
 > The advantage of this format is that abbreviations can be added or removed directly in Reading view.
 
-#### Key-value pairs
+##### Key-value pairs
 
 Use the abbreviation for key and the tooltip for value.
 
@@ -47,6 +49,67 @@ abbr:
   - HTML: HyperText Markup Language
   - CSS: Cascading Style Sheets
 ---
+```
+
+### Markdown Extra syntax
+
+> [!NOTE]
+> This feature is experimental. Currently, there is no unified syntax specification, and the implementation of this plugin is similar to [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/#abbr).
+
+You need to enable "Enable Markdown Extra syntax support (Experimental)" in the plugin settings to activate this feature.
+
+Gets the abbreviations by reading the specified format in the note, and automatically render the abbreviations in the note content.
+
+#### Definition format
+
+Declare at the beginning of a line, for example:
+
+```
+*[W3C]: World Wide Web Consortium
+```
+
+Disable a specific abbreviation:
+
+```
+*[W3C]: 
+```
+
+#### Same abbreviations
+
+When there are multiple same abbreviations, the scope is as follows:
+
+```
+---
+abbr:
+  - RAM: Random Access Memory
+---
+
+RAM.
+
+*[RAM]: Reliability, Availability, Maintainability
+
+RAM.
+
+*[RAM]: Remote Access Management
+
+RAM.
+
+*[RAM]: 
+
+RAM.
+
+```
+
+Rendered as:
+
+```html
+<abbr title="Random Access Memory">RAM</abbr>.
+
+<abbr title="Reliability, Availability, Maintainability">RAM</abbr>.
+
+<abbr title="Remote Access Management">RAM</abbr>.
+
+RAM.
 ```
 
 ## Settings
