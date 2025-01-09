@@ -8,7 +8,7 @@ This is a plugin for [Obsidian](https://obsidian.md).
 
 Implements automatic marking of abbreviations and acronyms (terminology).
 
-This plugin supports rendering in both editing view (*Live Preview*) and reading view.
+This plugin supports rendering in both editing view (*Live Preview*), reading view and source mode (optional).
 
 ## Usage
 
@@ -117,6 +117,10 @@ RAM.
 ### Metadata keyword
 
 This plugin allows you to customize the keyword that read abbreviations from [properties](https://help.obsidian.md/Editing+and+formatting/Properties), default value is `abbr`.
+
+### Mark abbreviations in Source mode
+
+In Source mode, mark abbreviations just like in Live Preview and Reading view.
 
 ### Global abbreviations
 
