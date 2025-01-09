@@ -1,7 +1,7 @@
 import "mocha";
 import { expect } from "chai";
+import type { AbbreviationInstance } from "../../common/data";
 import { Conversion } from "../../common/conversion";
-import type { AbbreviationInstance } from "../../common/tool";
 
 describe("common/conversion", function () {
   it("Conversion.handler", function () {
