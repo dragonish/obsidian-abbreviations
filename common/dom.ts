@@ -22,12 +22,13 @@ import {
 function replaceWordWithAbbr(
   node: Node,
   abbrList: AbbreviationInstance[],
-  lineStart = 1
+  lineStart = 1,
+  affixList: string[] = []
 ) {
   if (["DEL", "EM", "MARK", "STRONG"].includes(node.nodeName)) {
     const childNodes = node.childNodes;
     for (let i = 0; i < childNodes.length; i++) {
-      replaceWordWithAbbr(childNodes[i], abbrList, lineStart);
+      replaceWordWithAbbr(childNodes[i], abbrList, lineStart, affixList);
     }
   }
 
@@ -47,7 +48,8 @@ function replaceWordWithAbbr(
         const abbrTitle = queryAbbreviationTitle(
           word.text,
           abbrList,
-          lineStart
+          lineStart,
+          affixList
         );
         if (abbrTitle) {
           const abbr = fragment.createEl("abbr", {
@@ -73,7 +75,8 @@ function replaceWordWithAbbr(
  */
 export function handlePreviewMarkdown(
   element: HTMLElement,
-  abbrList: AbbreviationInstance[]
+  abbrList: AbbreviationInstance[],
+  affixList: string[] = []
 ) {
   if (isAbbreviationsEmpty(abbrList)) {
     return;
@@ -84,7 +87,7 @@ export function handlePreviewMarkdown(
     const childNodes = ele.childNodes;
     for (let i = 0; i < childNodes.length; i++) {
       const node = childNodes[i];
-      replaceWordWithAbbr(node, abbrList);
+      replaceWordWithAbbr(node, abbrList, 1, affixList);
     }
   }
 }
@@ -98,7 +101,8 @@ export function handlePreviewMarkdown(
 export function handlePreviewMarkdownExtra(
   context: MarkdownPostProcessorContext,
   element: HTMLElement,
-  abbrList: AbbreviationInstance[]
+  abbrList: AbbreviationInstance[],
+  affixList: string[] = []
 ) {
   if (isAbbreviationsEmpty(abbrList)) {
     return;
@@ -126,7 +130,7 @@ export function handlePreviewMarkdownExtra(
     const childNodes = ele.childNodes;
     for (let i = 0; i < childNodes.length; i++) {
       const node = childNodes[i];
-      replaceWordWithAbbr(node, abbrList, lineStart);
+      replaceWordWithAbbr(node, abbrList, lineStart, affixList);
     }
   }
 }

@@ -16,7 +16,7 @@ describe("common/conversion", function () {
     const content = [
       "---",
       "note:",
-      "  - HTML: HyperText Markup Language",
+      "  - CSS: Test",
       "---",
       "CSS",
       "*[TEST]: CSS",
@@ -84,6 +84,33 @@ describe("common/conversion", function () {
         },
       ],
       [],
+    ]);
+
+    const conversion3 = new Conversion(abbrList, true, ["es"]);
+    const res3: unknown[] = [];
+    const content3 = ["---", "note:", "  - CSS: Test", "---", "CSS", "CSSes"];
+    content3.forEach((line, index) => {
+      res3.push(conversion3.handler(line, index + 1));
+    });
+    expect(res3).to.deep.eq([
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          index: 0,
+          text: "CSS",
+          title: "Cascading Style Sheets",
+        },
+      ],
+      [
+        {
+          index: 0,
+          text: "CSSes",
+          title: "Cascading Style Sheets",
+        },
+      ],
     ]);
   });
 });

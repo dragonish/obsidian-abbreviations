@@ -32,6 +32,8 @@ export interface CodeBlocks {
 export interface AbbrPluginSettings {
   useMarkdownExtraSyntax: boolean;
   metadataKeyword: string;
+  detectAffixes: boolean;
+  affixes: string;
   globalAbbreviations: AbbreviationInfo[];
 }
 

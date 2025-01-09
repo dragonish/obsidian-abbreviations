@@ -21,7 +21,7 @@ import {
   editorModeField,
   updateEditorMode,
 } from "./common/view";
-import { calcAbbrListFromFrontmatter } from "./common/tool";
+import { calcAbbrListFromFrontmatter, getAffixList } from "./common/tool";
 import {
   handlePreviewMarkdown,
   handlePreviewMarkdownExtra,
@@ -35,6 +35,8 @@ interface ObsidianEditor extends Editor {
 const DEFAULT_SETTINGS: AbbrPluginSettings = {
   useMarkdownExtraSyntax: false,
   metadataKeyword: "abbr",
+  detectAffixes: false,
+  affixes: "",
   globalAbbreviations: [],
 };
 
@@ -71,7 +73,14 @@ export default class AbbrPlugin extends Plugin {
           });
         }
 
-        handlePreviewMarkdownExtra(context, element, parser.abbreviations);
+        handlePreviewMarkdownExtra(
+          context,
+          element,
+          parser.abbreviations,
+          this.settings.detectAffixes
+            ? getAffixList(this.settings.affixes)
+            : undefined
+        );
       } else {
         let frontmatter: undefined | FrontMatterCache = context.frontmatter;
 
@@ -92,7 +101,13 @@ export default class AbbrPlugin extends Plugin {
         }
 
         const abbrList = this.getAbbrList(frontmatter);
-        handlePreviewMarkdown(element, abbrList);
+        handlePreviewMarkdown(
+          element,
+          abbrList,
+          this.settings.detectAffixes
+            ? getAffixList(this.settings.affixes)
+            : undefined
+        );
       }
     });
 
@@ -212,6 +227,8 @@ export default class AbbrPlugin extends Plugin {
     const data: AbbrPluginData = {
       useMarkdownExtraSyntax: this.settings.useMarkdownExtraSyntax,
       metadataKeyword: this.settings.metadataKeyword,
+      detectAffixes: this.settings.detectAffixes,
+      affixes: this.settings.affixes,
       globalAbbreviations: [...this.settings.globalAbbreviations],
       frontmatterCache: undefined,
     };
@@ -308,6 +325,44 @@ class AbbrSettingTab extends PluginSettingTab {
       "."
     );
     globalAbbreviationsSetting.descEl.appendChild(globalAbbreviationsDesc);
+
+    new Setting(containerEl).setName("Affixes").setHeading();
+
+    //* detectAffixes
+    new Setting(containerEl)
+      .setName("Enable detect affixes")
+      .setDesc("Detect supplementary affixes for abbreviations.")
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.detectAffixes)
+          .onChange(async (value) => {
+            this.plugin.settings.detectAffixes = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    //* affixes
+    const affixesSetting = new Setting(containerEl)
+      .setName("Affix list")
+      .addText((text) => {
+        text
+          .setPlaceholder("A string separated by ,")
+          .setValue(this.plugin.settings.affixes)
+          .onChange(async (value) => {
+            this.plugin.settings.affixes = value.trim();
+            await this.plugin.saveSettings();
+          });
+      });
+
+    const affixesDesc = document.createDocumentFragment();
+    affixesDesc.append(
+      "The list content uses comma-separated string, for example: ",
+      createEl("b", {
+        text: "s, es, less",
+      }),
+      "."
+    );
+    affixesSetting.descEl.appendChild(affixesDesc);
   }
 
   displayGlobalAbbreviations(): void {

@@ -114,6 +114,22 @@ export function parseExtraAbbreviation(line: string): AbbreviationInfo | null {
 }
 
 /**
+ * Get affix list.
+ * @param affixes
+ * @returns
+ */
+export function getAffixList(affixes: string): string[] {
+  return Array.from(
+    new Set(
+      affixes
+        .split(",")
+        .map((affix) => affix.trim())
+        .filter((item) => item)
+    )
+  );
+}
+
+/**
  * Get abbreviation instance.
  * @param input
  * @returns
@@ -150,14 +166,19 @@ export function getAbbreviationInstance(
  * @param text
  * @param abbrList
  * @param lineStart
+ * @param affixList
  * @returns the abbreviation title. *An empty string indicates that the abbreviation is disabled*
  */
 export function queryAbbreviationTitle(
   text: string,
   abbrList: AbbreviationInstance[],
-  lineStart = 1
+  lineStart = 1,
+  affixList: string[] = []
 ) {
   let res: string | null = null;
+  let affixRes: string | null = null;
+  let detectAffixes = affixList.length > 0;
+
   for (let i = abbrList.length - 1; i >= 0; i--) {
     const abbr = abbrList[i];
     if (text === abbr.key) {
@@ -169,10 +190,29 @@ export function queryAbbreviationTitle(
       } else {
         break;
       }
+    } else if (detectAffixes) {
+      let match = false;
+      for (const affix of affixList) {
+        if (text === abbr.key + affix) {
+          affixRes = abbr.title;
+          match = true;
+          break;
+        }
+      }
+
+      if (match) {
+        if (abbr.type === "extra") {
+          if (abbr.position <= lineStart) {
+            detectAffixes = false;
+          }
+        } else {
+          detectAffixes = false;
+        }
+      }
     }
   }
 
-  return res;
+  return res ?? affixRes;
 }
 
 /**

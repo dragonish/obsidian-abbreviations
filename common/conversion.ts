@@ -22,6 +22,7 @@ export class Conversion {
   private readonly mark: MarkBuffer;
 
   private abbreviations: AbbreviationInstance[];
+  private affixList: string[];
 
   private skipExtraDefinition: boolean;
 
@@ -33,10 +34,12 @@ export class Conversion {
 
   constructor(
     abbreviations: AbbreviationInstance[],
-    skipExtraDefinition: boolean
+    skipExtraDefinition: boolean,
+    affixList: string[] = []
   ) {
     this.abbreviations = abbreviations;
     this.skipExtraDefinition = skipExtraDefinition;
+    this.affixList = affixList;
     this.state = "";
     this.codeBlocks = {
       graveCount: 0,
@@ -109,7 +112,8 @@ export class Conversion {
           const abbrTitle = queryAbbreviationTitle(
             word.text,
             this.abbreviations,
-            lineStart
+            lineStart,
+            this.affixList
           );
           if (abbrTitle) {
             return {

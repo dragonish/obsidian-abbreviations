@@ -7,6 +7,7 @@ import {
   findCharCount,
   getWords,
   parseExtraAbbreviation,
+  getAffixList,
   getAbbreviationInstance,
   queryAbbreviationTitle,
   isAbbreviationsEmpty,
@@ -211,6 +212,17 @@ describe("common/tool", function () {
     expect(parseExtraAbbreviation("*[[PATH]]: content*")).to.be.null;
   });
 
+  it("getAffixList", function () {
+    expect(getAffixList("s")).to.deep.eq(["s"]);
+    expect(getAffixList("s,s,es")).to.deep.eq(["s", "es"]);
+    expect(getAffixList("s,es,less")).to.deep.eq(["s", "es", "less"]);
+    expect(getAffixList("s, es, less")).to.deep.eq(["s", "es", "less"]);
+    expect(getAffixList(" , s, es, less, ")).to.deep.eq(["s", "es", "less"]);
+    expect(getAffixList("")).to.be.empty;
+    expect(getAffixList("  ")).to.be.empty;
+    expect(getAffixList("0")).to.deep.eq(["0"]);
+  });
+
   it("getAbbreviationInstance", function () {
     expect(
       getAbbreviationInstance("HTML: HyperText Markup Language")
@@ -302,6 +314,91 @@ describe("common/tool", function () {
     expect(queryAbbreviationTitle("HTM", abbrList2, 32)).to.be.eq("Test");
     expect(queryAbbreviationTitle("HTM", abbrList2, 36)).to.be.eq("Test");
     expect(queryAbbreviationTitle("HTM", abbrList2, 40)).to.be.empty;
+  });
+
+  it("queryAbbreviationTitle with affixList", function () {
+    const abbrList1: AbbreviationInstance[] = [
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+        type: "global",
+      },
+      {
+        key: "CSS",
+        title: "Cascading Style Sheets",
+        type: "metadata",
+      },
+      {
+        key: "CSS",
+        title: "Cross Site Scripting",
+        type: "extra",
+        position: 25,
+      },
+      {
+        key: "CSS",
+        title: "",
+        type: "extra",
+        position: 50,
+      },
+    ];
+    const affixList = ["s", "es", "less"];
+
+    expect(queryAbbreviationTitle("HTMLs", abbrList1, 1, affixList)).to.eq(
+      "HyperText Markup Language"
+    );
+    expect(queryAbbreviationTitle("CSSes", abbrList1, 1, affixList)).to.eq(
+      "Cascading Style Sheets"
+    );
+    expect(queryAbbreviationTitle("CSSes", abbrList1, 30, affixList)).to.eq(
+      "Cross Site Scripting"
+    );
+    expect(queryAbbreviationTitle("CSSes", abbrList1, 60, affixList)).to.be
+      .empty;
+
+    expect(queryAbbreviationTitle("", abbrList1, 1, affixList)).to.be.null;
+    expect(queryAbbreviationTitle("htmls", abbrList1, 1, affixList)).to.be.null;
+
+    const abbrList2: AbbreviationInstance[] = [
+      {
+        key: "HTM",
+        title: "Test",
+        type: "extra",
+        position: 34,
+      },
+      {
+        key: "HTM",
+        title: "",
+        type: "extra",
+        position: 38,
+      },
+    ];
+    expect(queryAbbreviationTitle("HTMs", abbrList2, 32, affixList)).to.be.eq(
+      "Test"
+    );
+    expect(queryAbbreviationTitle("HTMes", abbrList2, 36, affixList)).to.be.eq(
+      "Test"
+    );
+    expect(queryAbbreviationTitle("HTMless", abbrList2, 40, affixList)).to.be
+      .empty;
+
+    const abbrList3: AbbreviationInstance[] = [
+      {
+        key: "HTMs",
+        title: "Test1",
+        type: "metadata",
+      },
+      {
+        key: "HTM",
+        title: "Test2",
+        type: "metadata",
+      },
+    ];
+    expect(queryAbbreviationTitle("HTMs", abbrList3, 1, affixList)).to.be.eq(
+      "Test1"
+    );
+    expect(queryAbbreviationTitle("HTM", abbrList3, 1, affixList)).to.be.eq(
+      "Test2"
+    );
   });
 
   it("isAbbreviationsEmpty", function () {
