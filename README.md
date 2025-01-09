@@ -134,6 +134,12 @@ abbr:
 ---
 ```
 
+### Affixes
+
+This plugin allows match supplementary affixes for abbreviations. For example, it can make the `OS` match other `OSes`. More information can see: [#3](https://github.com/dragonish/obsidian-abbreviations/issues/3).
+
+Affix list is defined by the user, with values set as comma-separated string. For example: `s, es, less`.
+
 ## Preview
 
 **Live Preview:**
