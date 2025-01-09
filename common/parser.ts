@@ -1,5 +1,6 @@
-import { MarkBuffer } from "./mark";
+import * as yaml from "js-yaml";
 import type {
+  AbbreviationInfo,
   AbbreviationInstance,
   SpecialState,
   CodeBlocks,
@@ -7,23 +8,22 @@ import type {
 } from "./data";
 import { METADATA_BORDER } from "./data";
 import {
-  queryAbbreviationTitle,
   findCharCount,
+  calcAbbrListFromFrontmatter,
   parseExtraAbbreviation,
 } from "./tool";
 
-interface MarkItem {
-  index: number;
-  text: string;
-  title: string;
+interface ParseOption {
+  metadata?: boolean;
+  extra?: boolean;
 }
 
-export class Conversion {
-  private readonly mark: MarkBuffer;
+export class Parser {
+  abbreviations: AbbreviationInstance[];
 
-  private abbreviations: AbbreviationInstance[];
-
-  private skipExtraDefinition: boolean;
+  private abbreviationKeyword: string;
+  private parseOption: ParseOption;
+  private metadataBuffer: string[];
 
   private state: SpecialState;
 
@@ -32,11 +32,21 @@ export class Conversion {
   private lastEmptyLine: boolean;
 
   constructor(
-    abbreviations: AbbreviationInstance[],
-    skipExtraDefinition: boolean
+    abbreviations: AbbreviationInfo[],
+    abbreviationKeyword: string,
+    parseOption: ParseOption
   ) {
-    this.abbreviations = abbreviations;
-    this.skipExtraDefinition = skipExtraDefinition;
+    this.abbreviations = [
+      ...abbreviations.map<AbbreviationInstance>(({ key, title }) => ({
+        key,
+        title,
+        type: "global",
+      })),
+    ];
+
+    this.abbreviationKeyword = abbreviationKeyword;
+    this.parseOption = parseOption;
+    this.metadataBuffer = [];
     this.state = "";
     this.codeBlocks = {
       graveCount: 0,
@@ -45,21 +55,35 @@ export class Conversion {
       level: 0,
     };
     this.lastEmptyLine = true;
-    this.mark = new MarkBuffer();
+  }
+
+  isMetadataState() {
+    return this.state === "metadata";
+  }
+
+  /**
+   * Read abbreviations from frontmatter cache.
+   * @param frontmatterCache
+   */
+  readAbbreviationsFromCache(frontmatterCache?: Record<string, unknown>) {
+    const list = calcAbbrListFromFrontmatter(
+      frontmatterCache,
+      this.abbreviationKeyword
+    );
+    this.abbreviations.push(...list);
   }
 
   /**
    * Line content handler.
    * - Do not process Properties(Metadata), Code blocks, Math
-   * - Process Comments
+   * - Process comments
    * @param text
    * @param lineStart
-   * @returns
    */
-  handler(text: string, lineStart: number): MarkItem[] {
+  handler(text: string, lineStart: number): void {
     if (lineStart === 1 && text === METADATA_BORDER) {
       this.state = "metadata";
-      return [];
+      return;
     }
 
     if (this.quotes.level > 0) {
@@ -69,7 +93,7 @@ export class Conversion {
         this.codeBlocks.graveCount = 0;
         this.quotes.level = 0;
         this.lastEmptyLine = true;
-        return [];
+        return;
       }
     }
 
@@ -77,7 +101,7 @@ export class Conversion {
       if (this.lastEmptyLine) {
         if (/^[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t)/.test(text)) {
           // pure code blocks
-          return [];
+          return;
         }
       }
 
@@ -86,45 +110,54 @@ export class Conversion {
         this.state = "codeBlocks";
         this.codeBlocks.graveCount = findCharCount(codeBlocks[1], "`");
         this.quotes.level = findCharCount(codeBlocks[1], ">");
-        return [];
+        return;
       }
 
       const math = text.match(/^([> ]*)\$\$(.*)/);
       if (math && !math[2].trim().endsWith("$$")) {
         this.state = "math";
         this.quotes.level = findCharCount(math[1], ">");
-        return [];
+        return;
       }
 
-      if (this.skipExtraDefinition) {
+      if (this.parseOption.extra) {
         const parseRes = parseExtraAbbreviation(text);
         if (parseRes) {
-          return [];
+          this.abbreviations.push({
+            key: parseRes.key,
+            title: parseRes.title,
+            type: "extra",
+            position: lineStart,
+          });
         }
       }
-
-      const words = this.mark.handler(text);
-      return words
-        .map((word) => {
-          const abbrTitle = queryAbbreviationTitle(
-            word.text,
-            this.abbreviations,
-            lineStart
-          );
-          if (abbrTitle) {
-            return {
-              index: word.position,
-              text: word.text,
-              title: abbrTitle,
-            };
-          }
-          return null;
-        })
-        .filter((v) => v !== null);
     } else {
       if (this.state === "metadata") {
         if (text === METADATA_BORDER) {
+          if (
+            this.parseOption.metadata &&
+            this.abbreviationKeyword &&
+            this.metadataBuffer.length > 0
+          ) {
+            //* Calculate abbreviations
+            try {
+              const metadata = yaml.load(
+                this.metadataBuffer.join("\n")
+              ) as Record<string, unknown>;
+              if (typeof metadata === "object" && metadata) {
+                const list = calcAbbrListFromFrontmatter(
+                  metadata,
+                  this.abbreviationKeyword
+                );
+                this.abbreviations.push(...list);
+              }
+            } catch {
+              //* Do nothing
+            }
+          }
           this.state = "";
+        } else if (this.parseOption.metadata && this.abbreviationKeyword) {
+          this.metadataBuffer.push(text);
         }
       } else if (this.state === "codeBlocks") {
         const endCodeBlocks = text.match(/^([> ]*`{3,})([^`]*)$/);
@@ -154,7 +187,5 @@ export class Conversion {
         }
       }
     }
-
-    return [];
   }
 }

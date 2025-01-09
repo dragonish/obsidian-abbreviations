@@ -1,24 +1,12 @@
+import type { AbbreviationInfo, AbbreviationInstance } from "./data";
+
 interface WordItem {
   text: string;
   /** Is special or whitespace */
   isSpecial: boolean;
 }
 
-export interface AbbreviationInfo {
-  key: string;
-  title: string;
-}
-
-export type MetadataAbbrType = string | Record<string, unknown>;
-
-export interface AbbrPluginSettings {
-  metadataKeyword: string;
-  globalAbbreviations: AbbreviationInfo[];
-}
-
-export interface AbbrPluginData extends AbbrPluginSettings {
-  frontmatterCache?: Record<string, unknown>;
-}
+type MetadataAbbrType = string | Record<string, unknown>;
 
 /**
  * Detects whether it is a whitespace character.
@@ -109,13 +97,30 @@ export function getWords(text: string) {
 }
 
 /**
- * Get abbreviation info.
+ * Parse the Abbreviation of the extra syntax.
+ * @param line
+ * @returns
+ */
+export function parseExtraAbbreviation(line: string): AbbreviationInfo | null {
+  const matches = line.match(/^\*\[([^[\]]+?)\]:(\s+.*)?$/);
+  if (matches) {
+    return {
+      key: matches[1],
+      title: (matches[2] || "").trim(),
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Get abbreviation instance.
  * @param input
  * @returns
  */
-export function getAbbreviationInfo(
+export function getAbbreviationInstance(
   input: MetadataAbbrType
-): AbbreviationInfo | null {
+): AbbreviationInstance | null {
   if (typeof input === "string") {
     const val = input.trim();
     const index = val.indexOf(":");
@@ -123,6 +128,7 @@ export function getAbbreviationInfo(
       return {
         key: val.substring(0, index).trim(),
         title: val.substring(index + 1).trim(),
+        type: "metadata",
       };
     }
   } else if (typeof input === "object" && input) {
@@ -131,6 +137,7 @@ export function getAbbreviationInfo(
       return {
         key: keys[0],
         title: input[keys[0]] as string,
+        type: "metadata",
       };
     }
   }
@@ -142,18 +149,30 @@ export function getAbbreviationInfo(
  * Query title for abbreviations.
  * @param text
  * @param abbrList
+ * @param lineStart
  * @returns the abbreviation title. *An empty string indicates that the abbreviation is disabled*
  */
 export function queryAbbreviationTitle(
   text: string,
-  abbrList: AbbreviationInfo[]
+  abbrList: AbbreviationInstance[],
+  lineStart = 1
 ) {
+  let res: string | null = null;
   for (let i = abbrList.length - 1; i >= 0; i--) {
-    if (text === abbrList[i].key) {
-      return abbrList[i].title;
+    const abbr = abbrList[i];
+    if (text === abbr.key) {
+      res = abbr.title;
+      if (abbr.type === "extra") {
+        if (abbr.position <= lineStart) {
+          break;
+        }
+      } else {
+        break;
+      }
     }
   }
-  return null;
+
+  return res;
 }
 
 /**
@@ -162,13 +181,17 @@ export function queryAbbreviationTitle(
  * @param abbr
  * @returns `true` if empty
  */
-export function isAbbreviationsEmpty(abbr: AbbreviationInfo[]): boolean {
+export function isAbbreviationsEmpty(abbr: AbbreviationInstance[]): boolean {
   if (abbr.length === 0) {
     return true;
   }
 
   const tempSet = new Set<string>();
   for (const item of abbr) {
+    if (item.type === "extra") {
+      return false;
+    }
+
     if (item.title) {
       tempSet.add(item.key);
     } else {
@@ -180,21 +203,21 @@ export function isAbbreviationsEmpty(abbr: AbbreviationInfo[]): boolean {
 }
 
 /**
- * Calculate abbreviations.
+ * Calculate abbreviations from frontmatter.
  * @param frontmatter
  * @param keyword
  * @returns
  */
-export function calcAbbrList(
+export function calcAbbrListFromFrontmatter(
   frontmatter?: Record<string, unknown>,
   keyword?: string
-): AbbreviationInfo[] {
-  const abbrList: AbbreviationInfo[] = [];
+): AbbreviationInstance[] {
+  const abbrList: AbbreviationInstance[] = [];
   if (keyword && typeof frontmatter === "object" && frontmatter) {
     if (Array.isArray(frontmatter[keyword])) {
       const list = frontmatter[keyword] as MetadataAbbrType[];
       list.forEach((item) => {
-        const abbrInfo = getAbbreviationInfo(item);
+        const abbrInfo = getAbbreviationInstance(item);
         abbrInfo && abbrList.push(abbrInfo);
       });
     }

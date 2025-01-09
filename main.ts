@@ -10,25 +10,30 @@ import {
   Editor,
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
+import type {
+  AbbreviationInstance,
+  AbbrPluginSettings,
+  AbbrPluginData,
+} from "./common/data";
 import {
   AbbrViewPlugin,
   abbrDecorationsField,
   editorModeField,
   updateEditorMode,
 } from "./common/view";
-import { calcAbbrList } from "./common/tool";
-import type {
-  AbbreviationInfo,
-  AbbrPluginSettings,
-  AbbrPluginData,
-} from "./common/tool";
-import { handlePreviewMarkdown } from "./common/dom";
+import { calcAbbrListFromFrontmatter } from "./common/tool";
+import {
+  handlePreviewMarkdown,
+  handlePreviewMarkdownExtra,
+} from "./common/dom";
+import { Parser } from "./common/parser";
 
 interface ObsidianEditor extends Editor {
   cm: EditorView;
 }
 
 const DEFAULT_SETTINGS: AbbrPluginSettings = {
+  useMarkdownExtraSyntax: false,
   metadataKeyword: "abbr",
   globalAbbreviations: [],
 };
@@ -47,27 +52,48 @@ export default class AbbrPlugin extends Plugin {
     ]);
 
     // Register markdown post processor
-    this.registerMarkdownPostProcessor((element, context) => {
-      let frontmatter: undefined | FrontMatterCache;
-      if (this.settings.metadataKeyword) {
-        frontmatter = context.frontmatter;
-        if (!frontmatter) {
-          //? It may be Tables or Callouts rendered in Live Preview.
-          if (
-            element.classList.contains("table-cell-wrapper") ||
-            element.classList.contains("markdown-rendered")
-          ) {
-            const file = this.app.workspace.getActiveFile();
-            if (file) {
-              frontmatter =
-                this.app.metadataCache.getFileCache(file)?.frontmatter;
+    this.registerMarkdownPostProcessor(async (element, context) => {
+      if (this.settings.useMarkdownExtraSyntax) {
+        const parser = new Parser(
+          this.settings.globalAbbreviations,
+          this.settings.metadataKeyword,
+          {
+            extra: true,
+          }
+        );
+        parser.readAbbreviationsFromCache(context.frontmatter);
+
+        const file = this.app.workspace.getActiveFile();
+        if (file) {
+          const sourceContent = await this.app.vault.cachedRead(file);
+          sourceContent.split("\n").forEach((line, index) => {
+            parser.handler(line, index + 1);
+          });
+        }
+
+        handlePreviewMarkdownExtra(context, element, parser.abbreviations);
+      } else {
+        let frontmatter: undefined | FrontMatterCache = context.frontmatter;
+
+        if (this.settings.metadataKeyword) {
+          if (!frontmatter) {
+            //? It may be Tables or Callouts rendered in Live Preview.
+            if (
+              element.classList.contains("table-cell-wrapper") ||
+              element.classList.contains("markdown-rendered")
+            ) {
+              const file = this.app.workspace.getActiveFile();
+              if (file) {
+                frontmatter =
+                  this.app.metadataCache.getFileCache(file)?.frontmatter;
+              }
             }
           }
         }
-      }
 
-      const abbrList = this.getAbbrList(frontmatter);
-      handlePreviewMarkdown(element, abbrList);
+        const abbrList = this.getAbbrList(frontmatter);
+        handlePreviewMarkdown(element, abbrList);
+      }
     });
 
     // Listen for metadata changes
@@ -152,14 +178,20 @@ export default class AbbrPlugin extends Plugin {
     true
   );
 
-  private getAbbrList(frontmatter?: FrontMatterCache): AbbreviationInfo[] {
-    const abbrList: AbbreviationInfo[] = Object.assign(
-      [],
-      this.settings.globalAbbreviations
-    );
+  private getAbbrList(frontmatter?: FrontMatterCache): AbbreviationInstance[] {
+    const abbrList: AbbreviationInstance[] =
+      this.settings.globalAbbreviations.map(({ key, title }) => ({
+        key,
+        title,
+        type: "global",
+      }));
 
-    const readList = calcAbbrList(frontmatter, this.settings.metadataKeyword);
+    const readList = calcAbbrListFromFrontmatter(
+      frontmatter,
+      this.settings.metadataKeyword
+    );
     abbrList.push(...readList);
+
     return abbrList;
   }
 
@@ -178,6 +210,7 @@ export default class AbbrPlugin extends Plugin {
 
   async getPluginData(): Promise<AbbrPluginData> {
     const data: AbbrPluginData = {
+      useMarkdownExtraSyntax: this.settings.useMarkdownExtraSyntax,
       metadataKeyword: this.settings.metadataKeyword,
       globalAbbreviations: [...this.settings.globalAbbreviations],
       frontmatterCache: undefined,
@@ -208,6 +241,7 @@ class AbbrSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
+    //* metadataKeyword
     const metadataKeywordSetting = new Setting(containerEl)
       .setName("Metadata keyword")
       .addText((text) =>
@@ -231,6 +265,31 @@ class AbbrSettingTab extends PluginSettingTab {
     );
     metadataKeywordSetting.descEl.appendChild(metadataKeywordDesc);
 
+    //* useMarkdownExtraSyntax
+    const useMarkdownExtraSyntaxSetting = new Setting(containerEl)
+      .setName("Enable Markdown Extra syntax support (Experimental)")
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.useMarkdownExtraSyntax)
+          .onChange(async (value) => {
+            this.plugin.settings.useMarkdownExtraSyntax = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    const useMarkdownExtraSyntaxDesc = document.createDocumentFragment();
+    useMarkdownExtraSyntaxDesc.append(
+      "Toggle this setting to enable or disable the feature. Definition format: ",
+      createEl("b", {
+        text: "*[W3C]: World Wide Web Consortium",
+      }),
+      "."
+    );
+    useMarkdownExtraSyntaxSetting.descEl.appendChild(
+      useMarkdownExtraSyntaxDesc
+    );
+
+    //* globalAbbreviations
     const globalAbbreviationsSetting = new Setting(containerEl)
       .setName("Global abbreviations")
       .addButton((button) => {

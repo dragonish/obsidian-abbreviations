@@ -346,5 +346,20 @@ describe("common/mark", function () {
         position: 0,
       },
     ]);
+
+    expect(mark.handler("*[CSS]: Cascading Style Sheets")).to.deep.eq([
+      {
+        text: "Cascading",
+        position: 8,
+      },
+      {
+        text: "Style",
+        position: 18,
+      },
+      {
+        text: "Sheets",
+        position: 24,
+      },
+    ]);
   });
 });

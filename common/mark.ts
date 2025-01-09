@@ -1,6 +1,6 @@
 import { isWhitespace, isSpecialOrWhitespace } from "./tool";
 
-export interface MarkWord {
+interface MarkWord {
   text: string;
   /** Position index */
   position: number;

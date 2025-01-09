@@ -1,16 +1,17 @@
 import "mocha";
 import { expect } from "chai";
+import type { AbbreviationInstance } from "../../common/data";
 import {
   isWhitespace,
   isSpecialOrWhitespace,
   findCharCount,
   getWords,
-  getAbbreviationInfo,
+  parseExtraAbbreviation,
+  getAbbreviationInstance,
   queryAbbreviationTitle,
   isAbbreviationsEmpty,
-  calcAbbrList,
+  calcAbbrListFromFrontmatter,
 } from "../../common/tool";
-import type { AbbreviationInfo } from "../../common/tool";
 
 describe("common/tool", function () {
   it("isWhitespace", function () {
@@ -172,101 +173,198 @@ describe("common/tool", function () {
     ]);
   });
 
-  it("getAbbreviationInfo", function () {
-    expect(getAbbreviationInfo("HTML: HyperText Markup Language")).to.deep.eq({
-      key: "HTML",
-      title: "HyperText Markup Language",
-    });
-
-    expect(getAbbreviationInfo("HTML : ")).to.deep.eq({
-      key: "HTML",
-      title: "",
-    });
-
+  it("parseExtraAbbreviation", function () {
     expect(
-      getAbbreviationInfo({ HTML: "HyperText Markup Language" })
+      parseExtraAbbreviation("*[HTML]: HyperText Markup Language")
     ).to.deep.eq({
       key: "HTML",
       title: "HyperText Markup Language",
     });
 
-    expect(getAbbreviationInfo({ HTML: "" })).to.deep.eq({
+    expect(
+      parseExtraAbbreviation("*[HTML]:   HyperText Markup Language  ")
+    ).to.deep.eq({
+      key: "HTML",
+      title: "HyperText Markup Language",
+    });
+
+    expect(parseExtraAbbreviation("*[HTML]:")).to.deep.eq({
       key: "HTML",
       title: "",
     });
 
-    expect(getAbbreviationInfo("HTML")).to.be.null;
-    expect(getAbbreviationInfo({})).to.be.null;
-    expect(getAbbreviationInfo({ HTML: 1 })).to.be.null;
+    expect(parseExtraAbbreviation("*[HTML]:  ")).to.deep.eq({
+      key: "HTML",
+      title: "",
+    });
+
+    expect(parseExtraAbbreviation("*[HTML]:HyperText Markup Language")).to.be
+      .null;
+    expect(parseExtraAbbreviation(" *[HTML] :HyperText Markup Language")).to.be
+      .null;
+    expect(parseExtraAbbreviation("`*[HTML] :HyperText Markup Language`")).to.be
+      .null;
+    expect(parseExtraAbbreviation("")).to.be.null;
+
+    expect(parseExtraAbbreviation("*[URL](https://www.example.com): content*"))
+      .to.be.null;
+    expect(parseExtraAbbreviation("*[[PATH]]: content*")).to.be.null;
+  });
+
+  it("getAbbreviationInstance", function () {
+    expect(
+      getAbbreviationInstance("HTML: HyperText Markup Language")
+    ).to.deep.eq({
+      key: "HTML",
+      title: "HyperText Markup Language",
+      type: "metadata",
+    });
+
+    expect(getAbbreviationInstance("HTML : ")).to.deep.eq({
+      key: "HTML",
+      title: "",
+      type: "metadata",
+    });
+
+    expect(
+      getAbbreviationInstance({ HTML: "HyperText Markup Language" })
+    ).to.deep.eq({
+      key: "HTML",
+      title: "HyperText Markup Language",
+      type: "metadata",
+    });
+
+    expect(getAbbreviationInstance({ HTML: "" })).to.deep.eq({
+      key: "HTML",
+      title: "",
+      type: "metadata",
+    });
+
+    expect(getAbbreviationInstance("HTML")).to.be.null;
+    expect(getAbbreviationInstance({})).to.be.null;
+    expect(getAbbreviationInstance({ HTML: 1 })).to.be.null;
   });
 
   it("queryAbbreviationTitle", function () {
-    const abbrList: AbbreviationInfo[] = [
+    const abbrList1: AbbreviationInstance[] = [
       {
         key: "HTML",
         title: "HyperText Markup Language",
+        type: "global",
       },
       {
         key: "CSS",
         title: "Cascading Style Sheets",
+        type: "metadata",
+      },
+      {
+        key: "CSS",
+        title: "Cross Site Scripting",
+        type: "extra",
+        position: 25,
       },
       {
         key: "CSS",
         title: "",
+        type: "extra",
+        position: 50,
       },
     ];
 
-    expect(queryAbbreviationTitle("HTML", abbrList)).to.eq(
+    expect(queryAbbreviationTitle("HTML", abbrList1, 1)).to.eq(
       "HyperText Markup Language"
     );
-    expect(queryAbbreviationTitle("CSS", abbrList)).to.be.empty;
+    expect(queryAbbreviationTitle("CSS", abbrList1, 1)).to.eq(
+      "Cascading Style Sheets"
+    );
+    expect(queryAbbreviationTitle("CSS", abbrList1, 30)).to.eq(
+      "Cross Site Scripting"
+    );
+    expect(queryAbbreviationTitle("CSS", abbrList1, 60)).to.be.empty;
 
-    expect(queryAbbreviationTitle("", abbrList)).to.be.null;
-    expect(queryAbbreviationTitle("html", abbrList)).to.be.null;
+    expect(queryAbbreviationTitle("", abbrList1, 1)).to.be.null;
+    expect(queryAbbreviationTitle("html", abbrList1, 1)).to.be.null;
+
+    const abbrList2: AbbreviationInstance[] = [
+      {
+        key: "HTM",
+        title: "Test",
+        type: "extra",
+        position: 34,
+      },
+      {
+        key: "HTM",
+        title: "",
+        type: "extra",
+        position: 38,
+      },
+    ];
+    expect(queryAbbreviationTitle("HTM", abbrList2, 32)).to.be.eq("Test");
+    expect(queryAbbreviationTitle("HTM", abbrList2, 36)).to.be.eq("Test");
+    expect(queryAbbreviationTitle("HTM", abbrList2, 40)).to.be.empty;
   });
 
   it("isAbbreviationsEmpty", function () {
     expect(isAbbreviationsEmpty([])).to.be.true;
 
-    const abbrList1: AbbreviationInfo[] = [
+    const abbrList1: AbbreviationInstance[] = [
       {
         key: "HTML",
         title: "HyperText Markup Language",
+        type: "global",
       },
     ];
     expect(isAbbreviationsEmpty(abbrList1)).to.be.false;
 
-    const abbrList2: AbbreviationInfo[] = [
+    const abbrList2: AbbreviationInstance[] = [
       {
         key: "HTML",
         title: "HyperText Markup Language",
+        type: "global",
       },
       {
         key: "HTML",
         title: "",
+        type: "metadata",
       },
     ];
     expect(isAbbreviationsEmpty(abbrList2)).to.be.true;
+
+    const abbrList3: AbbreviationInstance[] = [
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+        type: "global",
+      },
+      {
+        key: "HTML",
+        title: "",
+        type: "extra",
+        position: 1,
+      },
+    ];
+    expect(isAbbreviationsEmpty(abbrList3)).to.be.false;
   });
 
-  it("calcAbbrList", function () {
-    expect(calcAbbrList(undefined, undefined)).to.be.empty;
-    expect(calcAbbrList({}, "abbr")).to.be.empty;
+  it("calcAbbrListFromFrontmatter", function () {
+    expect(calcAbbrListFromFrontmatter(undefined, undefined)).to.be.empty;
+    expect(calcAbbrListFromFrontmatter({}, "abbr")).to.be.empty;
 
     const frontmatter1 = {
       tags: ["Tag", "Test"],
       abbr: ["HTML: HyperText Markup Language"],
     };
 
-    expect(calcAbbrList(frontmatter1, "abbr")).to.deep.eq([
+    expect(calcAbbrListFromFrontmatter(frontmatter1, "abbr")).to.deep.eq([
       {
         key: "HTML",
         title: "HyperText Markup Language",
+        type: "metadata",
       },
     ]);
-    expect(calcAbbrList(frontmatter1, "tags")).to.be.empty;
-    expect(calcAbbrList(frontmatter1, "other")).to.be.empty;
-    expect(calcAbbrList(frontmatter1, "")).to.be.empty;
+    expect(calcAbbrListFromFrontmatter(frontmatter1, "tags")).to.be.empty;
+    expect(calcAbbrListFromFrontmatter(frontmatter1, "other")).to.be.empty;
+    expect(calcAbbrListFromFrontmatter(frontmatter1, "")).to.be.empty;
 
     const frontmatter2 = {
       abbr: [
@@ -275,28 +373,32 @@ describe("common/tool", function () {
         "Tag",
       ],
     };
-    expect(calcAbbrList(frontmatter2, "abbr")).to.deep.eq([
+    expect(calcAbbrListFromFrontmatter(frontmatter2, "abbr")).to.deep.eq([
       {
         key: "HTML",
         title: "HyperText Markup Language",
+        type: "metadata",
       },
       {
         key: "CSS",
         title: "Cascading Style Sheets",
+        type: "metadata",
       },
     ]);
 
     const frontmatter3 = {
       abbr: ["R&D: Research and Development", { "C-suite": "Corporate suite" }],
     };
-    expect(calcAbbrList(frontmatter3, "abbr")).to.deep.eq([
+    expect(calcAbbrListFromFrontmatter(frontmatter3, "abbr")).to.deep.eq([
       {
         key: "R&D",
         title: "Research and Development",
+        type: "metadata",
       },
       {
         key: "C-suite",
         title: "Corporate suite",
+        type: "metadata",
       },
     ]);
   });

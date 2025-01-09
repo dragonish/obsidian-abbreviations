@@ -1,3 +1,4 @@
+import { editorLivePreviewField } from "obsidian";
 import {
   ViewUpdate,
   PluginValue,
@@ -6,10 +7,10 @@ import {
   Decoration,
 } from "@codemirror/view";
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
-import { editorLivePreviewField } from "obsidian";
-import type { AbbrPluginData } from "./tool";
+import type { AbbrPluginData } from "./data";
+import { abbrClassName, METADATA_BORDER } from "./data";
+import { Parser } from "./parser";
 import { Conversion } from "./conversion";
-import { abbrClassName } from "./data";
 import { handlePreviewMarkdown } from "./dom";
 
 /** A StateEffect for updating decorations */
@@ -83,26 +84,42 @@ export class AbbrViewPlugin implements PluginValue {
       const builder = new RangeSetBuilder<Decoration>();
       const doc = view.state.doc;
 
-      const conversion = new Conversion(
-        [...pluginData.globalAbbreviations],
-        pluginData.metadataKeyword
+      const parser = new Parser(
+        pluginData.globalAbbreviations,
+        pluginData.metadataKeyword,
+        {
+          metadata: true,
+          extra: pluginData.useMarkdownExtraSyntax,
+        }
       );
 
       for (let i = 1; i < doc.lines + 1; i++) {
         const line = doc.line(i);
         const lineText = line.text;
 
-        if (i === 1) {
-          if (lineText === "---") {
-            conversion.setMetadataState();
-            continue;
-          } else {
-            //? For Table Cell
-            conversion.readAbbreviationsFromCache(pluginData.frontmatterCache);
-          }
+        if (i === 1 && lineText !== METADATA_BORDER) {
+          //? For Table Cell
+          parser.readAbbreviationsFromCache(pluginData.frontmatterCache);
         }
 
-        const markWords = conversion.handler(lineText);
+        parser.handler(lineText, i);
+
+        if (!pluginData.useMarkdownExtraSyntax && !parser.isMetadataState()) {
+          //* No content requiring parses.
+          break;
+        }
+      }
+
+      const conversion = new Conversion(
+        parser.abbreviations,
+        pluginData.useMarkdownExtraSyntax
+      );
+
+      for (let i = 1; i < doc.lines + 1; i++) {
+        const line = doc.line(i);
+        const lineText = line.text;
+
+        const markWords = conversion.handler(lineText, i);
         markWords.forEach((word) => {
           const from = line.from + word.index;
           const to = from + word.text.length;
@@ -125,7 +142,8 @@ export class AbbrViewPlugin implements PluginValue {
       });
 
       //? Render Tables and Callouts
-      handlePreviewMarkdown(view.dom, conversion.abbreviations);
+      //TODO Unable to obtain the corresponding row number in the rendered Table and Callout views.
+      handlePreviewMarkdown(view.dom, parser.abbreviations);
     } else {
       view.dispatch({
         effects: updateAbbrDecorations.of(Decoration.none),
