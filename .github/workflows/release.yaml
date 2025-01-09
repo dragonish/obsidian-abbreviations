@@ -45,5 +45,5 @@ jobs:
           name: Release ${{ steps.git_tags.outputs.current }}
           prerelease: false
           draft: false
-          artifacts: "main.js,manifest.json"
+          artifacts: "main.js,styles.css,manifest.json"
           body: ${{ steps.changelog_text.outputs.changes }}

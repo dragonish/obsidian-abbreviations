@@ -43,7 +43,7 @@ jobs:
           package_file=./package.json
           plugin_name=$(cat $package_file | jq -r '.name')
           mkdir -p release
-          zip "./release/${plugin_name}_v${{ steps.git_tags.outputs.current }}.zip" "main.js" "manifest.json"
+          zip "./release/${plugin_name}_v${{ steps.git_tags.outputs.current }}.zip" "main.js" "styles.css" "manifest.json"
       - name: Create changelog text
         id: changelog_text
         uses: dragonish/tag-changelog@7ec9e81e765a457f012bf0747f7a5a60831899e2
