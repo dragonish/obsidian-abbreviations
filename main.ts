@@ -37,6 +37,7 @@ const DEFAULT_SETTINGS: AbbrPluginSettings = {
   metadataKeyword: "abbr",
   detectAffixes: false,
   affixes: "",
+  markInSourceMode: false,
   globalAbbreviations: [],
 };
 
@@ -229,6 +230,7 @@ export default class AbbrPlugin extends Plugin {
       metadataKeyword: this.settings.metadataKeyword,
       detectAffixes: this.settings.detectAffixes,
       affixes: this.settings.affixes,
+      markInSourceMode: this.settings.markInSourceMode,
       globalAbbreviations: [...this.settings.globalAbbreviations],
       frontmatterCache: undefined,
     };
@@ -305,6 +307,21 @@ class AbbrSettingTab extends PluginSettingTab {
     useMarkdownExtraSyntaxSetting.descEl.appendChild(
       useMarkdownExtraSyntaxDesc
     );
+
+    //* markInSourceMode
+    new Setting(containerEl)
+      .setName("Mark abbreviations in Source mode")
+      .setDesc(
+        "In Source mode, mark abbreviations just like in Live Preview and Reading view."
+      )
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.markInSourceMode)
+          .onChange(async (value) => {
+            this.plugin.settings.markInSourceMode = value;
+            await this.plugin.saveSettings();
+          });
+      });
 
     //* globalAbbreviations
     const globalAbbreviationsSetting = new Setting(containerEl)

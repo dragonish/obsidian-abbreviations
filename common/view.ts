@@ -81,7 +81,7 @@ export class AbbrViewPlugin implements PluginValue {
   private async updateDecorations(view: EditorView, isLivePreviwMode: boolean) {
     const pluginData = await this.getPluginData();
 
-    if (isLivePreviwMode) {
+    if (isLivePreviwMode || pluginData.markInSourceMode) {
       const builder = new RangeSetBuilder<Decoration>();
       const doc = view.state.doc;
 

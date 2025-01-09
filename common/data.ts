@@ -34,6 +34,7 @@ export interface AbbrPluginSettings {
   metadataKeyword: string;
   detectAffixes: boolean;
   affixes: string;
+  markInSourceMode: boolean;
   globalAbbreviations: AbbreviationInfo[];
 }
 
