@@ -343,12 +343,12 @@ class AbbrSettingTab extends PluginSettingTab {
     );
     globalAbbreviationsSetting.descEl.appendChild(globalAbbreviationsDesc);
 
-    new Setting(containerEl).setName("Affixes").setHeading();
+    new Setting(containerEl).setName("Suffixes").setHeading();
 
     //* detectAffixes
     new Setting(containerEl)
-      .setName("Enable detect affixes")
-      .setDesc("Detect supplementary affixes for abbreviations.")
+      .setName("Enable detect suffixes")
+      .setDesc("Detect supplementary suffixes for abbreviations.")
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.detectAffixes)
@@ -360,7 +360,7 @@ class AbbrSettingTab extends PluginSettingTab {
 
     //* affixes
     const affixesSetting = new Setting(containerEl)
-      .setName("Affix list")
+      .setName("Suffix list")
       .addText((text) => {
         text
           .setPlaceholder("A string separated by ,")
