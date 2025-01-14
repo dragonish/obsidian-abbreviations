@@ -8,7 +8,7 @@ import {
 } from "@codemirror/view";
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
 import type { AbbrPluginData } from "./data";
-import { abbrClassName, METADATA_BORDER } from "./data";
+import { abbrClassName, extraAsteriskClassName, METADATA_BORDER } from "./data";
 import { getAffixList } from "./tool";
 import { Parser } from "./parser";
 import { Conversion } from "./conversion";
@@ -121,19 +121,32 @@ export class AbbrViewPlugin implements PluginValue {
         const line = doc.line(i);
         const lineText = line.text;
 
-        const markWords = conversion.handler(lineText, i);
-        markWords.forEach((word) => {
-          const from = line.from + word.index;
-          const to = from + word.text.length;
-          const deco = Decoration.mark({
-            tagName: "abbr",
-            attributes: {
-              text: word.text,
-              title: word.title,
-              class: abbrClassName,
-            },
-          });
-          builder.add(from, to, deco);
+        conversion.handler(lineText, i, (markWords, isDefinition) => {
+          if (isDefinition) {
+            if (isLivePreviwMode) {
+              //? Hide the asterisks in continuous definition rows in the live preview.
+              const deco = Decoration.mark({
+                attributes: {
+                  class: extraAsteriskClassName,
+                },
+              });
+              builder.add(line.from, line.from + 1, deco);
+            }
+          } else {
+            markWords.forEach((word) => {
+              const from = line.from + word.index;
+              const to = from + word.text.length;
+              const deco = Decoration.mark({
+                tagName: "abbr",
+                attributes: {
+                  text: word.text,
+                  title: word.title,
+                  class: abbrClassName,
+                },
+              });
+              builder.add(from, to, deco);
+            });
+          }
         });
       }
 

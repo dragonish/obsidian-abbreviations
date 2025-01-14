@@ -1,3 +1,9 @@
 p.abbreviations-plugin-extra-definition {
   display: none;
 }
+
+:not(.cm-active)
+  > .cm-em
+  > .abbreviations-plugin-extra-asterisk:not(.cm-formatting) {
+  display: none;
+}

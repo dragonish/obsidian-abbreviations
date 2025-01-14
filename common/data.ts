@@ -46,6 +46,8 @@ export const abbrClassName = "abbreviations-plugin-abbr-element";
 
 export const extraDefinitionClassName = "abbreviations-plugin-extra-definition";
 
+export const extraAsteriskClassName = "abbreviations-plugin-extra-asterisk";
+
 export const elementListSelector =
   "p, li, h1, h2, h3, h4, h5, h6, th, td, .table-cell-wrapper, .callout-title-inner";
 

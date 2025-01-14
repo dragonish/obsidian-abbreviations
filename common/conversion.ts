@@ -57,12 +57,16 @@ export class Conversion {
    * - Process Comments
    * @param text
    * @param lineStart
-   * @returns
+   * @param callback
    */
-  handler(text: string, lineStart: number): MarkItem[] {
+  handler(
+    text: string,
+    lineStart: number,
+    callback: (marks: MarkItem[], isDefinition: boolean) => void
+  ): void {
     if (lineStart === 1 && text === METADATA_BORDER) {
       this.state = "metadata";
-      return [];
+      return;
     }
 
     if (this.quotes.level > 0) {
@@ -72,7 +76,7 @@ export class Conversion {
         this.codeBlocks.graveCount = 0;
         this.quotes.level = 0;
         this.lastEmptyLine = true;
-        return [];
+        return;
       }
     }
 
@@ -80,7 +84,7 @@ export class Conversion {
       if (this.lastEmptyLine) {
         if (/^[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t)/.test(text)) {
           // pure code blocks
-          return [];
+          return;
         }
       }
 
@@ -89,42 +93,47 @@ export class Conversion {
         this.state = "codeBlocks";
         this.codeBlocks.graveCount = findCharCount(codeBlocks[1], "`");
         this.quotes.level = findCharCount(codeBlocks[1], ">");
-        return [];
+        return;
       }
 
       const math = text.match(/^([> ]*)\$\$(.*)/);
       if (math && !math[2].trim().endsWith("$$")) {
         this.state = "math";
         this.quotes.level = findCharCount(math[1], ">");
-        return [];
+        return;
       }
 
       if (this.skipExtraDefinition) {
         const parseRes = parseExtraAbbreviation(text);
         if (parseRes) {
-          return [];
+          callback([], true);
+          return;
         }
       }
 
       const words = this.mark.handler(text);
-      return words
-        .map((word) => {
-          const abbrTitle = queryAbbreviationTitle(
-            word.text,
-            this.abbreviations,
-            lineStart,
-            this.affixList
-          );
-          if (abbrTitle) {
-            return {
-              index: word.position,
-              text: word.text,
-              title: abbrTitle,
-            };
-          }
-          return null;
-        })
-        .filter((v) => v !== null);
+      callback(
+        words
+          .map((word) => {
+            const abbrTitle = queryAbbreviationTitle(
+              word.text,
+              this.abbreviations,
+              lineStart,
+              this.affixList
+            );
+            if (abbrTitle) {
+              return {
+                index: word.position,
+                text: word.text,
+                title: abbrTitle,
+              };
+            }
+            return null;
+          })
+          .filter((v) => v !== null),
+        false
+      );
+      return;
     } else {
       if (this.state === "metadata") {
         if (text === METADATA_BORDER) {
@@ -158,7 +167,5 @@ export class Conversion {
         }
       }
     }
-
-    return [];
   }
 }
