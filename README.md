@@ -74,6 +74,17 @@ Disable a specific abbreviation:
 *[W3C]: 
 ```
 
+It is recommended to use blank lines to separate the definition area from the main content. For example:
+
+```
+You can use CSS to style your HTML. 
+
+*[HTML]: HyperText Markup Language
+*[CSS]: Cascading Style Sheets
+
+Using style sheets, you can keep your CSS presentation layer and HTML content layer separate. This is called "separation of concerns."
+```
+
 #### Same abbreviations
 
 When there are multiple same abbreviations, the scope is as follows:
