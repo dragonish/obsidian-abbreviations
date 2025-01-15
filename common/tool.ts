@@ -114,6 +114,34 @@ export function parseExtraAbbreviation(line: string): AbbreviationInfo | null {
 }
 
 /**
+ * Determine if it is an abbreviation definition area.
+ * @param text
+ * @returns
+ */
+export function isExtraDefinitions(text: string): boolean {
+  const lines = text.split("\n");
+  let counter = 0;
+
+  for (const line of lines) {
+    if (line.match(/^\*\[[^[\]]+?\]:(\s+.*)?$/)) {
+      counter = 0;
+      continue;
+    } else if (line.match(/^\[[^[\]]+?\]:(\s+.*)?$/)) {
+      if (counter === 0) {
+        counter = 1;
+        continue;
+      } else {
+        counter = 0;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  return counter === 0;
+}
+
+/**
  * Get affix list.
  * @param affixes
  * @returns

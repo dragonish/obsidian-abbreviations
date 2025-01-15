@@ -7,6 +7,7 @@ import {
   findCharCount,
   getWords,
   parseExtraAbbreviation,
+  isExtraDefinitions,
   getAffixList,
   getAbbreviationInstance,
   queryAbbreviationTitle,
@@ -210,6 +211,47 @@ describe("common/tool", function () {
     expect(parseExtraAbbreviation("*[URL](https://www.example.com): content*"))
       .to.be.null;
     expect(parseExtraAbbreviation("*[[PATH]]: content*")).to.be.null;
+  });
+
+  it("isExtraDefinitions", function () {
+    expect(isExtraDefinitions([""].join("\n"))).to.be.false;
+
+    expect(isExtraDefinitions(["*[OS1]: Test1"].join("\n"))).to.be.true;
+
+    expect(isExtraDefinitions(["*[OS1]: Test1", "[OS2]: Test2"].join("\n"))).to
+      .be.false;
+
+    expect(isExtraDefinitions(["[OS1]: Test1", "[OS2]: Test2"].join("\n"))).to
+      .be.true;
+
+    expect(
+      isExtraDefinitions(
+        ["[OS1]: Test1", "[OS2]: Test2", "*[OS3]: Test3"].join("\n")
+      )
+    ).to.be.true;
+
+    expect(isExtraDefinitions(["*[OS1]: Test1", "A line."].join("\n"))).to.be
+      .false;
+
+    expect(
+      isExtraDefinitions(["[OS1]: Test1", "[OS2]: Test2", "A line."].join("\n"))
+    ).to.be.false;
+
+    expect(
+      isExtraDefinitions(["[OS1]: Test1", "A line.", "[OS2]: Test2"].join("\n"))
+    ).to.be.false;
+
+    expect(
+      isExtraDefinitions(
+        ["A line.", "[OS1]: Test1", "[OS2]: Test2", "*[OS3]: Test3"].join("\n")
+      )
+    ).to.be.false;
+
+    expect(
+      isExtraDefinitions(
+        ["[OS1]: Test1", "[OS2]: Test2", "*[OS3]: Test3", "A line."].join("\n")
+      )
+    ).to.be.false;
   });
 
   it("getAffixList", function () {

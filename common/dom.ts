@@ -9,7 +9,7 @@ import {
   getWords,
   queryAbbreviationTitle,
   isAbbreviationsEmpty,
-  parseExtraAbbreviation,
+  isExtraDefinitions,
 } from "./tool";
 
 /**
@@ -110,7 +110,7 @@ export function handlePreviewMarkdownExtra(
 
   const pList = element.findAll(".markdown-preview-section > .el-p > p");
   for (const p of pList) {
-    if (p.textContent && parseExtraAbbreviation(p.textContent)) {
+    if (p.textContent && isExtraDefinitions(p.textContent)) {
       p.classList.add(extraDefinitionClassName);
     }
   }
