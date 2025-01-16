@@ -1,11 +1,7 @@
-import { MarkBuffer } from "./mark";
-import type {
-  AbbreviationInstance,
-  SpecialState,
-  CodeBlocks,
-  Quotes,
-} from "./data";
+import type { AbbreviationInstance } from "./data";
 import { METADATA_BORDER } from "./data";
+import { Base } from "./base";
+import { MarkBuffer } from "./mark";
 import {
   queryAbbreviationTitle,
   findCharCount,
@@ -18,7 +14,7 @@ interface MarkItem {
   title: string;
 }
 
-export class Conversion {
+export class Conversion extends Base {
   private readonly mark: MarkBuffer;
 
   private abbreviations: AbbreviationInstance[];
@@ -26,28 +22,17 @@ export class Conversion {
 
   private skipExtraDefinition: boolean;
 
-  private state: SpecialState;
-
-  private codeBlocks: CodeBlocks;
-  private quotes: Quotes;
-  private lastEmptyLine: boolean;
-
   constructor(
     abbreviations: AbbreviationInstance[],
     skipExtraDefinition: boolean,
     affixList: string[] = []
   ) {
+    super();
+
     this.abbreviations = abbreviations;
     this.skipExtraDefinition = skipExtraDefinition;
     this.affixList = affixList;
-    this.state = "";
-    this.codeBlocks = {
-      graveCount: 0,
-    };
-    this.quotes = {
-      level: 0,
-    };
-    this.lastEmptyLine = true;
+
     this.mark = new MarkBuffer();
   }
 

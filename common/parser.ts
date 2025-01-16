@@ -1,12 +1,7 @@
 import * as yaml from "js-yaml";
-import type {
-  AbbreviationInfo,
-  AbbreviationInstance,
-  SpecialState,
-  CodeBlocks,
-  Quotes,
-} from "./data";
+import type { AbbreviationInfo, AbbreviationInstance } from "./data";
 import { METADATA_BORDER } from "./data";
+import { Base } from "./base";
 import {
   findCharCount,
   calcAbbrListFromFrontmatter,
@@ -18,24 +13,20 @@ interface ParseOption {
   extra?: boolean;
 }
 
-export class Parser {
+export class Parser extends Base {
   abbreviations: AbbreviationInstance[];
 
   private abbreviationKeyword: string;
   private parseOption: ParseOption;
   private metadataBuffer: string[];
 
-  private state: SpecialState;
-
-  private codeBlocks: CodeBlocks;
-  private quotes: Quotes;
-  private lastEmptyLine: boolean;
-
   constructor(
     abbreviations: AbbreviationInfo[],
     abbreviationKeyword: string,
     parseOption: ParseOption
   ) {
+    super();
+
     this.abbreviations = [
       ...abbreviations.map<AbbreviationInstance>(({ key, title }) => ({
         key,
@@ -47,18 +38,6 @@ export class Parser {
     this.abbreviationKeyword = abbreviationKeyword;
     this.parseOption = parseOption;
     this.metadataBuffer = [];
-    this.state = "";
-    this.codeBlocks = {
-      graveCount: 0,
-    };
-    this.quotes = {
-      level: 0,
-    };
-    this.lastEmptyLine = true;
-  }
-
-  isMetadataState() {
-    return this.state === "metadata";
   }
 
   /**
