@@ -154,6 +154,20 @@ export default class AbbrPlugin extends Plugin {
         this.copyAndFormatContent();
       },
     });
+    this.addCommand({
+      id: "insert-extra-definition",
+      name: "Insert extra definition",
+      editorCheckCallback: (checking) => {
+        const extraState = this.settings.useMarkdownExtraSyntax;
+        if (extraState) {
+          if (!checking) {
+            this.insertExtraDefinition();
+          }
+          return true;
+        }
+        return false;
+      },
+    });
 
     this.addSettingTab(new AbbrSettingTab(this.app, this));
   }
@@ -279,6 +293,28 @@ export default class AbbrPlugin extends Plugin {
         .catch(() => {
           this.sendNotification("Error: Unable to copy content!");
         });
+    }
+  }
+
+  private insertExtraDefinition() {
+    const editor = this.app.workspace.activeEditor?.editor;
+    if (editor) {
+      const selectedText = editor.getSelection();
+      const content = selectedText ? `*[${selectedText}]: ` : "*[]: ";
+      const cursor = editor.getCursor();
+
+      // Insert content at cursor position
+      if (selectedText) {
+        editor.replaceSelection(content);
+      } else {
+        editor.replaceRange(content, cursor);
+      }
+
+      // Move cursor according to situation
+      editor.setCursor({
+        line: cursor.line,
+        ch: cursor.ch + (selectedText ? selectedText.length + 5 : 2),
+      });
     }
   }
 
