@@ -8,6 +8,7 @@ import {
   TFile,
   debounce,
   Editor,
+  Notice,
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
 import type {
@@ -27,6 +28,7 @@ import {
   handlePreviewMarkdownExtra,
 } from "./common/dom";
 import { Parser } from "./common/parser";
+import { contentFormatter } from "./common/format";
 
 interface ObsidianEditor extends Editor {
   cm: EditorView;
@@ -144,6 +146,15 @@ export default class AbbrPlugin extends Plugin {
       this.app.workspace.on("layout-change", this.handleModeChange.bind(this))
     );
 
+    // Register command
+    this.addCommand({
+      id: "copy-with-format",
+      name: "Copy and format content",
+      callback: () => {
+        this.copyAndFormatContent();
+      },
+    });
+
     this.addSettingTab(new AbbrSettingTab(this.app, this));
   }
 
@@ -244,6 +255,35 @@ export default class AbbrPlugin extends Plugin {
     }
 
     return data;
+  }
+
+  private async copyAndFormatContent() {
+    const activeFile = this.app.workspace.getActiveFile();
+    if (activeFile) {
+      const content = await this.app.vault.cachedRead(activeFile);
+      const formatContent = contentFormatter(
+        content,
+        this.settings.globalAbbreviations,
+        this.settings.metadataKeyword,
+        this.settings.useMarkdownExtraSyntax,
+        this.settings.detectAffixes
+          ? getAffixList(this.settings.affixes)
+          : undefined
+      );
+
+      navigator.clipboard
+        .writeText(formatContent)
+        .then(() => {
+          this.sendNotification("Formatted content has been copied!");
+        })
+        .catch(() => {
+          this.sendNotification("Error: Unable to copy content!");
+        });
+    }
+  }
+
+  private sendNotification(message: string) {
+    new Notice(message);
   }
 }
 

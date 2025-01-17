@@ -29,6 +29,12 @@ export interface CodeBlocks {
   graveCount: number;
 }
 
+export interface MarkItem {
+  index: number;
+  text: string;
+  title: string;
+}
+
 export interface AbbrPluginSettings {
   useMarkdownExtraSyntax: boolean;
   metadataKeyword: string;

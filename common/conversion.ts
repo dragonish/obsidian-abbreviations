@@ -1,4 +1,4 @@
-import type { AbbreviationInstance } from "./data";
+import type { AbbreviationInstance, MarkItem } from "./data";
 import { METADATA_BORDER } from "./data";
 import { Base } from "./base";
 import { MarkBuffer } from "./mark";
@@ -7,12 +7,6 @@ import {
   findCharCount,
   parseExtraAbbreviation,
 } from "./tool";
-
-interface MarkItem {
-  index: number;
-  text: string;
-  title: string;
-}
 
 export class Conversion extends Base {
   private readonly mark: MarkBuffer;
