@@ -20,6 +20,8 @@ Gets the abbreviations by reading the specified field in the note [properties(me
 
 You can use arrays of strings or key-value pairs.
 
+Given that Obsidian's properties [support the JSON format](https://help.obsidian.md/Editing+and+formatting/Properties#JSON+Properties), you can also write in an equivalent JSON format for the following YAML. *However, Obsidian itself saves JSON block as YAML, so it is recommended to write properties in the YAML format.*
+
 ##### Strings
 
 Use a colon (`:`) in the string to separate the abbreviation and the tooltip.
