@@ -1,4 +1,3 @@
-import * as yaml from "js-yaml";
 import type { AbbreviationInfo, AbbreviationInstance } from "./data";
 import { METADATA_BORDER } from "./data";
 import { Base } from "./base";
@@ -7,6 +6,7 @@ import {
   calcAbbrListFromFrontmatter,
   parseExtraAbbreviation,
 } from "./tool";
+import { getMetadata } from "./metadata";
 
 interface ParseOption {
   metadata?: boolean;
@@ -119,19 +119,13 @@ export class Parser extends Base {
             this.metadataBuffer.length > 0
           ) {
             //* Calculate abbreviations
-            try {
-              const metadata = yaml.load(
-                this.metadataBuffer.join("\n")
-              ) as Record<string, unknown>;
-              if (typeof metadata === "object" && metadata) {
-                const list = calcAbbrListFromFrontmatter(
-                  metadata,
-                  this.abbreviationKeyword
-                );
-                this.abbreviations.push(...list);
-              }
-            } catch {
-              //* Do nothing
+            const metadata = getMetadata(this.metadataBuffer.join("\n"));
+            if (metadata) {
+              const list = calcAbbrListFromFrontmatter(
+                metadata,
+                this.abbreviationKeyword
+              );
+              this.abbreviations.push(...list);
             }
           }
           this.state = "";
