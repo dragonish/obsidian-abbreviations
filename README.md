@@ -82,7 +82,7 @@ You can use CSS to style your HTML.
 *[HTML]: HyperText Markup Language
 *[CSS]: Cascading Style Sheets
 
-Using style sheets, you can keep your CSS presentation layer and HTML content layer separate. This is called "separation of concerns."
+Using style sheets, you can keep your CSS presentation layer and HTML content layer separate.
 ```
 
 #### Same abbreviations
@@ -121,6 +121,40 @@ Rendered as:
 <abbr title="Remote Access Management">RAM</abbr>.
 
 RAM.
+```
+
+## Command
+
+### Copy and format content
+
+Copy the note content and convert abbreviations to `<abbr>` tags, so that they can be displayed in other Markdown editors that do not support similar syntax.
+
+For example, for the following note content:
+
+```
+---
+tags:
+  - test
+abbr:
+  - HTML: HyperText Markup Language
+---
+# Example
+
+You can use CSS to style your HTML. 
+
+*[CSS]: Cascading Style Sheets
+
+Using style sheets, you can keep your `CSS` presentation layer and `HTML` content layer separate.
+```
+
+After using the command, you get:
+
+```markdown
+# Example
+
+You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>. 
+
+Using style sheets, you can keep your `CSS` presentation layer and `HTML` content layer separate.
 ```
 
 ## Settings
