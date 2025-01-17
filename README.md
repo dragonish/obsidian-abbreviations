@@ -157,6 +157,24 @@ You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr 
 Using style sheets, you can keep your `CSS` presentation layer and `HTML` content layer separate.
 ```
 
+### Insert extra definition
+
+*This command is only allowed after enabling the "Enable Markdown Extra syntax support (Experimental)" setting.*
+
+Insert definition of Markdown Extra syntax at current cursor position in activity editor.
+
+When no text is selected, insert the following content:
+
+```
+*[<cursor_position>]: 
+```
+
+When selected text exists, insert the following content:
+
+```
+*[<selected_text>]: <cursor_position>
+```
+
 ## Settings
 
 ### Metadata keyword
