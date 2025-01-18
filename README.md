@@ -127,6 +127,10 @@ RAM.
 
 ## Command
 
+### Add abbreviation
+
+Quickly add abbreviations to [properties(metadata)](https://help.obsidian.md/Editing+and+formatting/Properties).
+
 ### Copy and format content
 
 Copy the note content and convert abbreviations to `<abbr>` tags, so that they can be displayed in other Markdown editors that do not support similar syntax.
