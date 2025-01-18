@@ -22,7 +22,12 @@ import {
   editorModeField,
   updateEditorMode,
 } from "./common/view";
-import { calcAbbrListFromFrontmatter, getAffixList } from "./common/tool";
+import { AbbreviationInputModal } from "./common/modal";
+import {
+  calcAbbrListFromFrontmatter,
+  getAffixList,
+  isWord,
+} from "./common/tool";
 import {
   handlePreviewMarkdown,
   handlePreviewMarkdownExtra,
@@ -162,6 +167,20 @@ export default class AbbrPlugin extends Plugin {
         if (extraState) {
           if (!checking) {
             this.insertExtraDefinition();
+          }
+          return true;
+        }
+        return false;
+      },
+    });
+    this.addCommand({
+      id: "add-abbreviation",
+      name: "Add abbreviation",
+      editorCheckCallback: (checking) => {
+        const keywordState = this.settings.metadataKeyword;
+        if (keywordState) {
+          if (!checking) {
+            this.showAbbreviationInputModal();
           }
           return true;
         }
@@ -313,6 +332,48 @@ export default class AbbrPlugin extends Plugin {
         line: cursor.line,
         ch: cursor.ch + (selectedText ? selectedText.length + 5 : 2),
       });
+    }
+  }
+
+  private showAbbreviationInputModal() {
+    const editor = this.app.workspace.activeEditor?.editor;
+    if (editor) {
+      const selectedText = editor.getSelection();
+      new AbbreviationInputModal(
+        this.app,
+        selectedText,
+        this.addAbbreviationToFrontmatter.bind(this)
+      ).open();
+    }
+  }
+
+  private addAbbreviationToFrontmatter(abbr: string, tooltip: string) {
+    if (!isWord(abbr)) {
+      this.sendNotification("Warn: Abbreviation format is incorrect!");
+      return;
+    }
+
+    const metadataKeyword = this.settings.metadataKeyword;
+    if (metadataKeyword) {
+      const file = this.app.workspace.getActiveFile();
+      if (file) {
+        this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+          if (typeof frontmatter === "object" && frontmatter) {
+            const item = `${abbr}: ${tooltip}`;
+            if (Array.isArray(frontmatter[metadataKeyword])) {
+              frontmatter[metadataKeyword].push(item);
+            } else {
+              frontmatter[metadataKeyword] = [item];
+            }
+          } else {
+            this.sendNotification("Error: Unexpected error!");
+          }
+        });
+      } else {
+        this.sendNotification("Error: No active file found!");
+      }
+    } else {
+      this.sendNotification("Error: Metadata keyword is empty!");
     }
   }
 

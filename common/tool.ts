@@ -44,6 +44,25 @@ export function isSpecialOrWhitespace(char: string) {
 }
 
 /**
+ * Determine if the text is a word or content.
+ * - Empty string is considered content.
+ * @param text
+ * @returns `true` if the text is a word
+ */
+export function isWord(text: string) {
+  if (text === "") {
+    return false;
+  }
+
+  for (const ch of text) {
+    if (isSpecialOrWhitespace(ch)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
  * Gets the number of a single specified character in a source.
  * @param source
  * @param character
