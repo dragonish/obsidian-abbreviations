@@ -285,14 +285,12 @@ export default class AbbrPlugin extends Plugin {
           : undefined
       );
 
-      navigator.clipboard
-        .writeText(formatContent)
-        .then(() => {
-          this.sendNotification("Formatted content has been copied!");
-        })
-        .catch(() => {
-          this.sendNotification("Error: Unable to copy content!");
-        });
+      try {
+        await navigator.clipboard.writeText(formatContent);
+        this.sendNotification("Formatted content has been copied!");
+      } catch {
+        this.sendNotification("Error: Unable to copy content!");
+      }
     }
   }
 
