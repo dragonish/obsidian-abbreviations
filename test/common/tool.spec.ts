@@ -454,6 +454,15 @@ describe("common/tool", function () {
     expect(queryAbbreviationTitle("HTM", abbrList3, 1, affixList)).to.be.eq(
       "Test2"
     );
+
+    const abbrList4: AbbreviationInstance[] = [
+      {
+        key: "",
+        title: "Test",
+        type: "metadata",
+      },
+    ];
+    expect(queryAbbreviationTitle("es", abbrList4, 1, affixList)).to.be.null;
   });
 
   it("isAbbreviationsEmpty", function () {

@@ -228,6 +228,10 @@ export function queryAbbreviationTitle(
 
   for (let i = abbrList.length - 1; i >= 0; i--) {
     const abbr = abbrList[i];
+    if (!abbr.key) {
+      continue;
+    }
+
     if (text === abbr.key) {
       res = abbr.title;
       if (abbr.type === "extra") {
