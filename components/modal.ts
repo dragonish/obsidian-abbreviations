@@ -16,11 +16,11 @@ export class AbbreviationInputModal extends Modal {
   onOpen() {
     let abbr = "",
       tip = "";
-    const sTest = this.selectedText.replace(/\n/, " ").trim();
-    if (isWord(sTest)) {
-      abbr = sTest;
+    const sText = this.selectedText.replace(/\n/, " ").trim();
+    if (isWord(sText)) {
+      abbr = sText;
     } else {
-      tip = sTest;
+      tip = sText;
     }
 
     this.setTitle("Add abbreviation");
