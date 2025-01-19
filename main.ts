@@ -267,6 +267,7 @@ export default class AbbrPlugin extends Plugin {
     const data: AbbrPluginData = {
       metadataKeyword,
       frontmatterCache: undefined,
+      suffixes: this.getAffixList(),
       ...other,
     };
 

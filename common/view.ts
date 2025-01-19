@@ -9,7 +9,6 @@ import {
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
 import type { AbbrPluginData } from "./data";
 import { abbrClassName, extraAsteriskClassName, METADATA_BORDER } from "./data";
-import { getAffixList } from "./tool";
 import { Parser } from "./parser";
 import { Conversion } from "./conversion";
 import { handlePreviewMarkdown } from "./dom";
@@ -115,9 +114,7 @@ export class AbbrViewPlugin implements PluginValue {
         const conversion = new Conversion(
           parser.abbreviations,
           pluginData.useMarkdownExtraSyntax,
-          pluginData.detectAffixes
-            ? getAffixList(pluginData.affixes)
-            : undefined
+          pluginData.suffixes
         );
 
         for (let i = 1; i < doc.lines + 1; i++) {
@@ -165,7 +162,7 @@ export class AbbrViewPlugin implements PluginValue {
       handlePreviewMarkdown(
         view.dom,
         parser.abbreviations,
-        pluginData.detectAffixes ? getAffixList(pluginData.affixes) : undefined
+        pluginData.suffixes
       );
     } else {
       view.dispatch({
