@@ -21,17 +21,17 @@ import {
   abbrDecorationsField,
   editorModeField,
   updateEditorMode,
-} from "./common/view";
-import { AbbreviationInputModal } from "./common/modal";
+} from "./components/view";
+import {
+  handlePreviewMarkdown,
+  handlePreviewMarkdownExtra,
+} from "./components/dom";
+import { AbbreviationInputModal } from "./components/modal";
 import {
   calcAbbrListFromFrontmatter,
   getAffixList,
   isWord,
 } from "./common/tool";
-import {
-  handlePreviewMarkdown,
-  handlePreviewMarkdownExtra,
-} from "./common/dom";
 import { Parser } from "./common/parser";
 import { contentFormatter } from "./common/format";
 

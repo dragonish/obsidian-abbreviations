@@ -1,16 +1,16 @@
 import { MarkdownPostProcessorContext } from "obsidian";
-import type { AbbreviationInstance } from "./data";
+import type { AbbreviationInstance } from "../common/data";
 import {
   abbrClassName,
   extraDefinitionClassName,
   elementListSelector,
-} from "./data";
+} from "../common/data";
 import {
   getWords,
   queryAbbreviationTitle,
   isAbbreviationsEmpty,
   isExtraDefinitions,
-} from "./tool";
+} from "../common/tool";
 
 /**
  * Replace words with abbreviation elements.

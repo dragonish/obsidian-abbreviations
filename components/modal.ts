@@ -1,5 +1,5 @@
 import { App, Modal, Setting } from "obsidian";
-import { isWord } from "./tool";
+import { isWord } from "../common/tool";
 
 type SubmitCallback = (abbr: string, tooltip: string) => void;
 

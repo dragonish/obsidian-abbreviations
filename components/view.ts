@@ -7,11 +7,15 @@ import {
   Decoration,
 } from "@codemirror/view";
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
-import type { AbbrPluginData } from "./data";
-import { abbrClassName, extraAsteriskClassName, METADATA_BORDER } from "./data";
-import { Parser } from "./parser";
-import { Conversion } from "./conversion";
 import { handlePreviewMarkdown } from "./dom";
+import type { AbbrPluginData } from "../common/data";
+import {
+  abbrClassName,
+  extraAsteriskClassName,
+  METADATA_BORDER,
+} from "../common/data";
+import { Parser } from "../common/parser";
+import { Conversion } from "../common/conversion";
 
 /** A StateEffect for updating decorations */
 const updateAbbrDecorations = StateEffect.define<DecorationSet>();
