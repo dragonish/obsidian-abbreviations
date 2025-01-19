@@ -181,6 +181,10 @@ When selected text exists, insert the following content:
 *[<selected_text>]: <cursor_position>
 ```
 
+### List abbreviations
+
+List all abbreviations in the current file, then select one and jump to its definition position.
+
 ### Manage global abbreviations
 
 Manage [global abbreviations](#global-abbreviations) quickly.
