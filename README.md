@@ -8,7 +8,7 @@ This is a plugin for [Obsidian](https://obsidian.md).
 
 Implements automatic marking of abbreviations and acronyms (terminology).
 
-This plugin supports rendering in both editing view (*Live Preview*), reading view and source mode (optional).
+This plugin supports rendering in both editing view (*Live Preview*), reading view and source mode (optional). Simultaneously support listing all abbreviations in the current file.
 
 ## Usage
 
