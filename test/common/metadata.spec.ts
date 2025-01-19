@@ -1,9 +1,13 @@
 import "mocha";
 import { expect } from "chai";
-import { getMetadata } from "../../common/metadata";
+import { loadWithMockedObsidian } from "../helpers/obsidianMock";
+
+const metadataModule = loadWithMockedObsidian("../../common/metadata");
 
 describe("common/metadata", function () {
   it("getMetadata", function () {
+    const getMetadata = metadataModule.getMetadata;
+
     expect(getMetadata("")).to.be.null;
     expect(getMetadata(" ")).to.be.null;
     expect(getMetadata("1")).to.be.null;

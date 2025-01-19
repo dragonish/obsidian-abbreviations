@@ -1,6 +1,9 @@
 import "mocha";
 import { expect } from "chai";
-import { Parser } from "../../common/parser";
+import { loadWithMockedObsidian } from "../helpers/obsidianMock";
+
+const parserModule = loadWithMockedObsidian("../../common/parser");
+const Parser = parserModule.Parser;
 
 describe("common/parser", function () {
   it("Parser.readAbbreviationsFromCache", function () {

@@ -1,9 +1,13 @@
 import "mocha";
 import { expect } from "chai";
-import { lineMarkupFormatter, contentFormatter } from "../../common/format";
+import { loadWithMockedObsidian } from "../helpers/obsidianMock";
+
+const formatModule = loadWithMockedObsidian("../../common/format");
 
 describe("common/format", function () {
   it("lineMarkupFormatter", function () {
+    const lineMarkupFormatter = formatModule.lineMarkupFormatter;
+
     expect(lineMarkupFormatter("", [])).to.be.empty;
     expect(lineMarkupFormatter("This is a test string.", [])).to.be.eq(
       "This is a test string."
@@ -55,6 +59,8 @@ describe("common/format", function () {
   });
 
   it("contentFormatter", function () {
+    const contentFormatter = formatModule.contentFormatter;
+
     expect(contentFormatter("", [], "", false)).to.be.empty;
 
     const abbrs = [

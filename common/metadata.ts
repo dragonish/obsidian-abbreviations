@@ -1,4 +1,4 @@
-import * as yaml from "js-yaml";
+import { parseYaml } from "obsidian";
 
 function toMetadata(input: unknown) {
   if (typeof input === "object" && input) {
@@ -18,7 +18,7 @@ function jsonParser(text: string) {
 
 function yamlParser(text: string) {
   try {
-    const yamlObj = yaml.load(text);
+    const yamlObj = parseYaml(text);
     return toMetadata(yamlObj);
   } catch {
     return null;
