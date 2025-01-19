@@ -111,43 +111,47 @@ export class AbbrViewPlugin implements PluginValue {
         }
       }
 
-      const conversion = new Conversion(
-        parser.abbreviations,
-        pluginData.useMarkdownExtraSyntax,
-        pluginData.detectAffixes ? getAffixList(pluginData.affixes) : undefined
-      );
+      if (!parser.isAbbreviationsEmpty()) {
+        const conversion = new Conversion(
+          parser.abbreviations,
+          pluginData.useMarkdownExtraSyntax,
+          pluginData.detectAffixes
+            ? getAffixList(pluginData.affixes)
+            : undefined
+        );
 
-      for (let i = 1; i < doc.lines + 1; i++) {
-        const line = doc.line(i);
-        const lineText = line.text;
+        for (let i = 1; i < doc.lines + 1; i++) {
+          const line = doc.line(i);
+          const lineText = line.text;
 
-        conversion.handler(lineText, i, (markWords, isDefinition) => {
-          if (isDefinition) {
-            if (isLivePreviwMode) {
-              //? Hide the asterisks in continuous definition rows in the live preview.
-              const deco = Decoration.mark({
-                attributes: {
-                  class: extraAsteriskClassName,
-                },
+          conversion.handler(lineText, i, (markWords, isDefinition) => {
+            if (isDefinition) {
+              if (isLivePreviwMode) {
+                //? Hide the asterisks in continuous definition rows in the live preview.
+                const deco = Decoration.mark({
+                  attributes: {
+                    class: extraAsteriskClassName,
+                  },
+                });
+                builder.add(line.from, line.from + 1, deco);
+              }
+            } else {
+              markWords.forEach((word) => {
+                const from = line.from + word.index;
+                const to = from + word.text.length;
+                const deco = Decoration.mark({
+                  tagName: "abbr",
+                  attributes: {
+                    text: word.text,
+                    title: word.title,
+                    class: abbrClassName,
+                  },
+                });
+                builder.add(from, to, deco);
               });
-              builder.add(line.from, line.from + 1, deco);
             }
-          } else {
-            markWords.forEach((word) => {
-              const from = line.from + word.index;
-              const to = from + word.text.length;
-              const deco = Decoration.mark({
-                tagName: "abbr",
-                attributes: {
-                  text: word.text,
-                  title: word.title,
-                  class: abbrClassName,
-                },
-              });
-              builder.add(from, to, deco);
-            });
-          }
-        });
+          });
+        }
       }
 
       const newDecorations = builder.finish();
