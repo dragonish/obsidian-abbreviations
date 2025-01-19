@@ -28,6 +28,7 @@ import {
   handlePreviewMarkdownExtra,
 } from "./components/dom";
 import { AbbreviationInputModal } from "./components/modal";
+import { AbbreviationListModal } from "./components/list";
 import {
   calcAbbrListFromFrontmatter,
   getAffixList,
@@ -181,11 +182,22 @@ export default class AbbrPlugin extends Plugin {
       },
     });
     this.addCommand({
+      id: "list-abbreviations",
+      name: "List abbreviations",
+      editorCallback: () => {
+        this.showAbbreviationListModal();
+      },
+    });
+    this.addCommand({
       id: "manage-global-abbreviations",
       name: "Manage global abbreviations",
       callback: () => {
         this.showManageAbbreviationsModal();
       },
+    });
+
+    this.addRibbonIcon("text-search", "List abbreviations", () => {
+      this.showAbbreviationListModal();
     });
 
     this.addSettingTab(new AbbrSettingTab(this.app, this));
@@ -351,6 +363,49 @@ export default class AbbrPlugin extends Plugin {
     }
   }
 
+  private async showAbbreviationListModal() {
+    let abbrList: AbbreviationInstance[] = [];
+    let selectedText = "";
+
+    const file = this.app.workspace.getActiveFile();
+    if (file) {
+      const frontmatter =
+        this.app.metadataCache.getFileCache(file)?.frontmatter;
+
+      if (this.settings.useMarkdownExtraSyntax) {
+        const parser = new Parser(
+          this.settings.globalAbbreviations,
+          this.settings.metadataKeyword,
+          {
+            extra: true,
+          }
+        );
+        parser.readAbbreviationsFromCache(frontmatter);
+
+        const sourceContent = await this.app.vault.cachedRead(file);
+        sourceContent.split("\n").forEach((line, index) => {
+          parser.handler(line, index + 1);
+        });
+
+        abbrList = parser.abbreviations;
+      } else {
+        abbrList = this.getAbbrList(frontmatter);
+      }
+
+      const editor = this.app.workspace.activeEditor?.editor;
+      if (editor) {
+        selectedText = editor.getSelection();
+      }
+
+      new AbbreviationListModal(
+        this.app,
+        abbrList,
+        selectedText,
+        this.jumpToAbbreviationDefinition.bind(this)
+      ).open();
+    }
+  }
+
   private showManageAbbreviationsModal() {
     new AbbreviationManagerModal(this.app, this).open();
   }
@@ -382,6 +437,22 @@ export default class AbbrPlugin extends Plugin {
       }
     } else {
       this.sendNotification("Error: Metadata keyword is empty!");
+    }
+  }
+
+  private jumpToAbbreviationDefinition(abbr: AbbreviationInstance) {
+    if (abbr.type === "global") {
+      this.showManageAbbreviationsModal();
+    } else {
+      const editor = this.app.workspace.activeEditor?.editor;
+      if (editor) {
+        if (abbr.type === "metadata") {
+          editor.setCursor(1); // Always jump to line 2
+        } else if (abbr.type === "extra") {
+          const dest = abbr.position - 1;
+          editor.setCursor(dest >= 0 ? dest : 0);
+        }
+      }
     }
   }
 
