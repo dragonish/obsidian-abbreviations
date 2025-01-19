@@ -85,9 +85,7 @@ export default class AbbrPlugin extends Plugin {
           context,
           element,
           parser.abbreviations,
-          this.settings.detectAffixes
-            ? getAffixList(this.settings.affixes)
-            : undefined
+          this.getAffixList()
         );
       } else {
         let frontmatter: undefined | FrontMatterCache = context.frontmatter;
@@ -109,13 +107,7 @@ export default class AbbrPlugin extends Plugin {
         }
 
         const abbrList = this.getAbbrList(frontmatter);
-        handlePreviewMarkdown(
-          element,
-          abbrList,
-          this.settings.detectAffixes
-            ? getAffixList(this.settings.affixes)
-            : undefined
-        );
+        handlePreviewMarkdown(element, abbrList, this.getAffixList());
       }
     });
 
@@ -289,6 +281,12 @@ export default class AbbrPlugin extends Plugin {
     return data;
   }
 
+  getAffixList() {
+    return this.settings.detectAffixes
+      ? getAffixList(this.settings.affixes)
+      : undefined;
+  }
+
   private async copyAndFormatContent() {
     const activeFile = this.app.workspace.getActiveFile();
     if (activeFile) {
@@ -298,9 +296,7 @@ export default class AbbrPlugin extends Plugin {
         this.settings.globalAbbreviations,
         this.settings.metadataKeyword,
         this.settings.useMarkdownExtraSyntax,
-        this.settings.detectAffixes
-          ? getAffixList(this.settings.affixes)
-          : undefined
+        this.getAffixList()
       );
 
       try {
