@@ -7,12 +7,15 @@ import {
   Decoration,
 } from "@codemirror/view";
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
-import type { AbbrPluginData } from "./data";
-import { abbrClassName, extraAsteriskClassName, METADATA_BORDER } from "./data";
-import { getAffixList } from "./tool";
-import { Parser } from "./parser";
-import { Conversion } from "./conversion";
 import { handlePreviewMarkdown } from "./dom";
+import type { AbbrPluginData } from "../common/data";
+import {
+  abbrClassName,
+  extraAsteriskClassName,
+  METADATA_BORDER,
+} from "../common/data";
+import { Parser } from "../common/parser";
+import { Conversion } from "../common/conversion";
 
 /** A StateEffect for updating decorations */
 const updateAbbrDecorations = StateEffect.define<DecorationSet>();
@@ -111,43 +114,45 @@ export class AbbrViewPlugin implements PluginValue {
         }
       }
 
-      const conversion = new Conversion(
-        parser.abbreviations,
-        pluginData.useMarkdownExtraSyntax,
-        pluginData.detectAffixes ? getAffixList(pluginData.affixes) : undefined
-      );
+      if (!parser.isAbbreviationsEmpty()) {
+        const conversion = new Conversion(
+          parser.abbreviations,
+          pluginData.useMarkdownExtraSyntax,
+          pluginData.suffixes
+        );
 
-      for (let i = 1; i < doc.lines + 1; i++) {
-        const line = doc.line(i);
-        const lineText = line.text;
+        for (let i = 1; i < doc.lines + 1; i++) {
+          const line = doc.line(i);
+          const lineText = line.text;
 
-        conversion.handler(lineText, i, (markWords, isDefinition) => {
-          if (isDefinition) {
-            if (isLivePreviwMode) {
-              //? Hide the asterisks in continuous definition rows in the live preview.
-              const deco = Decoration.mark({
-                attributes: {
-                  class: extraAsteriskClassName,
-                },
+          conversion.handler(lineText, i, (markWords, isDefinition) => {
+            if (isDefinition) {
+              if (isLivePreviwMode) {
+                //? Hide the asterisks in continuous definition rows in the live preview.
+                const deco = Decoration.mark({
+                  attributes: {
+                    class: extraAsteriskClassName,
+                  },
+                });
+                builder.add(line.from, line.from + 1, deco);
+              }
+            } else {
+              markWords.forEach((word) => {
+                const from = line.from + word.index;
+                const to = from + word.text.length;
+                const deco = Decoration.mark({
+                  tagName: "abbr",
+                  attributes: {
+                    text: word.text,
+                    title: word.title,
+                    class: abbrClassName,
+                  },
+                });
+                builder.add(from, to, deco);
               });
-              builder.add(line.from, line.from + 1, deco);
             }
-          } else {
-            markWords.forEach((word) => {
-              const from = line.from + word.index;
-              const to = from + word.text.length;
-              const deco = Decoration.mark({
-                tagName: "abbr",
-                attributes: {
-                  text: word.text,
-                  title: word.title,
-                  class: abbrClassName,
-                },
-              });
-              builder.add(from, to, deco);
-            });
-          }
-        });
+          });
+        }
       }
 
       const newDecorations = builder.finish();
@@ -161,7 +166,7 @@ export class AbbrViewPlugin implements PluginValue {
       handlePreviewMarkdown(
         view.dom,
         parser.abbreviations,
-        pluginData.detectAffixes ? getAffixList(pluginData.affixes) : undefined
+        pluginData.suffixes
       );
     } else {
       view.dispatch({

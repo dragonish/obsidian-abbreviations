@@ -1,64 +1,44 @@
-import * as yaml from "js-yaml";
-import type {
-  AbbreviationInfo,
-  AbbreviationInstance,
-  SpecialState,
-  CodeBlocks,
-  Quotes,
-} from "./data";
+import type { AbbreviationInfo, AbbreviationInstance } from "./data";
 import { METADATA_BORDER } from "./data";
+import { Base } from "./base";
 import {
   findCharCount,
   calcAbbrListFromFrontmatter,
   parseExtraAbbreviation,
+  isAbbreviationsEmpty,
 } from "./tool";
+import { getMetadata } from "./metadata";
 
 interface ParseOption {
   metadata?: boolean;
   extra?: boolean;
 }
 
-export class Parser {
+export class Parser extends Base {
   abbreviations: AbbreviationInstance[];
 
   private abbreviationKeyword: string;
   private parseOption: ParseOption;
   private metadataBuffer: string[];
 
-  private state: SpecialState;
-
-  private codeBlocks: CodeBlocks;
-  private quotes: Quotes;
-  private lastEmptyLine: boolean;
-
   constructor(
     abbreviations: AbbreviationInfo[],
     abbreviationKeyword: string,
     parseOption: ParseOption
   ) {
-    this.abbreviations = [
-      ...abbreviations.map<AbbreviationInstance>(({ key, title }) => ({
+    super();
+
+    this.abbreviations = abbreviations
+      .map<AbbreviationInstance>(({ key, title }) => ({
         key,
         title,
         type: "global",
-      })),
-    ];
+      }))
+      .filter((item) => item.key);
 
     this.abbreviationKeyword = abbreviationKeyword;
     this.parseOption = parseOption;
     this.metadataBuffer = [];
-    this.state = "";
-    this.codeBlocks = {
-      graveCount: 0,
-    };
-    this.quotes = {
-      level: 0,
-    };
-    this.lastEmptyLine = true;
-  }
-
-  isMetadataState() {
-    return this.state === "metadata";
   }
 
   /**
@@ -71,6 +51,14 @@ export class Parser {
       this.abbreviationKeyword
     );
     this.abbreviations.push(...list);
+  }
+
+  /**
+   * Determines whether the abbreviation list is empty.
+   * @returns `true` if empty
+   */
+  isAbbreviationsEmpty() {
+    return isAbbreviationsEmpty(this.abbreviations);
   }
 
   /**
@@ -140,19 +128,13 @@ export class Parser {
             this.metadataBuffer.length > 0
           ) {
             //* Calculate abbreviations
-            try {
-              const metadata = yaml.load(
-                this.metadataBuffer.join("\n")
-              ) as Record<string, unknown>;
-              if (typeof metadata === "object" && metadata) {
-                const list = calcAbbrListFromFrontmatter(
-                  metadata,
-                  this.abbreviationKeyword
-                );
-                this.abbreviations.push(...list);
-              }
-            } catch {
-              //* Do nothing
+            const metadata = getMetadata(this.metadataBuffer.join("\n"));
+            if (metadata) {
+              const list = calcAbbrListFromFrontmatter(
+                metadata,
+                this.abbreviationKeyword
+              );
+              this.abbreviations.push(...list);
             }
           }
           this.state = "";

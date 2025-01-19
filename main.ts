@@ -8,6 +8,8 @@ import {
   TFile,
   debounce,
   Editor,
+  Notice,
+  Modal,
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
 import type {
@@ -20,13 +22,20 @@ import {
   abbrDecorationsField,
   editorModeField,
   updateEditorMode,
-} from "./common/view";
-import { calcAbbrListFromFrontmatter, getAffixList } from "./common/tool";
+} from "./components/view";
 import {
   handlePreviewMarkdown,
   handlePreviewMarkdownExtra,
-} from "./common/dom";
+} from "./components/dom";
+import { AbbreviationInputModal } from "./components/modal";
+import { AbbreviationListModal } from "./components/list";
+import {
+  calcAbbrListFromFrontmatter,
+  getAffixList,
+  isWord,
+} from "./common/tool";
 import { Parser } from "./common/parser";
+import { contentFormatter } from "./common/format";
 
 interface ObsidianEditor extends Editor {
   cm: EditorView;
@@ -78,9 +87,7 @@ export default class AbbrPlugin extends Plugin {
           context,
           element,
           parser.abbreviations,
-          this.settings.detectAffixes
-            ? getAffixList(this.settings.affixes)
-            : undefined
+          this.getAffixList()
         );
       } else {
         let frontmatter: undefined | FrontMatterCache = context.frontmatter;
@@ -102,13 +109,7 @@ export default class AbbrPlugin extends Plugin {
         }
 
         const abbrList = this.getAbbrList(frontmatter);
-        handlePreviewMarkdown(
-          element,
-          abbrList,
-          this.settings.detectAffixes
-            ? getAffixList(this.settings.affixes)
-            : undefined
-        );
+        handlePreviewMarkdown(element, abbrList, this.getAffixList());
       }
     });
 
@@ -143,6 +144,61 @@ export default class AbbrPlugin extends Plugin {
     this.registerEvent(
       this.app.workspace.on("layout-change", this.handleModeChange.bind(this))
     );
+
+    // Register command
+    this.addCommand({
+      id: "add-abbreviation",
+      name: "Add abbreviation",
+      editorCheckCallback: (checking) => {
+        const keywordState = this.settings.metadataKeyword;
+        if (keywordState) {
+          if (!checking) {
+            this.showAbbreviationInputModal();
+          }
+          return true;
+        }
+        return false;
+      },
+    });
+    this.addCommand({
+      id: "copy-with-format",
+      name: "Copy and format content",
+      callback: () => {
+        this.copyAndFormatContent();
+      },
+    });
+    this.addCommand({
+      id: "insert-extra-definition",
+      name: "Insert extra definition",
+      editorCheckCallback: (checking) => {
+        const extraState = this.settings.useMarkdownExtraSyntax;
+        if (extraState) {
+          if (!checking) {
+            this.insertExtraDefinition();
+          }
+          return true;
+        }
+        return false;
+      },
+    });
+    this.addCommand({
+      id: "list-abbreviations",
+      name: "List abbreviations",
+      editorCallback: () => {
+        this.showAbbreviationListModal();
+      },
+    });
+    this.addCommand({
+      id: "manage-global-abbreviations",
+      name: "Manage global abbreviations",
+      callback: () => {
+        this.showManageAbbreviationsModal();
+      },
+    });
+
+    this.addRibbonIcon("text-search", "List abbreviations", () => {
+      this.showAbbreviationListModal();
+    });
 
     this.addSettingTab(new AbbrSettingTab(this.app, this));
   }
@@ -195,12 +251,13 @@ export default class AbbrPlugin extends Plugin {
   );
 
   private getAbbrList(frontmatter?: FrontMatterCache): AbbreviationInstance[] {
-    const abbrList: AbbreviationInstance[] =
-      this.settings.globalAbbreviations.map(({ key, title }) => ({
+    const abbrList: AbbreviationInstance[] = this.settings.globalAbbreviations
+      .map<AbbreviationInstance>(({ key, title }) => ({
         key,
         title,
         type: "global",
-      }));
+      }))
+      .filter((item) => item.key);
 
     const readList = calcAbbrListFromFrontmatter(
       frontmatter,
@@ -225,17 +282,16 @@ export default class AbbrPlugin extends Plugin {
   }
 
   async getPluginData(): Promise<AbbrPluginData> {
+    const { metadataKeyword, ...other } = this.settings;
+
     const data: AbbrPluginData = {
-      useMarkdownExtraSyntax: this.settings.useMarkdownExtraSyntax,
-      metadataKeyword: this.settings.metadataKeyword,
-      detectAffixes: this.settings.detectAffixes,
-      affixes: this.settings.affixes,
-      markInSourceMode: this.settings.markInSourceMode,
-      globalAbbreviations: [...this.settings.globalAbbreviations],
+      metadataKeyword,
       frontmatterCache: undefined,
+      suffixes: this.getAffixList(),
+      ...other,
     };
 
-    if (this.settings.metadataKeyword) {
+    if (metadataKeyword) {
       const file = this.app.workspace.getActiveFile();
       if (file) {
         data.frontmatterCache =
@@ -244,6 +300,164 @@ export default class AbbrPlugin extends Plugin {
     }
 
     return data;
+  }
+
+  getAffixList() {
+    return this.settings.detectAffixes
+      ? getAffixList(this.settings.affixes)
+      : undefined;
+  }
+
+  private async copyAndFormatContent() {
+    const activeFile = this.app.workspace.getActiveFile();
+    if (activeFile) {
+      const content = await this.app.vault.cachedRead(activeFile);
+      const formatContent = contentFormatter(
+        content,
+        this.settings.globalAbbreviations,
+        this.settings.metadataKeyword,
+        this.settings.useMarkdownExtraSyntax,
+        this.getAffixList()
+      );
+
+      try {
+        await navigator.clipboard.writeText(formatContent);
+        this.sendNotification("Formatted content has been copied!");
+      } catch {
+        this.sendNotification("Error: Unable to copy content!");
+      }
+    }
+  }
+
+  private insertExtraDefinition() {
+    const editor = this.app.workspace.activeEditor?.editor;
+    if (editor) {
+      const selectedText = editor.getSelection();
+      const content = selectedText ? `*[${selectedText}]: ` : "*[]: ";
+      const cursor = editor.getCursor();
+
+      // Insert content at cursor position
+      if (selectedText) {
+        editor.replaceSelection(content);
+      } else {
+        editor.replaceRange(content, cursor);
+      }
+
+      // Move cursor according to situation
+      editor.setCursor({
+        line: cursor.line,
+        ch: cursor.ch + (selectedText ? selectedText.length + 5 : 2),
+      });
+    }
+  }
+
+  private showAbbreviationInputModal() {
+    const editor = this.app.workspace.activeEditor?.editor;
+    if (editor) {
+      const selectedText = editor.getSelection();
+      new AbbreviationInputModal(
+        this.app,
+        selectedText,
+        this.addAbbreviationToFrontmatter.bind(this)
+      ).open();
+    }
+  }
+
+  private async showAbbreviationListModal() {
+    let abbrList: AbbreviationInstance[] = [];
+    let selectedText = "";
+
+    const file = this.app.workspace.getActiveFile();
+    if (file) {
+      const frontmatter =
+        this.app.metadataCache.getFileCache(file)?.frontmatter;
+
+      if (this.settings.useMarkdownExtraSyntax) {
+        const parser = new Parser(
+          this.settings.globalAbbreviations,
+          this.settings.metadataKeyword,
+          {
+            extra: true,
+          }
+        );
+        parser.readAbbreviationsFromCache(frontmatter);
+
+        const sourceContent = await this.app.vault.cachedRead(file);
+        sourceContent.split("\n").forEach((line, index) => {
+          parser.handler(line, index + 1);
+        });
+
+        abbrList = parser.abbreviations;
+      } else {
+        abbrList = this.getAbbrList(frontmatter);
+      }
+
+      const editor = this.app.workspace.activeEditor?.editor;
+      if (editor) {
+        selectedText = editor.getSelection();
+      }
+
+      new AbbreviationListModal(
+        this.app,
+        abbrList,
+        selectedText,
+        this.jumpToAbbreviationDefinition.bind(this)
+      ).open();
+    }
+  }
+
+  private showManageAbbreviationsModal() {
+    new AbbreviationManagerModal(this.app, this).open();
+  }
+
+  private addAbbreviationToFrontmatter(abbr: string, tooltip: string) {
+    if (!isWord(abbr)) {
+      this.sendNotification("Warn: Abbreviation format is incorrect!");
+      return;
+    }
+
+    const metadataKeyword = this.settings.metadataKeyword;
+    if (metadataKeyword) {
+      const file = this.app.workspace.getActiveFile();
+      if (file) {
+        this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+          if (typeof frontmatter === "object" && frontmatter) {
+            const item = `${abbr}: ${tooltip}`;
+            if (Array.isArray(frontmatter[metadataKeyword])) {
+              frontmatter[metadataKeyword].push(item);
+            } else {
+              frontmatter[metadataKeyword] = [item];
+            }
+          } else {
+            this.sendNotification("Error: Unexpected error!");
+          }
+        });
+      } else {
+        this.sendNotification("Error: No active file found!");
+      }
+    } else {
+      this.sendNotification("Error: Metadata keyword is empty!");
+    }
+  }
+
+  private jumpToAbbreviationDefinition(abbr: AbbreviationInstance) {
+    if (abbr.type === "global") {
+      this.showManageAbbreviationsModal();
+    } else {
+      const editor = this.app.workspace.activeEditor?.editor;
+      if (editor) {
+        if (abbr.type === "metadata") {
+          editor.setCursor(1); // Always jump to line 2
+        } else if (abbr.type === "extra") {
+          const dest = abbr.position - 1;
+          editor.setCursor(dest >= 0 ? dest : 0);
+        }
+      }
+    }
+  }
+
+  private sendNotification(message: string) {
+    new Notice(message);
   }
 }
 
@@ -384,61 +598,89 @@ class AbbrSettingTab extends PluginSettingTab {
 
   displayGlobalAbbreviations(): void {
     const { containerEl } = this;
-    containerEl.empty();
-
-    new Setting(containerEl)
-      .setName("Global abbreviations")
-      .setHeading()
-      .addButton((button) => {
-        button.setButtonText("Back").onClick(() => {
-          this.display();
-        });
-      });
-
-    this.plugin.settings.globalAbbreviations.forEach((abbr, index) => {
+    manageGlobalAbbreviations(this.plugin, containerEl, () => {
       new Setting(containerEl)
-        .setName("Abbreviation:")
-        .addText((text) =>
-          text
-            .setPlaceholder("Short word")
-            .setValue(abbr.key)
-            .onChange(async (value) => {
-              this.plugin.settings.globalAbbreviations[index].key =
-                value.trim();
-              await this.plugin.saveSettings();
-            })
-        )
-        .addText((text) =>
-          text
-            .setPlaceholder("Tooltip")
-            .setValue(abbr.title)
-            .onChange(async (value) => {
-              this.plugin.settings.globalAbbreviations[index].title =
-                value.trim();
-              await this.plugin.saveSettings();
-            })
-        )
-        .addButton((button) =>
-          button.setButtonText("Delete").onClick(async () => {
-            this.plugin.settings.globalAbbreviations.splice(index, 1);
-            await this.plugin.saveSettings();
-            this.displayGlobalAbbreviations(); //! Rerender the settings page
-          })
-        );
-    });
-
-    new Setting(containerEl).addButton((button) =>
-      button
-        .setButtonText("Add")
-        .setTooltip("Add new abbreviation")
-        .onClick(async () => {
-          this.plugin.settings.globalAbbreviations.push({
-            key: "",
-            title: "",
+        .setName("Global abbreviations")
+        .setHeading()
+        .addButton((button) => {
+          button.setButtonText("Back").onClick(() => {
+            this.display();
           });
-          await this.plugin.saveSettings();
-          this.displayGlobalAbbreviations(); //! Rerender the settings page
-        })
-    );
+        });
+    });
   }
+}
+
+class AbbreviationManagerModal extends Modal {
+  private plugin: AbbrPlugin;
+
+  constructor(app: App, plugin: AbbrPlugin) {
+    super(app);
+    this.plugin = plugin;
+  }
+
+  onOpen() {
+    const { contentEl } = this;
+    manageGlobalAbbreviations(this.plugin, contentEl, () => {
+      this.setTitle("Manage global abbreviations");
+    });
+  }
+
+  onClose(): void {
+    const { contentEl } = this;
+    contentEl.empty();
+  }
+}
+
+function manageGlobalAbbreviations(
+  plugin: AbbrPlugin,
+  containerEl: HTMLElement,
+  header: () => void
+) {
+  containerEl.empty();
+  header();
+
+  plugin.settings.globalAbbreviations.forEach((abbr, index) => {
+    new Setting(containerEl)
+      .setName("Abbreviation:")
+      .addText((text) =>
+        text
+          .setPlaceholder("Short word")
+          .setValue(abbr.key)
+          .onChange(async (value) => {
+            plugin.settings.globalAbbreviations[index].key = value.trim();
+            await plugin.saveSettings();
+          })
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder("Tooltip")
+          .setValue(abbr.title)
+          .onChange(async (value) => {
+            plugin.settings.globalAbbreviations[index].title = value.trim();
+            await plugin.saveSettings();
+          })
+      )
+      .addButton((button) =>
+        button.setButtonText("Delete").onClick(async () => {
+          plugin.settings.globalAbbreviations.splice(index, 1);
+          await plugin.saveSettings();
+          manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
+        })
+      );
+  });
+
+  new Setting(containerEl).addButton((button) =>
+    button
+      .setButtonText("Add")
+      .setTooltip("Add new abbreviation")
+      .onClick(async () => {
+        plugin.settings.globalAbbreviations.push({
+          key: "",
+          title: "",
+        });
+        await plugin.saveSettings();
+        manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
+      })
+  );
 }

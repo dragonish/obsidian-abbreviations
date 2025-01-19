@@ -29,6 +29,12 @@ export interface CodeBlocks {
   graveCount: number;
 }
 
+export interface MarkItem {
+  index: number;
+  text: string;
+  title: string;
+}
+
 export interface AbbrPluginSettings {
   useMarkdownExtraSyntax: boolean;
   metadataKeyword: string;
@@ -38,8 +44,10 @@ export interface AbbrPluginSettings {
   globalAbbreviations: AbbreviationInfo[];
 }
 
-export interface AbbrPluginData extends AbbrPluginSettings {
+export interface AbbrPluginData
+  extends Omit<AbbrPluginSettings, "detectAffixes" | "affixes"> {
   frontmatterCache?: Record<string, unknown>;
+  suffixes?: string[];
 }
 
 export const abbrClassName = "abbreviations-plugin-abbr-element";

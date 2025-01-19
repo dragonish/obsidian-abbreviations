@@ -44,6 +44,25 @@ export function isSpecialOrWhitespace(char: string) {
 }
 
 /**
+ * Determine if the text is a word or content.
+ * - Empty string is considered content.
+ * @param text
+ * @returns `true` if the text is a word
+ */
+export function isWord(text: string) {
+  if (text === "") {
+    return false;
+  }
+
+  for (const ch of text) {
+    if (isSpecialOrWhitespace(ch)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
  * Gets the number of a single specified character in a source.
  * @param source
  * @param character
@@ -209,6 +228,10 @@ export function queryAbbreviationTitle(
 
   for (let i = abbrList.length - 1; i >= 0; i--) {
     const abbr = abbrList[i];
+    if (!abbr.key) {
+      continue;
+    }
+
     if (text === abbr.key) {
       res = abbr.title;
       if (abbr.type === "extra") {
@@ -256,6 +279,10 @@ export function isAbbreviationsEmpty(abbr: AbbreviationInstance[]): boolean {
 
   const tempSet = new Set<string>();
   for (const item of abbr) {
+    if (!item.key) {
+      continue;
+    }
+
     if (item.type === "extra") {
       return false;
     }
