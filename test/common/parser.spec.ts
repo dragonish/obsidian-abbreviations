@@ -6,6 +6,43 @@ const parserModule = loadWithMockedObsidian("../../common/parser");
 const Parser = parserModule.Parser;
 
 describe("common/parser", function () {
+  it("Parser.constructor", function () {
+    const parser1 = new Parser([], "abbr", {});
+    expect(parser1.abbreviations).to.be.empty;
+
+    const parser2 = new Parser(
+      [{ key: "TEST", title: "test value" }],
+      "abbr",
+      {}
+    );
+    expect(parser2.abbreviations).to.deep.eq([
+      {
+        key: "TEST",
+        title: "test value",
+        type: "global",
+      },
+    ]);
+
+    const parser3 = new Parser([{ key: "", title: "test value" }], "abbr", {});
+    expect(parser3.abbreviations).to.be.empty;
+
+    const parser4 = new Parser(
+      [
+        { key: "", title: "test" },
+        { key: "TEST", title: "test value" },
+      ],
+      "abbr",
+      {}
+    );
+    expect(parser4.abbreviations).to.deep.eq([
+      {
+        key: "TEST",
+        title: "test value",
+        type: "global",
+      },
+    ]);
+  });
+
   it("Parser.readAbbreviationsFromCache", function () {
     const parser = new Parser([], "abbr", {});
 

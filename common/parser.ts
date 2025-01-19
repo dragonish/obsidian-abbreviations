@@ -27,13 +27,13 @@ export class Parser extends Base {
   ) {
     super();
 
-    this.abbreviations = [
-      ...abbreviations.map<AbbreviationInstance>(({ key, title }) => ({
+    this.abbreviations = abbreviations
+      .map<AbbreviationInstance>(({ key, title }) => ({
         key,
         title,
         type: "global",
-      })),
-    ];
+      }))
+      .filter((item) => item.key);
 
     this.abbreviationKeyword = abbreviationKeyword;
     this.parseOption = parseOption;

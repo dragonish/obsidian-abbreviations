@@ -239,12 +239,13 @@ export default class AbbrPlugin extends Plugin {
   );
 
   private getAbbrList(frontmatter?: FrontMatterCache): AbbreviationInstance[] {
-    const abbrList: AbbreviationInstance[] =
-      this.settings.globalAbbreviations.map(({ key, title }) => ({
+    const abbrList: AbbreviationInstance[] = this.settings.globalAbbreviations
+      .map<AbbreviationInstance>(({ key, title }) => ({
         key,
         title,
         type: "global",
-      }));
+      }))
+      .filter((item) => item.key);
 
     const readList = calcAbbrListFromFrontmatter(
       frontmatter,
