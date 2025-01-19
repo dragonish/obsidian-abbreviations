@@ -145,6 +145,20 @@ export default class AbbrPlugin extends Plugin {
 
     // Register command
     this.addCommand({
+      id: "add-abbreviation",
+      name: "Add abbreviation",
+      editorCheckCallback: (checking) => {
+        const keywordState = this.settings.metadataKeyword;
+        if (keywordState) {
+          if (!checking) {
+            this.showAbbreviationInputModal();
+          }
+          return true;
+        }
+        return false;
+      },
+    });
+    this.addCommand({
       id: "copy-with-format",
       name: "Copy and format content",
       callback: () => {
@@ -159,20 +173,6 @@ export default class AbbrPlugin extends Plugin {
         if (extraState) {
           if (!checking) {
             this.insertExtraDefinition();
-          }
-          return true;
-        }
-        return false;
-      },
-    });
-    this.addCommand({
-      id: "add-abbreviation",
-      name: "Add abbreviation",
-      editorCheckCallback: (checking) => {
-        const keywordState = this.settings.metadataKeyword;
-        if (keywordState) {
-          if (!checking) {
-            this.showAbbreviationInputModal();
           }
           return true;
         }
