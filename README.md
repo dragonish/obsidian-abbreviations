@@ -181,6 +181,10 @@ When selected text exists, insert the following content:
 *[<selected_text>]: <cursor_position>
 ```
 
+### Manage global abbreviations
+
+Manage [global abbreviations](#global-abbreviations) quickly.
+
 ## Settings
 
 ### Metadata keyword
