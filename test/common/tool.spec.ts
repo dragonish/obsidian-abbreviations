@@ -496,6 +496,21 @@ describe("common/tool", function () {
       },
     ];
     expect(isAbbreviationsEmpty(abbrList3)).to.be.false;
+
+    const abbrList4: AbbreviationInstance[] = [
+      {
+        key: "",
+        title: "HyperText Markup Language",
+        type: "global",
+      },
+      {
+        key: "",
+        title: "HyperText Markup Language",
+        type: "extra",
+        position: 1,
+      },
+    ];
+    expect(isAbbreviationsEmpty(abbrList4)).to.be.true;
   });
 
   it("calcAbbrListFromFrontmatter", function () {

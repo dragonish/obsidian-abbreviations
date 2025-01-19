@@ -275,6 +275,10 @@ export function isAbbreviationsEmpty(abbr: AbbreviationInstance[]): boolean {
 
   const tempSet = new Set<string>();
   for (const item of abbr) {
+    if (!item.key) {
+      continue;
+    }
+
     if (item.type === "extra") {
       return false;
     }
