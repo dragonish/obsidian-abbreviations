@@ -270,17 +270,15 @@ export default class AbbrPlugin extends Plugin {
   }
 
   async getPluginData(): Promise<AbbrPluginData> {
+    const { metadataKeyword, ...other } = this.settings;
+
     const data: AbbrPluginData = {
-      useMarkdownExtraSyntax: this.settings.useMarkdownExtraSyntax,
-      metadataKeyword: this.settings.metadataKeyword,
-      detectAffixes: this.settings.detectAffixes,
-      affixes: this.settings.affixes,
-      markInSourceMode: this.settings.markInSourceMode,
-      globalAbbreviations: [...this.settings.globalAbbreviations],
+      metadataKeyword,
       frontmatterCache: undefined,
+      ...other,
     };
 
-    if (this.settings.metadataKeyword) {
+    if (metadataKeyword) {
       const file = this.app.workspace.getActiveFile();
       if (file) {
         data.frontmatterCache =
