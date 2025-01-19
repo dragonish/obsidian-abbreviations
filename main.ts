@@ -9,6 +9,7 @@ import {
   debounce,
   Editor,
   Notice,
+  Modal,
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
 import type {
@@ -179,6 +180,13 @@ export default class AbbrPlugin extends Plugin {
         return false;
       },
     });
+    this.addCommand({
+      id: "manage-global-abbreviations",
+      name: "Manage global abbreviations",
+      callback: () => {
+        this.showManageAbbreviationsModal();
+      },
+    });
 
     this.addSettingTab(new AbbrSettingTab(this.app, this));
   }
@@ -341,6 +349,10 @@ export default class AbbrPlugin extends Plugin {
         this.addAbbreviationToFrontmatter.bind(this)
       ).open();
     }
+  }
+
+  private showManageAbbreviationsModal() {
+    new AbbreviationManagerModal(this.app, this).open();
   }
 
   private addAbbreviationToFrontmatter(abbr: string, tooltip: string) {
@@ -515,61 +527,89 @@ class AbbrSettingTab extends PluginSettingTab {
 
   displayGlobalAbbreviations(): void {
     const { containerEl } = this;
-    containerEl.empty();
-
-    new Setting(containerEl)
-      .setName("Global abbreviations")
-      .setHeading()
-      .addButton((button) => {
-        button.setButtonText("Back").onClick(() => {
-          this.display();
-        });
-      });
-
-    this.plugin.settings.globalAbbreviations.forEach((abbr, index) => {
+    manageGlobalAbbreviations(this.plugin, containerEl, () => {
       new Setting(containerEl)
-        .setName("Abbreviation:")
-        .addText((text) =>
-          text
-            .setPlaceholder("Short word")
-            .setValue(abbr.key)
-            .onChange(async (value) => {
-              this.plugin.settings.globalAbbreviations[index].key =
-                value.trim();
-              await this.plugin.saveSettings();
-            })
-        )
-        .addText((text) =>
-          text
-            .setPlaceholder("Tooltip")
-            .setValue(abbr.title)
-            .onChange(async (value) => {
-              this.plugin.settings.globalAbbreviations[index].title =
-                value.trim();
-              await this.plugin.saveSettings();
-            })
-        )
-        .addButton((button) =>
-          button.setButtonText("Delete").onClick(async () => {
-            this.plugin.settings.globalAbbreviations.splice(index, 1);
-            await this.plugin.saveSettings();
-            this.displayGlobalAbbreviations(); //! Rerender the settings page
-          })
-        );
-    });
-
-    new Setting(containerEl).addButton((button) =>
-      button
-        .setButtonText("Add")
-        .setTooltip("Add new abbreviation")
-        .onClick(async () => {
-          this.plugin.settings.globalAbbreviations.push({
-            key: "",
-            title: "",
+        .setName("Global abbreviations")
+        .setHeading()
+        .addButton((button) => {
+          button.setButtonText("Back").onClick(() => {
+            this.display();
           });
-          await this.plugin.saveSettings();
-          this.displayGlobalAbbreviations(); //! Rerender the settings page
-        })
-    );
+        });
+    });
   }
+}
+
+class AbbreviationManagerModal extends Modal {
+  private plugin: AbbrPlugin;
+
+  constructor(app: App, plugin: AbbrPlugin) {
+    super(app);
+    this.plugin = plugin;
+  }
+
+  onOpen() {
+    const { contentEl } = this;
+    manageGlobalAbbreviations(this.plugin, contentEl, () => {
+      this.setTitle("Manage global abbreviations");
+    });
+  }
+
+  onClose(): void {
+    const { contentEl } = this;
+    contentEl.empty();
+  }
+}
+
+function manageGlobalAbbreviations(
+  plugin: AbbrPlugin,
+  containerEl: HTMLElement,
+  header: () => void
+) {
+  containerEl.empty();
+  header();
+
+  plugin.settings.globalAbbreviations.forEach((abbr, index) => {
+    new Setting(containerEl)
+      .setName("Abbreviation:")
+      .addText((text) =>
+        text
+          .setPlaceholder("Short word")
+          .setValue(abbr.key)
+          .onChange(async (value) => {
+            plugin.settings.globalAbbreviations[index].key = value.trim();
+            await plugin.saveSettings();
+          })
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder("Tooltip")
+          .setValue(abbr.title)
+          .onChange(async (value) => {
+            plugin.settings.globalAbbreviations[index].title = value.trim();
+            await plugin.saveSettings();
+          })
+      )
+      .addButton((button) =>
+        button.setButtonText("Delete").onClick(async () => {
+          plugin.settings.globalAbbreviations.splice(index, 1);
+          await plugin.saveSettings();
+          manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
+        })
+      );
+  });
+
+  new Setting(containerEl).addButton((button) =>
+    button
+      .setButtonText("Add")
+      .setTooltip("Add new abbreviation")
+      .onClick(async () => {
+        plugin.settings.globalAbbreviations.push({
+          key: "",
+          title: "",
+        });
+        await plugin.saveSettings();
+        manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
+      })
+  );
 }
