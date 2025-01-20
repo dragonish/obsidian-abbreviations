@@ -19,6 +19,7 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
     this.selectedText = selectedText;
     this.onSelete = onSelect;
 
+    this.emptyStateText = "No abbreviations found.";
     this.setPlaceholder("Type the search term");
   }
 
