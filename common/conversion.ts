@@ -45,6 +45,7 @@ export class Conversion extends Base {
   ): void {
     if (lineStart === 1 && text === METADATA_BORDER) {
       this.state = "metadata";
+      callback([], false);
       return;
     }
 
@@ -55,6 +56,7 @@ export class Conversion extends Base {
         this.codeBlocks.graveCount = 0;
         this.quotes.level = 0;
         this.lastEmptyLine = true;
+        callback([], false);
         return;
       }
     }
@@ -63,6 +65,7 @@ export class Conversion extends Base {
       if (this.lastEmptyLine) {
         if (/^[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t)/.test(text)) {
           // pure code blocks
+          callback([], false);
           return;
         }
       }
@@ -72,6 +75,7 @@ export class Conversion extends Base {
         this.state = "codeBlocks";
         this.codeBlocks.graveCount = findCharCount(codeBlocks[1], "`");
         this.quotes.level = findCharCount(codeBlocks[1], ">");
+        callback([], false);
         return;
       }
 
@@ -79,6 +83,7 @@ export class Conversion extends Base {
       if (math && !math[2].trim().endsWith("$$")) {
         this.state = "math";
         this.quotes.level = findCharCount(math[1], ">");
+        callback([], false);
         return;
       }
 
@@ -116,7 +121,10 @@ export class Conversion extends Base {
     } else {
       if (this.state === "metadata") {
         if (text === METADATA_BORDER) {
+          //? Early callback, can read the row's metadata state in the callback
+          callback([], false);
           this.state = "";
+          return;
         }
       } else if (this.state === "codeBlocks") {
         const endCodeBlocks = text.match(/^([> ]*`{3,})([^`]*)$/);
@@ -146,5 +154,7 @@ export class Conversion extends Base {
         }
       }
     }
+    callback([], false);
+    return;
   }
 }

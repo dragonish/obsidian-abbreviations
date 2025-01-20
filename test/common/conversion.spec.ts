@@ -35,6 +35,10 @@ describe("common/conversion", function () {
       );
     });
     expect(res1).to.deep.eq([
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
       {
         marks: [
           {
@@ -71,6 +75,10 @@ describe("common/conversion", function () {
       res2.push();
     });
     expect(res2).to.deep.eq([
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
       {
         marks: [
           {
@@ -116,6 +124,10 @@ describe("common/conversion", function () {
       );
     });
     expect(res3).to.deep.eq([
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
       {
         marks: [
           {

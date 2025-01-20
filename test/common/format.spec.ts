@@ -276,5 +276,34 @@ describe("common/format", function () {
         "",
       ]
     );
+
+    const content10 = [
+      "---",
+      "tags:",
+      "  - test",
+      "---",
+      "#Test",
+      "",
+      "*[HTML]: HyperText Markup Language",
+      "*[CSS]: Cascading Style Sheets",
+      "",
+      "You can use CSS to style your HTML.",
+      "",
+      "```",
+      "You can use CSS to style your HTML.",
+      "```",
+    ].join("\n");
+
+    expect(
+      contentFormatter(content10, [], "abbr", true).split("\n")
+    ).to.deep.eq([
+      "#Test",
+      "",
+      'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.',
+      "",
+      "```",
+      "You can use CSS to style your HTML.",
+      "```",
+    ]);
   });
 });
