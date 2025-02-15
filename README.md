@@ -201,7 +201,7 @@ In Source mode, mark abbreviations just like in Live Preview and Reading view.
 
 ### Enable abbreviation detection for languages not separated by spaces
 
-Detect abbreviations in languages that do not use spaces for word segmentation, such as <abbr title="Chinese, Japanese, Korean">CJK</abbr>.
+Detect abbreviations in languages that do not use spaces for word segmentation, such as CJK (Chinese, Japanese, Korean).
 
 For example, for the following note content:
 
