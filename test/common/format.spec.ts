@@ -9,7 +9,7 @@ describe("common/format", function () {
     const lineMarkupFormatter = formatModule.lineMarkupFormatter;
 
     expect(lineMarkupFormatter("", [])).to.be.empty;
-    expect(lineMarkupFormatter("This is a test string.", [])).to.be.eq(
+    expect(lineMarkupFormatter("This is a test string.", [])).to.eq(
       "This is a test string."
     );
 
@@ -21,7 +21,7 @@ describe("common/format", function () {
           title: "A test",
         },
       ])
-    ).to.be.eq('This is a <abbr title="A test">TEST</abbr> string.');
+    ).to.eq('This is a <abbr title="A test">TEST</abbr> string.');
 
     expect(
       lineMarkupFormatter("THIS is a TEST string.", [
@@ -36,7 +36,7 @@ describe("common/format", function () {
           title: "A test",
         },
       ])
-    ).to.be.eq(
+    ).to.eq(
       '<abbr title="A this">THIS</abbr> is a <abbr title="A test">TEST</abbr> string.'
     );
 
@@ -53,7 +53,7 @@ describe("common/format", function () {
           title: "HyperText Markup Language",
         },
       ])
-    ).to.be.eq(
+    ).to.eq(
       'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.'
     );
   });

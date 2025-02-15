@@ -57,11 +57,11 @@ describe("common/tool", function () {
   });
 
   it("findCharCount", function () {
-    expect(findCharCount("test", "t")).to.be.eq(2);
-    expect(findCharCount("test", "a")).to.be.eq(0);
-    expect(findCharCount("", "t")).to.be.eq(0);
-    expect(findCharCount("test", "")).to.be.eq(0);
-    expect(findCharCount("", "")).to.be.eq(0);
+    expect(findCharCount("test", "t")).to.eq(2);
+    expect(findCharCount("test", "a")).to.eq(0);
+    expect(findCharCount("", "t")).to.eq(0);
+    expect(findCharCount("test", "")).to.eq(0);
+    expect(findCharCount("", "")).to.eq(0);
   });
 
   it("getWords", function () {
@@ -335,7 +335,7 @@ describe("common/tool", function () {
           text: "test",
         }
       )
-    ).to.be.eq("same");
+    ).to.eq("same");
 
     expect(
       queryOverlap(
@@ -348,7 +348,7 @@ describe("common/tool", function () {
           text: "t",
         }
       )
-    ).to.be.eq("contain");
+    ).to.eq("contain");
 
     expect(
       queryOverlap(
@@ -361,7 +361,7 @@ describe("common/tool", function () {
           text: "test",
         }
       )
-    ).to.be.eq("included");
+    ).to.eq("included");
 
     expect(
       queryOverlap(
@@ -374,7 +374,7 @@ describe("common/tool", function () {
           text: "ate",
         }
       )
-    ).to.be.eq("intersection");
+    ).to.eq("intersection");
 
     expect(
       queryOverlap(
@@ -387,7 +387,7 @@ describe("common/tool", function () {
           text: "test",
         }
       )
-    ).to.be.eq("intersection");
+    ).to.eq("intersection");
 
     expect(
       queryOverlap(
@@ -400,7 +400,7 @@ describe("common/tool", function () {
           text: "test",
         }
       )
-    ).to.be.eq("unrelated");
+    ).to.eq("unrelated");
   });
 
   it("selectNonOverlappingItems", function () {
