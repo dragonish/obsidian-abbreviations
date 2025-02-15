@@ -199,6 +199,33 @@ This plugin allows you to customize the keyword that read abbreviations from [pr
 
 In Source mode, mark abbreviations just like in Live Preview and Reading view.
 
+### Enable abbreviation detection for languages not separated by spaces
+
+Detect abbreviations in languages that do not use spaces for word segmentation, such as <abbr title="Chinese, Japanese, Korean">CJK</abbr>.
+
+For example, for the following note content:
+
+```
+---
+abbr:
+  - "北大: 北京大学"
+---
+
+我是一名北大学子。
+```
+
+Only when this option is enabled will it render as:
+
+```html
+我是一名<abbr title="北京大学">北大</abbr>学子。
+```
+
+Otherwise, keep it as is:
+
+```
+我是一名北大学子。
+```
+
 ### Global abbreviations
 
 This plugin allows you to customize globally available abbreviations.
