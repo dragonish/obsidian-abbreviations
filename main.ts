@@ -44,6 +44,7 @@ interface ObsidianEditor extends Editor {
 const DEFAULT_SETTINGS: AbbrPluginSettings = {
   useMarkdownExtraSyntax: false,
   metadataKeyword: "abbr",
+  detectCJK: false,
   detectAffixes: false,
   affixes: "",
   markInSourceMode: false,
@@ -87,7 +88,8 @@ export default class AbbrPlugin extends Plugin {
           context,
           element,
           parser.abbreviations,
-          this.getAffixList()
+          this.getAffixList(),
+          this.settings.detectCJK
         );
       } else {
         let frontmatter: undefined | FrontMatterCache = context.frontmatter;
@@ -109,7 +111,12 @@ export default class AbbrPlugin extends Plugin {
         }
 
         const abbrList = this.getAbbrList(frontmatter);
-        handlePreviewMarkdown(element, abbrList, this.getAffixList());
+        handlePreviewMarkdown(
+          element,
+          abbrList,
+          this.getAffixList(),
+          this.settings.detectCJK
+        );
       }
     });
 
@@ -317,7 +324,8 @@ export default class AbbrPlugin extends Plugin {
         this.settings.globalAbbreviations,
         this.settings.metadataKeyword,
         this.settings.useMarkdownExtraSyntax,
-        this.getAffixList()
+        this.getAffixList(),
+        this.settings.detectCJK
       );
 
       try {
@@ -536,6 +544,31 @@ class AbbrSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
       });
+
+    //* detectCJK
+    const detectCJKSetting = new Setting(containerEl)
+      .setName(
+        "Enable abbreviation detection for languages not separated by spaces"
+      )
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.detectCJK)
+          .onChange(async (value) => {
+            this.plugin.settings.detectCJK = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    const detectCJKDesc = document.createDocumentFragment();
+    detectCJKDesc.append(
+      "Detect abbreviations in languages that do not use spaces for word segmentation, such as ",
+      createEl("abbr", {
+        text: "CJK",
+        title: "Chinese, Japanese, Korean",
+      }),
+      "."
+    );
+    detectCJKSetting.descEl.appendChild(detectCJKDesc);
 
     //* globalAbbreviations
     const globalAbbreviationsSetting = new Setting(containerEl)

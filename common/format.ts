@@ -37,6 +37,7 @@ export function lineMarkupFormatter(
  * @param metadataKeyword
  * @param useMarkdownExtraSyntax
  * @param affixList
+ * @param detectCJK
  * @returns
  */
 export function contentFormatter(
@@ -44,7 +45,8 @@ export function contentFormatter(
   globalAbbreviations: AbbreviationInfo[],
   metadataKeyword: string,
   useMarkdownExtraSyntax: boolean,
-  affixList?: string[]
+  affixList?: string[],
+  detectCJK = false
 ): string {
   const results: string[] = [];
   const parser = new Parser(globalAbbreviations, metadataKeyword, {
@@ -68,7 +70,8 @@ export function contentFormatter(
   const conversion = new Conversion(
     parser.abbreviations,
     useMarkdownExtraSyntax,
-    affixList
+    affixList,
+    detectCJK
   );
 
   let lastDefinitionState = false;

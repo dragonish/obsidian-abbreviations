@@ -118,7 +118,8 @@ export class AbbrViewPlugin implements PluginValue {
         const conversion = new Conversion(
           parser.abbreviations,
           pluginData.useMarkdownExtraSyntax,
-          pluginData.suffixes
+          pluginData.suffixes,
+          pluginData.detectCJK
         );
 
         for (let i = 1; i < doc.lines + 1; i++) {
@@ -166,7 +167,8 @@ export class AbbrViewPlugin implements PluginValue {
       handlePreviewMarkdown(
         view.dom,
         parser.abbreviations,
-        pluginData.suffixes
+        pluginData.suffixes,
+        pluginData.detectCJK
       );
     } else {
       view.dispatch({

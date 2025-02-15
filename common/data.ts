@@ -29,15 +29,19 @@ export interface CodeBlocks {
   graveCount: number;
 }
 
-export interface MarkItem {
+export interface TextItem {
   index: number;
   text: string;
+}
+
+export interface MarkItem extends TextItem {
   title: string;
 }
 
 export interface AbbrPluginSettings {
   useMarkdownExtraSyntax: boolean;
   metadataKeyword: string;
+  detectCJK: boolean;
   detectAffixes: boolean;
   affixes: string;
   markInSourceMode: boolean;

@@ -13,19 +13,22 @@ export class Conversion extends Base {
 
   private abbreviations: AbbreviationInstance[];
   private affixList: string[];
+  private detectCJK: boolean;
 
   private skipExtraDefinition: boolean;
 
   constructor(
     abbreviations: AbbreviationInstance[],
     skipExtraDefinition: boolean,
-    affixList: string[] = []
+    affixList: string[] = [],
+    detectCJK = false
   ) {
     super();
 
     this.abbreviations = abbreviations;
     this.skipExtraDefinition = skipExtraDefinition;
     this.affixList = affixList;
+    this.detectCJK = detectCJK;
 
     this.mark = new MarkBuffer();
   }
@@ -95,28 +98,34 @@ export class Conversion extends Base {
         }
       }
 
+      const results: MarkItem[] = [];
       const words = this.mark.handler(text);
-      callback(
-        words
-          .map((word) => {
-            const abbrTitle = queryAbbreviationTitle(
-              word.text,
-              this.abbreviations,
-              lineStart,
-              this.affixList
-            );
-            if (abbrTitle) {
-              return {
-                index: word.position,
-                text: word.text,
-                title: abbrTitle,
-              };
-            }
-            return null;
-          })
-          .filter((v) => v !== null),
-        false
-      );
+      words.forEach((word) => {
+        const abbrTitle = queryAbbreviationTitle(
+          word.text,
+          this.abbreviations,
+          lineStart,
+          this.affixList,
+          this.detectCJK
+        );
+
+        if (Array.isArray(abbrTitle)) {
+          for (const item of abbrTitle) {
+            results.push({
+              index: word.position + item.index,
+              text: item.text,
+              title: item.title,
+            });
+          }
+        } else if (abbrTitle) {
+          results.push({
+            index: word.position,
+            text: word.text,
+            title: abbrTitle,
+          });
+        }
+      });
+      callback(results, false);
       return;
     } else {
       if (this.state === "metadata") {

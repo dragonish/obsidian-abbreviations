@@ -1,4 +1,17 @@
-import type { AbbreviationInfo, AbbreviationInstance } from "./data";
+import type {
+  TextItem,
+  MarkItem,
+  AbbreviationInfo,
+  AbbreviationInstance,
+} from "./data";
+
+type MetadataAbbrType = string | Record<string, unknown>;
+type OverlapState =
+  | "intersection"
+  | "contain"
+  | "included"
+  | "same"
+  | "unrelated";
 
 interface WordItem {
   text: string;
@@ -6,7 +19,9 @@ interface WordItem {
   isSpecial: boolean;
 }
 
-type MetadataAbbrType = string | Record<string, unknown>;
+interface QueryItem extends MarkItem {
+  abbrPos: number;
+}
 
 /**
  * Detects whether it is a whitespace character.
@@ -209,21 +224,140 @@ export function getAbbreviationInstance(
 }
 
 /**
+ * Find all indexes.
+ * @param str
+ * @param word
+ * @returns
+ */
+export function findAllIndexes(str: string, word: string): number[] {
+  if (word.length === 0) {
+    return [];
+  }
+
+  const indexes: number[] = [];
+  let startIndex = 0;
+
+  while (startIndex < str.length) {
+    const index = str.indexOf(word, startIndex);
+    if (index === -1) {
+      break;
+    }
+    indexes.push(index);
+    startIndex = index + 1;
+  }
+
+  return indexes;
+}
+
+/**
+ * Query overlap between two items.
+ * @param left
+ * @param right
+ * @returns `"contain"` when left element contains right element.
+ */
+export function queryOverlap(left: TextItem, right: TextItem): OverlapState {
+  const leftStart = left.index;
+  const leftEnd = left.index + left.text.length;
+  const rightStart = right.index;
+  const rightEnd = right.index + right.text.length;
+
+  if (leftStart === rightStart && leftEnd === rightEnd) {
+    return "same";
+  } else if (leftStart <= rightStart && leftEnd >= rightEnd) {
+    return "contain";
+  } else if (leftStart >= rightStart && leftEnd <= rightEnd) {
+    return "included";
+  } else if (leftEnd > rightStart && leftStart < rightEnd) {
+    return "intersection";
+  }
+  return "unrelated";
+}
+
+/**
+ * Gets a list of non-overlapping items.
+ * @param list
+ * @returns
+ */
+export function selectNonOverlappingItems(list: QueryItem[]): MarkItem[] {
+  const res: MarkItem[] = [];
+
+  if (list.length === 0) {
+    return [];
+  }
+
+  const highestPriorityIndex = list.reduce(
+    (lastIndex, element, currentIndex) => {
+      if (element.abbrPos < 0) {
+        return currentIndex;
+      }
+      return lastIndex;
+    },
+    0
+  );
+
+  for (let i = highestPriorityIndex; i >= 0; i--) {
+    let add = true;
+    for (const resItem of res) {
+      const overlapState = queryOverlap(resItem, list[i]);
+
+      if (overlapState !== "unrelated") {
+        add = false;
+        break;
+      }
+    }
+
+    if (add) {
+      res.push({
+        index: list[i].index,
+        text: list[i].text,
+        title: list[i].title,
+      });
+    }
+  }
+
+  for (let j = highestPriorityIndex + 1; j < list.length; j++) {
+    let add = true;
+    for (const resItem of res) {
+      const overlapState = queryOverlap(resItem, list[j]);
+
+      if (overlapState !== "unrelated") {
+        add = false;
+        break;
+      }
+    }
+
+    if (add) {
+      res.push({
+        index: list[j].index,
+        text: list[j].text,
+        title: list[j].title,
+      });
+    }
+  }
+
+  return res;
+}
+
+/**
  * Query title for abbreviations.
  * @param text
  * @param abbrList
  * @param lineStart
  * @param affixList
+ * @param detectCJK
  * @returns the abbreviation title. *An empty string indicates that the abbreviation is disabled*
  */
 export function queryAbbreviationTitle(
   text: string,
   abbrList: AbbreviationInstance[],
   lineStart = 1,
-  affixList: string[] = []
-) {
-  let res: string | null = null;
-  let affixRes: string | null = null;
+  affixList: string[] = [],
+  detectCJK = false
+): string | MarkItem[] {
+  let fullRes: string | null = null;
+  let affixFullRes: string | null = null;
+  let cjkRes: QueryItem[] = [];
+
   let detectAffixes = affixList.length > 0;
 
   for (let i = abbrList.length - 1; i >= 0; i--) {
@@ -233,7 +367,7 @@ export function queryAbbreviationTitle(
     }
 
     if (text === abbr.key) {
-      res = abbr.title;
+      fullRes = abbr.title;
       if (abbr.type === "extra") {
         if (abbr.position <= lineStart) {
           break;
@@ -241,29 +375,78 @@ export function queryAbbreviationTitle(
       } else {
         break;
       }
-    } else if (detectAffixes) {
-      let match = false;
-      for (const affix of affixList) {
-        if (text === abbr.key + affix) {
-          affixRes = abbr.title;
-          match = true;
-          break;
+    } else {
+      if (detectAffixes) {
+        let affixMatch = false;
+        for (const affix of affixList) {
+          if (text === abbr.key + affix) {
+            affixFullRes = abbr.title;
+            affixMatch = true;
+            break;
+          }
+        }
+
+        if (affixMatch) {
+          if (abbr.type === "extra") {
+            if (abbr.position <= lineStart) {
+              detectAffixes = false;
+            }
+          } else {
+            detectAffixes = false;
+          }
         }
       }
 
-      if (match) {
-        if (abbr.type === "extra") {
-          if (abbr.position <= lineStart) {
-            detectAffixes = false;
+      if (detectCJK && fullRes == null && affixFullRes == null) {
+        const indexes = findAllIndexes(text, abbr.key);
+        for (const index of indexes) {
+          let add = true;
+          cjkRes = cjkRes.filter((item) => {
+            const overlapState = queryOverlap(item, {
+              index,
+              text: abbr.key,
+            });
+
+            if (overlapState === "same") {
+              if (item.abbrPos > 0) {
+                return false;
+              } else {
+                add = false;
+              }
+            } else if (overlapState === "included") {
+              return false;
+            } else if (overlapState === "contain") {
+              add = false;
+            }
+
+            return true;
+          });
+
+          if (add) {
+            cjkRes.push({
+              index,
+              text: abbr.key,
+              title: abbr.title,
+              abbrPos: abbr.type === "extra" ? abbr.position - lineStart : -1,
+            });
           }
-        } else {
-          detectAffixes = false;
         }
       }
     }
   }
 
-  return res ?? affixRes;
+  if (fullRes != null) {
+    return fullRes;
+  } else if (affixFullRes != null) {
+    return affixFullRes;
+  } else if (cjkRes.length > 0) {
+    const res = selectNonOverlappingItems(cjkRes)
+      .filter((item) => item.title)
+      .sort((a, b) => a.index - b.index);
+    return res.length > 0 ? res : "";
+  }
+
+  return "";
 }
 
 /**

@@ -11,6 +11,9 @@ import {
   isExtraDefinitions,
   getAffixList,
   getAbbreviationInstance,
+  findAllIndexes,
+  queryOverlap,
+  selectNonOverlappingItems,
   queryAbbreviationTitle,
   isAbbreviationsEmpty,
   calcAbbrListFromFrontmatter,
@@ -312,6 +315,195 @@ describe("common/tool", function () {
     expect(getAbbreviationInstance({ HTML: 1 })).to.be.null;
   });
 
+  it("findAllIndexes", function () {
+    expect(findAllIndexes("This is a test string.", "")).to.be.empty;
+    expect(findAllIndexes("This is a test string.", "test")).to.deep.eq([10]);
+    expect(
+      findAllIndexes("This is a test string for testing.", "test")
+    ).to.deep.eq([10, 26]);
+  });
+
+  it("queryOverlap", function () {
+    expect(
+      queryOverlap(
+        {
+          index: 0,
+          text: "test",
+        },
+        {
+          index: 0,
+          text: "test",
+        }
+      )
+    ).to.be.eq("same");
+
+    expect(
+      queryOverlap(
+        {
+          index: 0,
+          text: "test",
+        },
+        {
+          index: 0,
+          text: "t",
+        }
+      )
+    ).to.be.eq("contain");
+
+    expect(
+      queryOverlap(
+        {
+          index: 0,
+          text: "t",
+        },
+        {
+          index: 0,
+          text: "test",
+        }
+      )
+    ).to.be.eq("included");
+
+    expect(
+      queryOverlap(
+        {
+          index: 4,
+          text: "test",
+        },
+        {
+          index: 3,
+          text: "ate",
+        }
+      )
+    ).to.be.eq("intersection");
+
+    expect(
+      queryOverlap(
+        {
+          index: 4,
+          text: "test",
+        },
+        {
+          index: 7,
+          text: "test",
+        }
+      )
+    ).to.be.eq("intersection");
+
+    expect(
+      queryOverlap(
+        {
+          index: 0,
+          text: "test",
+        },
+        {
+          index: 4,
+          text: "test",
+        }
+      )
+    ).to.be.eq("unrelated");
+  });
+
+  it("selectNonOverlappingItems", function () {
+    expect(selectNonOverlappingItems([])).to.be.empty;
+
+    expect(
+      selectNonOverlappingItems([
+        {
+          index: 0,
+          text: "test",
+          title: "test1",
+          abbrPos: -1,
+        },
+      ])
+    ).to.deep.eq([
+      {
+        index: 0,
+        text: "test",
+        title: "test1",
+      },
+    ]);
+
+    expect(
+      selectNonOverlappingItems([
+        {
+          index: 1,
+          text: "test",
+          title: "test1",
+          abbrPos: -1,
+        },
+        {
+          index: 0,
+          text: "ate",
+          title: "test2",
+          abbrPos: 9,
+        },
+      ])
+    ).to.deep.eq([
+      {
+        index: 1,
+        text: "test",
+        title: "test1",
+      },
+    ]);
+
+    expect(
+      selectNonOverlappingItems([
+        {
+          index: 0,
+          text: "ate",
+          title: "test1",
+          abbrPos: -1,
+        },
+        {
+          index: 1,
+          text: "test",
+          title: "test2",
+          abbrPos: -1,
+        },
+        {
+          index: 3,
+          text: "sta",
+          title: "test3",
+          abbrPos: 9,
+        },
+      ])
+    ).to.deep.eq([
+      {
+        index: 1,
+        text: "test",
+        title: "test2",
+      },
+    ]);
+
+    expect(
+      selectNonOverlappingItems([
+        {
+          index: 0,
+          text: "test",
+          title: "test1",
+          abbrPos: 9,
+        },
+        {
+          index: 4,
+          text: "test",
+          title: "test1",
+          abbrPos: 9,
+        },
+      ])
+    ).to.deep.eq([
+      {
+        index: 0,
+        text: "test",
+        title: "test1",
+      },
+      {
+        index: 4,
+        text: "test",
+        title: "test1",
+      },
+    ]);
+  });
+
   it("queryAbbreviationTitle", function () {
     const abbrList1: AbbreviationInstance[] = [
       {
@@ -349,8 +541,8 @@ describe("common/tool", function () {
     );
     expect(queryAbbreviationTitle("CSS", abbrList1, 60)).to.be.empty;
 
-    expect(queryAbbreviationTitle("", abbrList1, 1)).to.be.null;
-    expect(queryAbbreviationTitle("html", abbrList1, 1)).to.be.null;
+    expect(queryAbbreviationTitle("", abbrList1, 1)).to.be.empty;
+    expect(queryAbbreviationTitle("html", abbrList1, 1)).to.be.empty;
 
     const abbrList2: AbbreviationInstance[] = [
       {
@@ -366,8 +558,8 @@ describe("common/tool", function () {
         position: 38,
       },
     ];
-    expect(queryAbbreviationTitle("HTM", abbrList2, 32)).to.be.eq("Test");
-    expect(queryAbbreviationTitle("HTM", abbrList2, 36)).to.be.eq("Test");
+    expect(queryAbbreviationTitle("HTM", abbrList2, 32)).to.eq("Test");
+    expect(queryAbbreviationTitle("HTM", abbrList2, 36)).to.eq("Test");
     expect(queryAbbreviationTitle("HTM", abbrList2, 40)).to.be.empty;
   });
 
@@ -410,8 +602,9 @@ describe("common/tool", function () {
     expect(queryAbbreviationTitle("CSSes", abbrList1, 60, affixList)).to.be
       .empty;
 
-    expect(queryAbbreviationTitle("", abbrList1, 1, affixList)).to.be.null;
-    expect(queryAbbreviationTitle("htmls", abbrList1, 1, affixList)).to.be.null;
+    expect(queryAbbreviationTitle("", abbrList1, 1, affixList)).to.be.empty;
+    expect(queryAbbreviationTitle("htmls", abbrList1, 1, affixList)).to.be
+      .empty;
 
     const abbrList2: AbbreviationInstance[] = [
       {
@@ -427,10 +620,10 @@ describe("common/tool", function () {
         position: 38,
       },
     ];
-    expect(queryAbbreviationTitle("HTMs", abbrList2, 32, affixList)).to.be.eq(
+    expect(queryAbbreviationTitle("HTMs", abbrList2, 32, affixList)).to.eq(
       "Test"
     );
-    expect(queryAbbreviationTitle("HTMes", abbrList2, 36, affixList)).to.be.eq(
+    expect(queryAbbreviationTitle("HTMes", abbrList2, 36, affixList)).to.eq(
       "Test"
     );
     expect(queryAbbreviationTitle("HTMless", abbrList2, 40, affixList)).to.be
@@ -448,10 +641,10 @@ describe("common/tool", function () {
         type: "metadata",
       },
     ];
-    expect(queryAbbreviationTitle("HTMs", abbrList3, 1, affixList)).to.be.eq(
+    expect(queryAbbreviationTitle("HTMs", abbrList3, 1, affixList)).to.eq(
       "Test1"
     );
-    expect(queryAbbreviationTitle("HTM", abbrList3, 1, affixList)).to.be.eq(
+    expect(queryAbbreviationTitle("HTM", abbrList3, 1, affixList)).to.eq(
       "Test2"
     );
 
@@ -462,7 +655,94 @@ describe("common/tool", function () {
         type: "metadata",
       },
     ];
-    expect(queryAbbreviationTitle("es", abbrList4, 1, affixList)).to.be.null;
+    expect(queryAbbreviationTitle("es", abbrList4, 1, affixList)).to.be.empty;
+  });
+
+  it("queryAbbreviationTitle with detectCJK", function () {
+    const abbrList1: AbbreviationInstance[] = [
+      {
+        key: "北大",
+        title: "北京大学",
+        type: "metadata",
+      },
+    ];
+
+    expect(queryAbbreviationTitle("我是一名北大学子", abbrList1, 1, [], false))
+      .to.be.empty;
+    expect(
+      queryAbbreviationTitle("我是一名北大学子", abbrList1, 1, [], true)
+    ).to.deep.eq([
+      {
+        index: 4,
+        text: "北大",
+        title: "北京大学",
+      },
+    ]);
+
+    const abbrList2: AbbreviationInstance[] = [
+      {
+        key: "北大学",
+        title: "测试",
+        type: "metadata",
+      },
+      {
+        key: "北大",
+        title: "北京大学",
+        type: "metadata",
+      },
+    ];
+    expect(
+      queryAbbreviationTitle("我是一名北大学子", abbrList2, 1, [], true)
+    ).to.deep.eq([
+      {
+        index: 4,
+        text: "北大学",
+        title: "测试",
+      },
+    ]);
+
+    const abbrList3: AbbreviationInstance[] = [
+      {
+        key: "北大",
+        title: "北京大学",
+        type: "metadata",
+      },
+      {
+        key: "北大学",
+        title: "测试",
+        type: "extra",
+        position: 99,
+      },
+    ];
+    expect(
+      queryAbbreviationTitle("我是一名北大学子", abbrList3, 1, [], true)
+    ).to.deep.eq([
+      {
+        index: 4,
+        text: "北大学",
+        title: "测试",
+      },
+    ]);
+    expect(
+      queryAbbreviationTitle(
+        "我是一名北大学子并向北大概测量了一下",
+        abbrList3,
+        1,
+        [],
+        true
+      )
+    ).to.deep.eq([
+      {
+        index: 4,
+        text: "北大学",
+        title: "测试",
+      },
+      {
+        index: 10,
+        text: "北大",
+        title: "北京大学",
+      },
+    ]);
   });
 
   it("isAbbreviationsEmpty", function () {

@@ -17,18 +17,26 @@ import {
  * @param node
  * @param abbrList
  * @param lineStart
+ * @param detectCJK
  * @returns
  */
 function replaceWordWithAbbr(
   node: Node,
   abbrList: AbbreviationInstance[],
   lineStart = 1,
-  affixList: string[] = []
+  affixList: string[] = [],
+  detectCJK = false
 ) {
   if (["DEL", "EM", "MARK", "STRONG"].includes(node.nodeName)) {
     const childNodes = node.childNodes;
     for (let i = 0; i < childNodes.length; i++) {
-      replaceWordWithAbbr(childNodes[i], abbrList, lineStart, affixList);
+      replaceWordWithAbbr(
+        childNodes[i],
+        abbrList,
+        lineStart,
+        affixList,
+        detectCJK
+      );
     }
   }
 
@@ -49,9 +57,37 @@ function replaceWordWithAbbr(
           word.text,
           abbrList,
           lineStart,
-          affixList
+          affixList,
+          detectCJK
         );
-        if (abbrTitle) {
+
+        if (Array.isArray(abbrTitle)) {
+          let lastIndex = 0;
+          for (const item of abbrTitle) {
+            if (item.index > lastIndex) {
+              fragment.appendChild(
+                document.createTextNode(
+                  word.text.substring(lastIndex, item.index)
+                )
+              );
+            }
+
+            const abbr = fragment.createEl("abbr", {
+              cls: abbrClassName,
+              title: item.title,
+              text: item.text,
+            });
+            fragment.appendChild(abbr);
+
+            lastIndex = item.index + item.text.length;
+          }
+
+          if (lastIndex < word.text.length) {
+            fragment.appendChild(
+              document.createTextNode(word.text.substring(lastIndex))
+            );
+          }
+        } else if (abbrTitle) {
           const abbr = fragment.createEl("abbr", {
             cls: abbrClassName,
             title: abbrTitle,
@@ -72,11 +108,14 @@ function replaceWordWithAbbr(
  * Handle preview makrdown.
  * @param element
  * @param abbrList
+ * @param affixList
+ * @param detectCJK
  */
 export function handlePreviewMarkdown(
   element: HTMLElement,
   abbrList: AbbreviationInstance[],
-  affixList: string[] = []
+  affixList: string[] = [],
+  detectCJK = false
 ) {
   if (isAbbreviationsEmpty(abbrList)) {
     return;
@@ -87,7 +126,7 @@ export function handlePreviewMarkdown(
     const childNodes = ele.childNodes;
     for (let i = 0; i < childNodes.length; i++) {
       const node = childNodes[i];
-      replaceWordWithAbbr(node, abbrList, 1, affixList);
+      replaceWordWithAbbr(node, abbrList, 1, affixList, detectCJK);
     }
   }
 }
@@ -97,12 +136,15 @@ export function handlePreviewMarkdown(
  * @param context
  * @param element
  * @param abbrList
+ * @param affixList
+ * @param detectCJK
  */
 export function handlePreviewMarkdownExtra(
   context: MarkdownPostProcessorContext,
   element: HTMLElement,
   abbrList: AbbreviationInstance[],
-  affixList: string[] = []
+  affixList: string[] = [],
+  detectCJK = false
 ) {
   if (isAbbreviationsEmpty(abbrList)) {
     return;
@@ -130,7 +172,7 @@ export function handlePreviewMarkdownExtra(
     const childNodes = ele.childNodes;
     for (let i = 0; i < childNodes.length; i++) {
       const node = childNodes[i];
-      replaceWordWithAbbr(node, abbrList, lineStart, affixList);
+      replaceWordWithAbbr(node, abbrList, lineStart, affixList, detectCJK);
     }
   }
 }
