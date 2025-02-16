@@ -76,7 +76,7 @@ export default class AbbrPlugin extends Plugin {
         );
         parser.readAbbreviationsFromCache(context.frontmatter);
 
-        const file = this.app.workspace.getActiveFile();
+        const file = this.getActiveFile(context.sourcePath);
         if (file) {
           const sourceContent = await this.app.vault.cachedRead(file);
           sourceContent.split("\n").forEach((line, index) => {
@@ -101,7 +101,7 @@ export default class AbbrPlugin extends Plugin {
               element.classList.contains("table-cell-wrapper") ||
               element.classList.contains("markdown-rendered")
             ) {
-              const file = this.app.workspace.getActiveFile();
+              const file = this.getActiveFile(context.sourcePath);
               if (file) {
                 frontmatter =
                   this.app.metadataCache.getFileCache(file)?.frontmatter;
@@ -130,7 +130,7 @@ export default class AbbrPlugin extends Plugin {
             if (
               this.settings.metadataKeyword &&
               file &&
-              file === this.app.workspace.getActiveFile()
+              file.path === this.getActiveFile()?.path
             ) {
               this.rerenderPreviewMarkdown(file);
             }
@@ -299,7 +299,7 @@ export default class AbbrPlugin extends Plugin {
     };
 
     if (metadataKeyword) {
-      const file = this.app.workspace.getActiveFile();
+      const file = this.getActiveFile();
       if (file) {
         data.frontmatterCache =
           this.app.metadataCache.getFileCache(file)?.frontmatter;
@@ -315,8 +315,16 @@ export default class AbbrPlugin extends Plugin {
       : undefined;
   }
 
+  private getActiveFile(sourcePath?: string) {
+    if (sourcePath) {
+      return this.app.vault.getFileByPath(sourcePath);
+    } else {
+      return this.app.workspace.getActiveFile();
+    }
+  }
+
   private async copyAndFormatContent() {
-    const activeFile = this.app.workspace.getActiveFile();
+    const activeFile = this.getActiveFile();
     if (activeFile) {
       const content = await this.app.vault.cachedRead(activeFile);
       const formatContent = contentFormatter(
@@ -375,7 +383,7 @@ export default class AbbrPlugin extends Plugin {
     let abbrList: AbbreviationInstance[] = [];
     let selectedText = "";
 
-    const file = this.app.workspace.getActiveFile();
+    const file = this.getActiveFile();
     if (file) {
       const frontmatter =
         this.app.metadataCache.getFileCache(file)?.frontmatter;
@@ -426,7 +434,7 @@ export default class AbbrPlugin extends Plugin {
 
     const metadataKeyword = this.settings.metadataKeyword;
     if (metadataKeyword) {
-      const file = this.app.workspace.getActiveFile();
+      const file = this.getActiveFile();
       if (file) {
         this.app.fileManager.processFrontMatter(file, (frontmatter) => {
           if (typeof frontmatter === "object" && frontmatter) {
