@@ -13,6 +13,13 @@ export class AbbreviationInputModal extends Modal {
     this.onSubmit = onSubmit;
   }
 
+  private submitModal(abbr: string, tip: string) {
+    if (abbr) {
+      this.close();
+      this.onSubmit(abbr, tip);
+    }
+  }
+
   onOpen() {
     let abbr = "",
       tip = "";
@@ -35,6 +42,12 @@ export class AbbreviationInputModal extends Modal {
           .setValue(abbr)
           .onChange((value) => {
             abbr = value.trim();
+          })
+          .inputEl.addEventListener("keypress", (evt) => {
+            if (evt.key === "Enter") {
+              abbr = text.getValue().trim();
+              this.submitModal(abbr, tip);
+            }
           });
       })
       .addText((text) => {
@@ -43,6 +56,12 @@ export class AbbreviationInputModal extends Modal {
           .setValue(tip)
           .onChange((value) => {
             tip = value.trim();
+          })
+          .inputEl.addEventListener("keypress", (evt) => {
+            if (evt.key === "Enter") {
+              tip = text.getValue().trim();
+              this.submitModal(abbr, tip);
+            }
           });
       });
 
@@ -51,10 +70,7 @@ export class AbbreviationInputModal extends Modal {
         .setButtonText("Submit")
         .setCta()
         .onClick(() => {
-          if (abbr) {
-            this.close();
-            this.onSubmit(abbr, tip);
-          }
+          this.submitModal(abbr, tip);
         });
     });
   }
