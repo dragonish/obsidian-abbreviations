@@ -67,4 +67,4 @@ jobs:
 
             ## Details
 
-            See: [${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }}](/${{ gitea.repository }}/compare/${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }})
+            See: [${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }}](/compare/${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }})
