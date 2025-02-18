@@ -43,7 +43,7 @@ export class AbbreviationInputModal extends Modal {
           .onChange((value) => {
             abbr = value.trim();
           })
-          .inputEl.addEventListener("keypress", (evt) => {
+          .inputEl.addEventListener("keyup", (evt) => {
             if (evt.key === "Enter") {
               abbr = text.getValue().trim();
               this.submitModal(abbr, tip);
@@ -57,7 +57,7 @@ export class AbbreviationInputModal extends Modal {
           .onChange((value) => {
             tip = value.trim();
           })
-          .inputEl.addEventListener("keypress", (evt) => {
+          .inputEl.addEventListener("keyup", (evt) => {
             if (evt.key === "Enter") {
               tip = text.getValue().trim();
               this.submitModal(abbr, tip);
