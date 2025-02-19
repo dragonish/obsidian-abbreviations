@@ -151,6 +151,16 @@ describe("common/conversion", function () {
     ]);
 
     const conversion4 = new Conversion(abbrList, true);
+    conversion4.handler("test\tCSS", 1, (marks) => {
+      expect(marks).to.deep.eq([
+        {
+          index: 5,
+          text: "CSS",
+          title: "Cascading Style Sheets",
+        },
+      ]);
+    });
+
     const res4: unknown[] = [];
     const content4 = ["```", "CSS", "```"];
     content4.forEach((line, index) => {

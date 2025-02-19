@@ -1,9 +1,10 @@
 import "mocha";
 import { expect } from "chai";
+import { type Parser as ParserType } from "../../common/parser";
 import { loadWithMockedObsidian } from "../helpers/obsidianMock";
 
 const parserModule = loadWithMockedObsidian("../../common/parser");
-const Parser = parserModule.Parser;
+const Parser = parserModule.Parser as typeof ParserType;
 
 describe("common/parser", function () {
   it("Parser.constructor", function () {
@@ -153,6 +154,17 @@ describe("common/parser", function () {
         title: "Cascading Style Sheets",
         type: "extra",
         position: 5,
+      },
+    ]);
+
+    const parser7 = new Parser([], "abbr", { extra: true });
+    parser7.handler("*[CSS]: Cascading\tStyle Sheets", 1);
+    expect(parser7.abbreviations).to.deep.eq([
+      {
+        key: "CSS",
+        title: "Cascading\tStyle Sheets",
+        type: "extra",
+        position: 1,
       },
     ]);
   });

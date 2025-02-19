@@ -85,7 +85,7 @@ export class Parser extends Base {
     }
 
     if (this.state === "") {
-      if (/^[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t)/.test(text)) {
+      if (/^(?:[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t))/.test(text)) {
         // pure code blocks
         return;
       }
