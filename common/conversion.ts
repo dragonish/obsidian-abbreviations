@@ -58,19 +58,16 @@ export class Conversion extends Base {
         this.state = "";
         this.codeBlocks.graveCount = 0;
         this.quotes.level = 0;
-        this.lastEmptyLine = true;
         callback([], false);
         return;
       }
     }
 
     if (this.state === "") {
-      if (this.lastEmptyLine) {
-        if (/^[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t)/.test(text)) {
-          // pure code blocks
-          callback([], false);
-          return;
-        }
+      if (/^[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t)/.test(text)) {
+        // pure code blocks
+        callback([], false);
+        return;
       }
 
       const codeBlocks = text.match(/^([> ]*`{3,})[^`]*$/);

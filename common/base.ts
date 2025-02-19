@@ -5,7 +5,6 @@ export abstract class Base {
 
   protected codeBlocks: CodeBlocks;
   protected quotes: Quotes;
-  protected lastEmptyLine: boolean;
 
   constructor() {
     this.state = "";
@@ -15,7 +14,6 @@ export abstract class Base {
     this.quotes = {
       level: 0,
     };
-    this.lastEmptyLine = true;
   }
 
   isMetadataState() {

@@ -80,17 +80,14 @@ export class Parser extends Base {
         this.state = "";
         this.codeBlocks.graveCount = 0;
         this.quotes.level = 0;
-        this.lastEmptyLine = true;
         return;
       }
     }
 
     if (this.state === "") {
-      if (this.lastEmptyLine) {
-        if (/^[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t)/.test(text)) {
-          // pure code blocks
-          return;
-        }
+      if (/^[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t)/.test(text)) {
+        // pure code blocks
+        return;
       }
 
       const codeBlocks = text.match(/^([> ]*`{3,})[^`]*$/);
