@@ -17,6 +17,8 @@ export class Conversion extends Base {
 
   private skipExtraDefinition: boolean;
 
+  private listState: boolean;
+
   constructor(
     abbreviations: AbbreviationInstance[],
     skipExtraDefinition: boolean,
@@ -29,6 +31,7 @@ export class Conversion extends Base {
     this.skipExtraDefinition = skipExtraDefinition;
     this.affixList = affixList;
     this.detectCJK = detectCJK;
+    this.listState = false;
 
     this.mark = new MarkBuffer();
   }
@@ -58,6 +61,7 @@ export class Conversion extends Base {
         this.state = "";
         this.codeBlocks.graveCount = 0;
         this.quotes.level = 0;
+        this.listState = false;
         callback([], false);
         return;
       }
@@ -65,9 +69,17 @@ export class Conversion extends Base {
 
     if (this.state === "") {
       if (/^(?:[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t))/.test(text)) {
-        // pure code blocks
-        callback([], false);
-        return;
+        if (!this.listState) {
+          // pure code blocks
+          callback([], false);
+          return;
+        }
+      }
+
+      if (text.match(/^(?:[> \t]*[-*+][ ]{1,4}|[> \t]*\d+\.[ ]{1,4})/)) {
+        this.listState = true;
+      } else {
+        this.listState = false;
       }
 
       const codeBlocks = text.match(/^([> ]*`{3,})[^`]*$/);

@@ -161,33 +161,140 @@ describe("common/conversion", function () {
       ]);
     });
 
-    const res4: unknown[] = [];
-    const content4 = ["```", "CSS", "```"];
-    content4.forEach((line, index) => {
-      conversion4.handler(line, index + 1, (marks, isDefinition) => {
-        res4.push({
-          marks,
-          isDefinition,
-        });
-      });
-    });
-    expect(res4).to.deep.eq([
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-    ]);
-
+    const conversion5 = new Conversion(abbrList, true);
     const res5: unknown[] = [];
-    const content5 = ["$$", "CSS", "$$"];
+    const content5 = ["```", "CSS", "```"];
     content5.forEach((line, index) => {
-      conversion4.handler(line, index + 1, (marks, isDefinition) => {
+      conversion5.handler(line, index + 1, (marks, isDefinition) => {
         res5.push({
           marks,
           isDefinition,
         });
       });
     });
-    expect(res4).to.deep.eq([
+    expect(res5).to.deep.eq([
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+    ]);
+
+    const conversion6 = new Conversion(abbrList, true);
+    const res6: unknown[] = [];
+    const content6 = ["$$", "CSS", "$$"];
+    content6.forEach((line, index) => {
+      conversion6.handler(line, index + 1, (marks, isDefinition) => {
+        res6.push({
+          marks,
+          isDefinition,
+        });
+      });
+    });
+    expect(res6).to.deep.eq([
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+    ]);
+
+    const conversion7 = new Conversion(abbrList, true);
+    const res7: unknown[] = [];
+    const content7 = ["- CSS", "    + CSS", "        1. CSS"];
+    content7.forEach((line, index) => {
+      conversion7.handler(line, index + 1, (marks, isDefinition) => {
+        res7.push({
+          marks,
+          isDefinition,
+        });
+      });
+    });
+    expect(res7).to.deep.eq([
+      {
+        marks: [
+          {
+            index: 2,
+            text: "CSS",
+            title: "Cascading Style Sheets",
+          },
+        ],
+        isDefinition: false,
+      },
+      {
+        marks: [
+          {
+            index: 6,
+            text: "CSS",
+            title: "Cascading Style Sheets",
+          },
+        ],
+        isDefinition: false,
+      },
+      {
+        marks: [
+          {
+            index: 11,
+            text: "CSS",
+            title: "Cascading Style Sheets",
+          },
+        ],
+        isDefinition: false,
+      },
+    ]);
+
+    const conversion8 = new Conversion(abbrList, true);
+    const res8: unknown[] = [];
+    const content8 = ["- CSS", "\t+ CSS", "\t* CSS"];
+    content8.forEach((line, index) => {
+      conversion8.handler(line, index + 1, (marks, isDefinition) => {
+        res8.push({
+          marks,
+          isDefinition,
+        });
+      });
+    });
+    expect(res8).to.deep.eq([
+      {
+        marks: [
+          {
+            index: 2,
+            text: "CSS",
+            title: "Cascading Style Sheets",
+          },
+        ],
+        isDefinition: false,
+      },
+      {
+        marks: [
+          {
+            index: 3,
+            text: "CSS",
+            title: "Cascading Style Sheets",
+          },
+        ],
+        isDefinition: false,
+      },
+      {
+        marks: [
+          {
+            index: 3,
+            text: "CSS",
+            title: "Cascading Style Sheets",
+          },
+        ],
+        isDefinition: false,
+      },
+    ]);
+
+    const conversion9 = new Conversion(abbrList, true);
+    const res9: unknown[] = [];
+    const content9 = ["    CSS", "\tCSS", "    \tCSS"];
+    content9.forEach((line, index) => {
+      conversion9.handler(line, index + 1, (marks, isDefinition) => {
+        res9.push({
+          marks,
+          isDefinition,
+        });
+      });
+    });
+    expect(res9).to.deep.eq([
       { marks: [], isDefinition: false },
       { marks: [], isDefinition: false },
       { marks: [], isDefinition: false },
