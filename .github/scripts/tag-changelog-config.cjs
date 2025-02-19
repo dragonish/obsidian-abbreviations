@@ -54,5 +54,6 @@ module.exports = {
     "ci",
     "revert",
     "init",
+    "merge",
   ],
 };
