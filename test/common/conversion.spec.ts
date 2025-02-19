@@ -149,5 +149,38 @@ describe("common/conversion", function () {
         isDefinition: false,
       },
     ]);
+
+    const conversion4 = new Conversion(abbrList, true);
+    const res4: unknown[] = [];
+    const content4 = ["```", "CSS", "```"];
+    content4.forEach((line, index) => {
+      conversion4.handler(line, index + 1, (marks, isDefinition) => {
+        res4.push({
+          marks,
+          isDefinition,
+        });
+      });
+    });
+    expect(res4).to.deep.eq([
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+    ]);
+
+    const res5: unknown[] = [];
+    const content5 = ["$$", "CSS", "$$"];
+    content5.forEach((line, index) => {
+      conversion4.handler(line, index + 1, (marks, isDefinition) => {
+        res5.push({
+          marks,
+          isDefinition,
+        });
+      });
+    });
+    expect(res4).to.deep.eq([
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+    ]);
   });
 });
