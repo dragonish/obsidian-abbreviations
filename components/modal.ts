@@ -42,13 +42,22 @@ export class AbbreviationInputModal extends Modal {
           .setValue(abbr)
           .onChange((value) => {
             abbr = value.trim();
-          })
-          .inputEl.addEventListener("keyup", (evt) => {
-            if (evt.key === "Enter") {
-              abbr = text.getValue().trim();
-              this.submitModal(abbr, tip);
-            }
           });
+
+        let isUserTriggered = false;
+
+        text.inputEl.addEventListener("keydown", (evt) => {
+          if (evt.key === "Enter") {
+            isUserTriggered = true;
+          }
+        });
+
+        text.inputEl.addEventListener("keyup", (evt) => {
+          if (isUserTriggered && evt.key === "Enter") {
+            abbr = text.getValue().trim();
+            this.submitModal(abbr, tip);
+          }
+        });
       })
       .addText((text) => {
         text
