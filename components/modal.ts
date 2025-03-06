@@ -1,36 +1,62 @@
 import { App, Modal, Setting } from "obsidian";
 import { isWord } from "../common/tool";
+import type { AbbreviationInstance } from "../common/data";
 
-type SubmitCallback = (abbr: string, tooltip: string) => void;
+type ActionType = "edit" | "delete";
+type SubmitCallback = (
+  abbr: string,
+  tooltip: string,
+  action?: ActionType
+) => void;
 
 export class AbbreviationInputModal extends Modal {
-  private selectedText: string;
+  private selectedText?: string;
+  private selectedAbbr?: AbbreviationInstance;
   private onSubmit: SubmitCallback;
 
-  constructor(app: App, selectedText: string, onSubmit: SubmitCallback) {
+  constructor(
+    app: App,
+    selectedTextOrAbbr: string | AbbreviationInstance,
+    onSubmit: SubmitCallback
+  ) {
     super(app);
-    this.selectedText = selectedText;
+    if (typeof selectedTextOrAbbr === "string") {
+      this.selectedText = selectedTextOrAbbr;
+    } else {
+      this.selectedAbbr = selectedTextOrAbbr;
+    }
     this.onSubmit = onSubmit;
   }
 
-  private submitModal(abbr: string, tip: string) {
+  private submitModal(abbr: string, tip: string, action?: ActionType) {
     if (abbr) {
       this.close();
-      this.onSubmit(abbr, tip);
+      this.onSubmit(abbr, tip, action);
     }
   }
 
   onOpen() {
     let abbr = "",
       tip = "";
-    const sText = this.selectedText.replace(/\n/, " ").trim();
-    if (isWord(sText)) {
-      abbr = sText;
-    } else {
-      tip = sText;
-    }
 
-    this.setTitle("Add abbreviation");
+    if (this.selectedAbbr) {
+      const { type, key, title } = this.selectedAbbr;
+      this.setTitle(`Edit ${type} abbreviation`);
+
+      abbr = key;
+      tip = title;
+    } else {
+      this.setTitle("Add metadata abbreviation");
+
+      if (this.selectedText) {
+        const sText = this.selectedText.replace(/\n/, " ").trim();
+        if (isWord(sText)) {
+          abbr = sText;
+        } else {
+          tip = sText;
+        }
+      }
+    }
 
     const { contentEl } = this;
 
@@ -55,7 +81,7 @@ export class AbbreviationInputModal extends Modal {
         text.inputEl.addEventListener("keyup", (evt) => {
           if (isUserTriggered && evt.key === "Enter") {
             abbr = text.getValue().trim();
-            this.submitModal(abbr, tip);
+            this.submitModal(abbr, tip, "edit");
           }
         });
       })
@@ -69,17 +95,30 @@ export class AbbreviationInputModal extends Modal {
           .inputEl.addEventListener("keyup", (evt) => {
             if (evt.key === "Enter") {
               tip = text.getValue().trim();
-              this.submitModal(abbr, tip);
+              this.submitModal(abbr, tip, "edit");
             }
           });
       });
 
-    new Setting(contentEl).addButton((btn) => {
+    const buttonSetting = new Setting(contentEl);
+
+    if (this.selectedAbbr) {
+      buttonSetting.addButton((btn) => {
+        btn
+          .setButtonText("Delete")
+          .setWarning()
+          .onClick(() => {
+            this.submitModal(abbr, tip, "delete");
+          });
+      });
+    }
+
+    buttonSetting.addButton((btn) => {
       btn
         .setButtonText("Submit")
         .setCta()
         .onClick(() => {
-          this.submitModal(abbr, tip);
+          this.submitModal(abbr, tip, "edit");
         });
     });
   }

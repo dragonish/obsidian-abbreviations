@@ -31,6 +31,8 @@ import { AbbreviationInputModal } from "./components/modal";
 import { AbbreviationListModal } from "./components/list";
 import {
   calcAbbrListFromFrontmatter,
+  findAbbrIndexFromFrontmatter,
+  findAbbrIndexFromGlobal,
   getAffixList,
   isWord,
 } from "./common/tool";
@@ -160,7 +162,7 @@ export default class AbbrPlugin extends Plugin {
         const keywordState = this.settings.metadataKeyword;
         if (keywordState) {
           if (!checking) {
-            this.showAbbreviationInputModal();
+            this.showAddMetaAbbreviationModal();
           }
           return true;
         }
@@ -367,7 +369,7 @@ export default class AbbrPlugin extends Plugin {
     }
   }
 
-  private showAbbreviationInputModal() {
+  private showAddMetaAbbreviationModal() {
     const editor = this.app.workspace.activeEditor?.editor;
     if (editor) {
       const selectedText = editor.getSelection();
@@ -427,49 +429,186 @@ export default class AbbrPlugin extends Plugin {
   }
 
   private addAbbreviationToFrontmatter(abbr: string, tooltip: string) {
-    if (!isWord(abbr)) {
-      this.sendNotification("Warn: Abbreviation format is incorrect!");
+    try {
+      this.strictCheckAbbreviationFormat(abbr);
+      const metadataKeyword = this.strictGetMetadataKeyword();
+      const file = this.strictGetActiveFile();
+      this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+        if (this.checkFrontmatter(frontmatter)) {
+          const item = `${abbr}: ${tooltip}`;
+          if (Array.isArray(frontmatter[metadataKeyword])) {
+            frontmatter[metadataKeyword].push(item);
+          } else {
+            frontmatter[metadataKeyword] = [item];
+          }
+        }
+      });
+    } catch (err) {
+      this.sendErrorNotification(err);
+    }
+  }
+
+  private modifyAbbreviationInFrontmatter(
+    abbr: AbbreviationInstance,
+    newKey: string,
+    newTitle: string
+  ) {
+    try {
+      this.strictCheckAbbreviationFormat(newKey);
+      const metadataKeyword = this.strictGetMetadataKeyword();
+      const file = this.strictGetActiveFile();
+      this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+        if (this.checkFrontmatter(frontmatter)) {
+          const index = findAbbrIndexFromFrontmatter(
+            abbr,
+            frontmatter,
+            metadataKeyword
+          );
+          if (index > -1) {
+            const item = `${newKey}: ${newTitle}`;
+            (frontmatter[metadataKeyword] as unknown[])[index] = item;
+          } else {
+            this.sendNotFoundWarn();
+          }
+        }
+      });
+    } catch (err) {
+      this.sendErrorNotification(err);
+    }
+  }
+
+  private deleteAbbreviationFromFrontmatter(abbr: AbbreviationInstance) {
+    try {
+      const metadataKeyword = this.strictGetMetadataKeyword();
+      const file = this.strictGetActiveFile();
+      this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+        if (this.checkFrontmatter(frontmatter)) {
+          const index = findAbbrIndexFromFrontmatter(
+            abbr,
+            frontmatter,
+            metadataKeyword
+          );
+          if (index > -1) {
+            (frontmatter[metadataKeyword] as unknown[]).splice(index, 1);
+          }
+        }
+      });
+    } catch (err) {
+      this.sendErrorNotification(err);
+    }
+  }
+
+  private modifyAbbreviationInGlobal(
+    abbr: AbbreviationInstance,
+    newKey: string,
+    newTitle: string
+  ) {
+    if (!isWord(newKey)) {
+      this.sendFormatWarn();
       return;
     }
 
-    const metadataKeyword = this.settings.metadataKeyword;
-    if (metadataKeyword) {
-      const file = this.getActiveFile();
-      if (file) {
-        this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-          if (typeof frontmatter === "object" && frontmatter) {
-            const item = `${abbr}: ${tooltip}`;
-            if (Array.isArray(frontmatter[metadataKeyword])) {
-              frontmatter[metadataKeyword].push(item);
-            } else {
-              frontmatter[metadataKeyword] = [item];
-            }
-          } else {
-            this.sendNotification("Error: Unexpected error!");
-          }
-        });
-      } else {
-        this.sendNotification("Error: No active file found!");
-      }
+    const index = findAbbrIndexFromGlobal(
+      abbr,
+      this.settings.globalAbbreviations
+    );
+    if (index > -1) {
+      this.settings.globalAbbreviations[index] = {
+        key: newKey,
+        title: newTitle,
+      };
+      this.saveSettings();
     } else {
-      this.sendNotification("Error: Metadata keyword is empty!");
+      this.sendNotFoundWarn();
+    }
+  }
+
+  private deleteAbbreviationFromGlobal(abbr: AbbreviationInstance) {
+    const index = findAbbrIndexFromGlobal(
+      abbr,
+      this.settings.globalAbbreviations
+    );
+    if (index > -1) {
+      this.settings.globalAbbreviations.splice(index, 1);
+      this.saveSettings();
     }
   }
 
   private jumpToAbbreviationDefinition(abbr: AbbreviationInstance) {
-    if (abbr.type === "global") {
-      this.showManageAbbreviationsModal();
-    } else {
+    if (abbr.type === "extra") {
       const editor = this.app.workspace.activeEditor?.editor;
       if (editor) {
-        if (abbr.type === "metadata") {
-          editor.setCursor(1); // Always jump to line 2
-        } else if (abbr.type === "extra") {
-          const dest = abbr.position - 1;
-          editor.setCursor(dest >= 0 ? dest : 0);
-        }
+        const dest = abbr.position - 1;
+        editor.setCursor(dest >= 0 ? dest : 0);
       }
+    } else {
+      new AbbreviationInputModal(
+        this.app,
+        abbr,
+        (abbrKey, abbrTitle, action) => {
+          if (action === "delete") {
+            if (abbr.type === "metadata") {
+              this.deleteAbbreviationFromFrontmatter(abbr);
+            } else if (abbr.type === "global") {
+              this.deleteAbbreviationFromGlobal(abbr);
+            }
+          } else if (action === "edit") {
+            if (abbr.type === "metadata") {
+              this.modifyAbbreviationInFrontmatter(abbr, abbrKey, abbrTitle);
+            } else if (abbr.type === "global") {
+              this.modifyAbbreviationInGlobal(abbr, abbrKey, abbrTitle);
+            }
+          }
+        }
+      ).open();
     }
+  }
+
+  private checkFrontmatter(
+    frontmatter: unknown
+  ): frontmatter is Record<string, unknown> {
+    if (typeof frontmatter === "object" && frontmatter) {
+      return true;
+    }
+    this.sendNotification("Error: Unexpected error!");
+    return false;
+  }
+
+  private strictCheckAbbreviationFormat(abbr: string) {
+    if (!isWord(abbr)) {
+      throw new Error("Warn: Abbreviation format is incorrect!");
+    }
+    return;
+  }
+
+  private strictGetMetadataKeyword() {
+    const metadataKeyword = this.settings.metadataKeyword;
+    if (metadataKeyword) {
+      return metadataKeyword;
+    }
+    throw new Error("Error: Metadata keyword is empty!");
+  }
+
+  private strictGetActiveFile() {
+    const file = this.getActiveFile();
+    if (file) {
+      return file;
+    }
+    throw new Error("Error: No active file found!");
+  }
+
+  private sendErrorNotification(err: unknown) {
+    if (err instanceof Error) {
+      this.sendNotification(err.message);
+    }
+  }
+
+  private sendFormatWarn() {
+    this.sendNotification("Warn: Abbreviation format is incorrect!");
+  }
+
+  private sendNotFoundWarn() {
+    this.sendNotification("Warn: No original abbreviation found!");
   }
 
   private sendNotification(message: string) {

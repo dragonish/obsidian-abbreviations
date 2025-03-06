@@ -17,6 +17,8 @@ import {
   queryAbbreviationTitle,
   isAbbreviationsEmpty,
   calcAbbrListFromFrontmatter,
+  findAbbrIndexFromFrontmatter,
+  findAbbrIndexFromGlobal,
 } from "../../common/tool";
 
 describe("common/tool", function () {
@@ -857,5 +859,123 @@ describe("common/tool", function () {
         type: "metadata",
       },
     ]);
+  });
+
+  it("findAbbrIndexFromFrontmatter", function () {
+    const abbr: AbbreviationInstance = {
+      key: "CSS",
+      title: "Cascading Style Sheets",
+      type: "metadata",
+    };
+
+    expect(findAbbrIndexFromFrontmatter(abbr, {}, "abbr")).to.eq(-1);
+
+    const frontmatter1 = {
+      tags: ["Tag", "Test"],
+      abbr: ["HTML: HyperText Markup Language"],
+    };
+    expect(findAbbrIndexFromFrontmatter(abbr, frontmatter1, "abbr")).to.eq(-1);
+
+    const frontmatter2 = {
+      abbr: [
+        "HTML: HyperText Markup Language",
+        { CSS: "Cascading Style Sheets" },
+        "Tag",
+      ],
+    };
+    expect(findAbbrIndexFromFrontmatter(abbr, frontmatter2, "abbr")).to.eq(1);
+
+    const frontmatter3 = {
+      abbr: [
+        "HTML: HyperText Markup Language",
+        "Tag",
+        { CSS: "Cascading Style Sheets" },
+      ],
+    };
+    expect(findAbbrIndexFromFrontmatter(abbr, frontmatter3, "abbr")).to.eq(2);
+
+    const frontmatter4 = {
+      abbr: [
+        "CSS: ",
+        "CSS: Cascading Style Sheets",
+        { CSS: "Cascading Style Sheets" },
+      ],
+    };
+    expect(findAbbrIndexFromFrontmatter(abbr, frontmatter4, "abbr")).to.eq(2);
+
+    const frontmatter5 = {
+      abbr: [
+        "CSS: ",
+        { CSS: "Cascading Style Sheets" },
+        "CSS: Cascading Style Sheets",
+      ],
+    };
+    expect(findAbbrIndexFromFrontmatter(abbr, frontmatter5, "abbr")).to.eq(2);
+  });
+
+  it("findAbbrIndexFromGlobal", function () {
+    const abbr: AbbreviationInstance = {
+      key: "CSS",
+      title: "Cascading Style Sheets",
+      type: "global",
+    };
+
+    expect(findAbbrIndexFromGlobal(abbr, [])).to.eq(-1);
+
+    const globalAbbreviations1 = [
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+      },
+    ];
+    expect(findAbbrIndexFromGlobal(abbr, globalAbbreviations1)).to.eq(-1);
+
+    const globalAbbreviations2 = [
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+      },
+      {
+        key: "CSS",
+        title: "Cascading Style Sheets",
+      },
+      {
+        key: "TAG",
+        title: "",
+      },
+    ];
+    expect(findAbbrIndexFromGlobal(abbr, globalAbbreviations2)).to.eq(1);
+
+    const globalAbbreviations3 = [
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+      },
+      {
+        key: "TAG",
+        title: "",
+      },
+      {
+        key: "CSS",
+        title: "Cascading Style Sheets",
+      },
+    ];
+    expect(findAbbrIndexFromGlobal(abbr, globalAbbreviations3)).to.eq(2);
+
+    const globalAbbreviations4 = [
+      {
+        key: "CSS",
+        title: "",
+      },
+      {
+        key: "CSS",
+        title: "Cascading Style Sheets",
+      },
+      {
+        key: "CSS",
+        title: "Cascading Style Sheets",
+      },
+    ];
+    expect(findAbbrIndexFromGlobal(abbr, globalAbbreviations4)).to.eq(2);
   });
 });

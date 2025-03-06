@@ -502,3 +502,51 @@ export function calcAbbrListFromFrontmatter(
   }
   return abbrList;
 }
+
+/**
+ * Find index of abbreviation from frontmatter.
+ * @param abbr
+ * @param frontmatter
+ * @param keyword
+ * @returns `-1` means not found.
+ */
+export function findAbbrIndexFromFrontmatter(
+  abbr: AbbreviationInstance,
+  frontmatter: Record<string, unknown>,
+  keyword: string
+): number {
+  if (Array.isArray(frontmatter[keyword])) {
+    const list = frontmatter[keyword] as MetadataAbbrType[];
+    let index = list.length - 1;
+    while (index >= 0) {
+      const item = getAbbreviationInstance(list[index]);
+      if (item && item.key === abbr.key && item.title === abbr.title) {
+        break;
+      }
+      index--;
+    }
+    return index;
+  }
+  return -1;
+}
+
+/**
+ * Find index of abbreviation from global abbreviations.
+ * @param abbr
+ * @param globalAbbreviations
+ * @returns `-1` means not found.
+ */
+export function findAbbrIndexFromGlobal(
+  abbr: AbbreviationInstance,
+  globalAbbreviations: AbbreviationInfo[]
+): number {
+  let index = globalAbbreviations.length - 1;
+  while (index >= 0) {
+    const item = globalAbbreviations[index];
+    if (item && item.key === abbr.key && item.title === abbr.title) {
+      break;
+    }
+    index--;
+  }
+  return index;
+}
