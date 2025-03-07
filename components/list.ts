@@ -1,4 +1,4 @@
-import { App, FuzzyMatch, FuzzySuggestModal } from "obsidian";
+import { App, FuzzyMatch, FuzzySuggestModal, renderResults } from "obsidian";
 import { AbbreviationInstance } from "../common/data";
 
 type SelectCallback = (abbr: AbbreviationInstance) => void;
@@ -46,7 +46,12 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
     match: FuzzyMatch<AbbreviationInstance>,
     el: HTMLElement
   ): void {
-    el.createEl("div", { text: `${match.item.key}: ${match.item.title}` });
+    const suggestion = el.createEl("div");
+    renderResults(
+      suggestion,
+      `${match.item.key}: ${match.item.title}`,
+      match.match
+    );
     el.createEl("small", {
       text:
         `type: ${match.item.type}` +
