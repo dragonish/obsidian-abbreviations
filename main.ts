@@ -842,17 +842,21 @@ function manageGlobalAbbreviations(
           })
       )
       .addButton((button) =>
-        button.setButtonText("Delete").onClick(async () => {
-          plugin.settings.globalAbbreviations.splice(index, 1);
-          await plugin.saveSettings();
-          manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
-        })
+        button
+          .setButtonText("Delete")
+          .setWarning()
+          .onClick(async () => {
+            plugin.settings.globalAbbreviations.splice(index, 1);
+            await plugin.saveSettings();
+            manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
+          })
       );
   });
 
   new Setting(containerEl).addButton((button) =>
     button
       .setButtonText("Add")
+      .setCta()
       .setTooltip("Add new abbreviation")
       .onClick(async () => {
         plugin.settings.globalAbbreviations.push({
