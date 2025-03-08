@@ -252,9 +252,7 @@ export default class AbbrPlugin extends Plugin {
   }
 
   private debouncedSaveSettings = debounce(
-    async () => {
-      this.rerenderPreviewMarkdown();
-    },
+    this.rerenderPreviewMarkdown.bind(this),
     1000,
     true
   );
