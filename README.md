@@ -183,7 +183,7 @@ When selected text exists, insert the following content:
 
 ### List abbreviations
 
-List all abbreviations in the current file, then select one and jump to its definition position.
+List all abbreviations in the current file, then select one and jump to its definition position (for *extra*), or edit it directly (for *metadata* or *global*).
 
 ### Manage global abbreviations
 
