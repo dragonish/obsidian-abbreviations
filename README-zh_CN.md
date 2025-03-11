@@ -1,5 +1,7 @@
 # Abbreviations and Acronyms
 
+<p align="center"><a href="./README.md">English</a> | <b>简体中文</b></p>
+
 ## 术语解说
 
 - `Abbreviation（缩写）`本身指的是在使用拼音文字的语言中，对于常用词组（多为专有名词）及少数常用词所采用的简便写法，如以 cm 指代 centimeter，No. 指代 numerō 或 UN 指代 the United Nations等情况，缩写后所得到的词称为`略语`。[^1]类似于汉语中的`简称`，如“四化”指代“四个现代化”。
