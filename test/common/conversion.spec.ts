@@ -299,5 +299,23 @@ describe("common/conversion", function () {
       { marks: [], isDefinition: false },
       { marks: [], isDefinition: false },
     ]);
+
+    const conversion10 = new Conversion(abbrList, true);
+    const res10: unknown[] = [];
+    const content10 = ["````", "```", "CSS", "````"];
+    content10.forEach((line, index) => {
+      conversion10.handler(line, index + 1, (marks, isDefinition) => {
+        res10.push({
+          marks,
+          isDefinition,
+        });
+      });
+    });
+    expect(res10).to.deep.eq([
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+      { marks: [], isDefinition: false },
+    ]);
   });
 });

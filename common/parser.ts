@@ -142,12 +142,14 @@ export class Parser extends Base {
         const endCodeBlocks = text.match(/^([> ]*`{3,})([^`]*)$/);
         if (endCodeBlocks) {
           const level = findCharCount(endCodeBlocks[1], ">");
+          const graveCount = findCharCount(endCodeBlocks[1], "`");
 
           if (level < this.quotes.level) {
             this.quotes.level = level;
-            this.codeBlocks.graveCount = findCharCount(endCodeBlocks[1], "`");
+            this.codeBlocks.graveCount = graveCount;
           } else if (
             level === this.quotes.level &&
+            graveCount >= this.codeBlocks.graveCount &&
             endCodeBlocks[2].trim().length === 0
           ) {
             this.state = "";

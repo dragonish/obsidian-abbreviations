@@ -167,5 +167,26 @@ describe("common/parser", function () {
         position: 1,
       },
     ]);
+
+    const parser8 = new Parser([], "abbr", { extra: true });
+    const content8 = [
+      "````",
+      "```",
+      "*[CSS]: Cascading Style Sheets",
+      "````",
+      "",
+      "*[HTML]: HyperText Markup Language",
+    ];
+    content8.forEach((line, index) => {
+      parser8.handler(line, index + 1);
+    });
+    expect(parser8.abbreviations).to.deep.eq([
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+        type: "extra",
+        position: 6,
+      },
+    ]);
   });
 });
