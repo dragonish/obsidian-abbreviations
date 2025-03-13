@@ -244,6 +244,14 @@ abbr:
 ---
 ```
 
+### Markdown extra syntax
+
+The usage can refer to the [previous text](#markdown-extra-syntax).
+
+In addition, you can show a decorator for extra syntax definitions in the editing view. The content of the decorator can use two variables: `${abbr}` and `${tooltip}`. To introduce certain information of the current definition into the content. For example, for `→ ${abbr}`:
+
+![decorator-example](images/definition-decorator.jpg)
+
 ### Suffixes
 
 This plugin allows match supplementary suffixes for abbreviations. For example, it can make the `OS` match other `OSes`. More information can see: [#3](https://github.com/dragonish/obsidian-abbreviations/issues/3).
