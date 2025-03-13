@@ -16,6 +16,7 @@ import type {
   AbbreviationInstance,
   AbbrPluginSettings,
   AbbrPluginData,
+  OpacityOptions,
 } from "./common/data";
 import {
   AbbrViewPlugin,
@@ -44,13 +45,16 @@ interface ObsidianEditor extends Editor {
 }
 
 const DEFAULT_SETTINGS: AbbrPluginSettings = {
-  useMarkdownExtraSyntax: false,
   metadataKeyword: "abbr",
   detectCJK: false,
   detectAffixes: false,
   affixes: "",
   markInSourceMode: false,
   globalAbbreviations: [],
+  useMarkdownExtraSyntax: false,
+  useExtraDefinitionDecorator: false,
+  extraDefinitionDecoratorOpacity: 20,
+  extraDefinitionDecoratorContent: "→ ${abbr}",
 };
 
 export default class AbbrPlugin extends Plugin {
@@ -651,30 +655,6 @@ class AbbrSettingTab extends PluginSettingTab {
     );
     metadataKeywordSetting.descEl.appendChild(metadataKeywordDesc);
 
-    //* useMarkdownExtraSyntax
-    const useMarkdownExtraSyntaxSetting = new Setting(containerEl)
-      .setName("Enable Markdown Extra syntax support (Experimental)")
-      .addToggle((toggle) => {
-        toggle
-          .setValue(this.plugin.settings.useMarkdownExtraSyntax)
-          .onChange(async (value) => {
-            this.plugin.settings.useMarkdownExtraSyntax = value;
-            await this.plugin.saveSettings();
-          });
-      });
-
-    const useMarkdownExtraSyntaxDesc = document.createDocumentFragment();
-    useMarkdownExtraSyntaxDesc.append(
-      "Toggle this setting to enable or disable the feature. Definition format: ",
-      createEl("b", {
-        text: "*[W3C]: World Wide Web Consortium",
-      }),
-      "."
-    );
-    useMarkdownExtraSyntaxSetting.descEl.appendChild(
-      useMarkdownExtraSyntaxDesc
-    );
-
     //* markInSourceMode
     new Setting(containerEl)
       .setName("Mark abbreviations in Source mode")
@@ -735,6 +715,80 @@ class AbbrSettingTab extends PluginSettingTab {
     );
     globalAbbreviationsSetting.descEl.appendChild(globalAbbreviationsDesc);
 
+    new Setting(containerEl).setName("Markdown extra syntax").setHeading();
+
+    //* useMarkdownExtraSyntax
+    const useMarkdownExtraSyntaxSetting = new Setting(containerEl)
+      .setName("Enable Markdown Extra syntax support")
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.useMarkdownExtraSyntax)
+          .onChange(async (value) => {
+            this.plugin.settings.useMarkdownExtraSyntax = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    const useMarkdownExtraSyntaxDesc = document.createDocumentFragment();
+    useMarkdownExtraSyntaxDesc.append(
+      "Toggle this setting to enable or disable the feature. Definition format: ",
+      createEl("b", {
+        text: "*[W3C]: World Wide Web Consortium",
+      }),
+      "."
+    );
+    useMarkdownExtraSyntaxSetting.descEl.appendChild(
+      useMarkdownExtraSyntaxDesc
+    );
+
+    //* useExtraDefinitionDecorator
+    new Setting(containerEl)
+      .setName("Enable extra definition decorator")
+      .setDesc(
+        "Display a decorator at the end of the extra definition that this is an abbreviation definition."
+      )
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.useExtraDefinitionDecorator)
+          .onChange(async (value) => {
+            this.plugin.settings.useExtraDefinitionDecorator = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    //* extraDefinitionDecoratorOpacity
+    new Setting(containerEl)
+      .setName("Extra definition decorator opacity")
+      .setDesc(
+        "Opacity of the extra definition decorator. The value is the form of percentage."
+      )
+      .addSlider((slider) => {
+        slider
+          .setLimits(10, 100, 10)
+          .setValue(this.plugin.settings.extraDefinitionDecoratorOpacity)
+          .onChange(async (value) => {
+            this.plugin.settings.extraDefinitionDecoratorOpacity =
+              this.isOpacityValue(value) ? value : 20;
+            await this.plugin.saveSettings();
+          })
+          .setDynamicTooltip();
+      });
+
+    //* extraDefinitionDecoratorContent
+    new Setting(containerEl)
+      .setName("Extra definition decorator content")
+      .setDesc(
+        "Content of the extra definition decorator. Two variables can be used: ${abbr} and ${tooltip}. To introduce certain information of the current definition into the content."
+      )
+      .addText((text) => {
+        text
+          .setValue(this.plugin.settings.extraDefinitionDecoratorContent)
+          .onChange(async (value) => {
+            this.plugin.settings.extraDefinitionDecoratorContent = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
     new Setting(containerEl).setName("Suffixes").setHeading();
 
     //* detectAffixes
@@ -786,6 +840,13 @@ class AbbrSettingTab extends PluginSettingTab {
           });
         });
     });
+  }
+
+  private isOpacityValue(value: number): value is OpacityOptions {
+    if (value >= 10 && value <= 100 && value % 10 === 0) {
+      return true;
+    }
+    return false;
   }
 }
 

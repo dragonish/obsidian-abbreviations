@@ -1,4 +1,4 @@
-import type { AbbreviationInstance, MarkItem } from "./data";
+import type { AbbreviationInfo, AbbreviationInstance, MarkItem } from "./data";
 import { METADATA_BORDER } from "./data";
 import { Base } from "./base";
 import { MarkBuffer } from "./mark";
@@ -47,11 +47,11 @@ export class Conversion extends Base {
   handler(
     text: string,
     lineStart: number,
-    callback: (marks: MarkItem[], isDefinition: boolean) => void
+    callback: (marks: MarkItem[], definition: AbbreviationInfo | null) => void
   ): void {
     if (lineStart === 1 && text === METADATA_BORDER) {
       this.state = "metadata";
-      callback([], false);
+      callback([], null);
       return;
     }
 
@@ -62,7 +62,7 @@ export class Conversion extends Base {
         this.codeBlocks.graveCount = 0;
         this.quotes.level = 0;
         this.listState = false;
-        callback([], false);
+        callback([], null);
         return;
       }
     }
@@ -71,7 +71,7 @@ export class Conversion extends Base {
       if (/^(?:[ ]{4,}|\t|[> ]+(?:[ ]{5,}|\t))/.test(text)) {
         if (!this.listState) {
           // pure code blocks
-          callback([], false);
+          callback([], null);
           return;
         }
       }
@@ -87,7 +87,7 @@ export class Conversion extends Base {
         this.state = "codeBlocks";
         this.codeBlocks.graveCount = findCharCount(codeBlocks[1], "`");
         this.quotes.level = findCharCount(codeBlocks[1], ">");
-        callback([], false);
+        callback([], null);
         return;
       }
 
@@ -95,14 +95,14 @@ export class Conversion extends Base {
       if (math && !math[2].trim().endsWith("$$")) {
         this.state = "math";
         this.quotes.level = findCharCount(math[1], ">");
-        callback([], false);
+        callback([], null);
         return;
       }
 
       if (this.skipExtraDefinition) {
         const parseRes = parseExtraAbbreviation(text);
         if (parseRes) {
-          callback([], true);
+          callback([], parseRes);
           return;
         }
       }
@@ -134,13 +134,13 @@ export class Conversion extends Base {
           });
         }
       });
-      callback(results, false);
+      callback(results, null);
       return;
     } else {
       if (this.state === "metadata") {
         if (text === METADATA_BORDER) {
           //? Early callback, can read the row's metadata state in the callback
-          callback([], false);
+          callback([], null);
           this.state = "";
           return;
         }
@@ -174,7 +174,7 @@ export class Conversion extends Base {
         }
       }
     }
-    callback([], false);
+    callback([], null);
     return;
   }
 }

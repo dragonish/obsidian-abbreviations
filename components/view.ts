@@ -13,6 +13,8 @@ import {
   abbrClassName,
   extraAsteriskClassName,
   extraDefinitionLineClassName,
+  previewDecoratorClassName,
+  sourceDecoratorClassName,
   METADATA_BORDER,
 } from "../common/data";
 import { Parser } from "../common/parser";
@@ -127,12 +129,29 @@ export class AbbrViewPlugin implements PluginValue {
           const line = doc.line(i);
           const lineText = line.text;
 
-          conversion.handler(lineText, i, (markWords, isDefinition) => {
-            if (isDefinition) {
+          conversion.handler(lineText, i, (markWords, definition) => {
+            if (definition) {
+              const attributes: { [key: string]: string } = {
+                class: pluginData.useExtraDefinitionDecorator
+                  ? `${extraDefinitionLineClassName} ${
+                      isLivePreviwMode
+                        ? previewDecoratorClassName
+                        : sourceDecoratorClassName
+                    }`
+                  : extraDefinitionLineClassName,
+              };
+              if (pluginData.useExtraDefinitionDecorator) {
+                attributes["data-abbreviation-decorator"] =
+                  pluginData.extraDefinitionDecoratorContent
+                    .replaceAll("${abbr}", definition.key)
+                    .replaceAll("${tooltip}", definition.title);
+                attributes[
+                  "data-decorator-opacity"
+                ] = `${pluginData.extraDefinitionDecoratorOpacity}%`;
+              }
+
               const lineDeco = Decoration.line({
-                attributes: {
-                  class: extraDefinitionLineClassName,
-                },
+                attributes,
               });
               builder.add(line.from, line.from, lineDeco);
 

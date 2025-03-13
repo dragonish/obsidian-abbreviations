@@ -79,7 +79,7 @@ export function contentFormatter(
     const lineText = lines[i];
     const lineNum = i + 1;
 
-    conversion.handler(lineText, lineNum, (markWords, isDefinition) => {
+    conversion.handler(lineText, lineNum, (markWords, definition) => {
       if (conversion.isMetadataState()) {
         //* Always excludes metadata content
         return;
@@ -97,7 +97,7 @@ export function contentFormatter(
         return;
       }
 
-      if (isDefinition) {
+      if (definition) {
         // Not includes definition line
         lastDefinitionState = true;
         return;

@@ -2,7 +2,10 @@ p.abbreviations-plugin-extra-definition {
   display: none;
 }
 
-:not(.cm-active)
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line:not(.cm-active):not(
+    :has(.cm-formatting)
+  )
   > .cm-em
   > .abbreviations-plugin-extra-asterisk:not(.cm-formatting) {
   display: none;
@@ -10,4 +13,133 @@ p.abbreviations-plugin-extra-definition {
 
 .abbreviations-plugin-extra-definition-line .cm-em {
   font-style: normal;
+}
+
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  content: attr(data-abbreviation-decorator);
+  opacity: 20%;
+  margin-inline-start: 10px;
+}
+
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="10%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 10%;
+}
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="20%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 20%;
+}
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="30%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 30%;
+}
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="40%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 40%;
+}
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="50%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 50%;
+}
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="60%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 60%;
+}
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="70%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 70%;
+}
+.ab.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="80%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 80%;
+}
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="90%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 90%;
+}
+.is-live-preview
+  .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="100%"]:not(
+    .cm-active
+  ):not(:has(.cm-formatting))::after {
+  opacity: 100%;
+}
+
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator:not(
+    .cm-active
+  )::after {
+  content: attr(data-abbreviation-decorator);
+  opacity: 20%;
+  margin-inline-start: 10px;
+}
+
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="10%"]:not(
+    .cm-active
+  )::after {
+  opacity: 10%;
+}
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="20%"]:not(
+    .cm-active
+  )::after {
+  opacity: 20%;
+}
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="30%"]:not(
+    .cm-active
+  )::after {
+  opacity: 30%;
+}
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="40%"]:not(
+    .cm-active
+  )::after {
+  opacity: 40%;
+}
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="50%"]:not(
+    .cm-active
+  )::after {
+  opacity: 50%;
+}
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="60%"]:not(
+    .cm-active
+  )::after {
+  opacity: 60%;
+}
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="70%"]:not(
+    .cm-active
+  )::after {
+  opacity: 70%;
+}
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="80%"]:not(
+    .cm-active
+  )::after {
+  opacity: 80%;
+}
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="90%"]:not(
+    .cm-active
+  )::after {
+  opacity: 90%;
+}
+.abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="100%"]:not(
+    .cm-active
+  )::after {
+  opacity: 100%;
 }

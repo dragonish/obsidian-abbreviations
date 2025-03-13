@@ -27,18 +27,18 @@ describe("common/conversion", function () {
     const conversion1 = new Conversion(abbrList, true);
     const res1: unknown[] = [];
     content.forEach((line, index) => {
-      conversion1.handler(line, index + 1, (marks, isDefinition) =>
+      conversion1.handler(line, index + 1, (marks, definition) =>
         res1.push({
           marks,
-          isDefinition,
+          definition,
         })
       );
     });
     expect(res1).to.deep.eq([
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
       {
         marks: [
           {
@@ -47,9 +47,15 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
-      { marks: [], isDefinition: true },
+      {
+        marks: [],
+        definition: {
+          key: "TEST",
+          title: "CSS",
+        },
+      },
       {
         marks: [
           {
@@ -58,27 +64,33 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
-      { marks: [], isDefinition: true },
+      {
+        marks: [],
+        definition: {
+          key: "CSS",
+          title: "Cross Site Scripting",
+        },
+      },
     ]);
 
     const conversion2 = new Conversion(abbrList, false);
     const res2: unknown[] = [];
     content.forEach((line, index) => {
-      conversion2.handler(line, index + 1, (marks, isDefinition) =>
+      conversion2.handler(line, index + 1, (marks, definition) =>
         res2.push({
           marks,
-          isDefinition,
+          definition,
         })
       );
       res2.push();
     });
     expect(res2).to.deep.eq([
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
       {
         marks: [
           {
@@ -87,7 +99,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
       {
         marks: [
@@ -97,7 +109,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
       {
         marks: [
@@ -107,27 +119,27 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
-      { marks: [], isDefinition: false },
+      { marks: [], definition: null },
     ]);
 
     const conversion3 = new Conversion(abbrList, true, ["es"]);
     const res3: unknown[] = [];
     const content3 = ["---", "note:", "  - CSS: Test", "---", "CSS", "CSSes"];
     content3.forEach((line, index) => {
-      conversion3.handler(line, index + 1, (marks, isDefinition) =>
+      conversion3.handler(line, index + 1, (marks, definition) =>
         res3.push({
           marks,
-          isDefinition,
+          definition,
         })
       );
     });
     expect(res3).to.deep.eq([
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
       {
         marks: [
           {
@@ -136,7 +148,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
       {
         marks: [
@@ -146,7 +158,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
     ]);
 
@@ -165,44 +177,44 @@ describe("common/conversion", function () {
     const res5: unknown[] = [];
     const content5 = ["```", "CSS", "```"];
     content5.forEach((line, index) => {
-      conversion5.handler(line, index + 1, (marks, isDefinition) => {
+      conversion5.handler(line, index + 1, (marks, definition) => {
         res5.push({
           marks,
-          isDefinition,
+          definition,
         });
       });
     });
     expect(res5).to.deep.eq([
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
     ]);
 
     const conversion6 = new Conversion(abbrList, true);
     const res6: unknown[] = [];
     const content6 = ["$$", "CSS", "$$"];
     content6.forEach((line, index) => {
-      conversion6.handler(line, index + 1, (marks, isDefinition) => {
+      conversion6.handler(line, index + 1, (marks, definition) => {
         res6.push({
           marks,
-          isDefinition,
+          definition,
         });
       });
     });
     expect(res6).to.deep.eq([
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
     ]);
 
     const conversion7 = new Conversion(abbrList, true);
     const res7: unknown[] = [];
     const content7 = ["- CSS", "    + CSS", "        1. CSS"];
     content7.forEach((line, index) => {
-      conversion7.handler(line, index + 1, (marks, isDefinition) => {
+      conversion7.handler(line, index + 1, (marks, definition) => {
         res7.push({
           marks,
-          isDefinition,
+          definition,
         });
       });
     });
@@ -215,7 +227,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
       {
         marks: [
@@ -225,7 +237,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
       {
         marks: [
@@ -235,7 +247,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
     ]);
 
@@ -243,10 +255,10 @@ describe("common/conversion", function () {
     const res8: unknown[] = [];
     const content8 = ["- CSS", "\t+ CSS", "\t* CSS"];
     content8.forEach((line, index) => {
-      conversion8.handler(line, index + 1, (marks, isDefinition) => {
+      conversion8.handler(line, index + 1, (marks, definition) => {
         res8.push({
           marks,
-          isDefinition,
+          definition,
         });
       });
     });
@@ -259,7 +271,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
       {
         marks: [
@@ -269,7 +281,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
       {
         marks: [
@@ -279,7 +291,7 @@ describe("common/conversion", function () {
             title: "Cascading Style Sheets",
           },
         ],
-        isDefinition: false,
+        definition: null,
       },
     ]);
 
@@ -287,35 +299,35 @@ describe("common/conversion", function () {
     const res9: unknown[] = [];
     const content9 = ["    CSS", "\tCSS", "    \tCSS"];
     content9.forEach((line, index) => {
-      conversion9.handler(line, index + 1, (marks, isDefinition) => {
+      conversion9.handler(line, index + 1, (marks, definition) => {
         res9.push({
           marks,
-          isDefinition,
+          definition,
         });
       });
     });
     expect(res9).to.deep.eq([
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
     ]);
 
     const conversion10 = new Conversion(abbrList, true);
     const res10: unknown[] = [];
     const content10 = ["````", "```", "CSS", "````"];
     content10.forEach((line, index) => {
-      conversion10.handler(line, index + 1, (marks, isDefinition) => {
+      conversion10.handler(line, index + 1, (marks, definition) => {
         res10.push({
           marks,
-          isDefinition,
+          definition,
         });
       });
     });
     expect(res10).to.deep.eq([
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
-      { marks: [], isDefinition: false },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
+      { marks: [], definition: null },
     ]);
   });
 });
