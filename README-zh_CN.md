@@ -36,7 +36,7 @@ abbr:
 
 ---
 
-<span id="refs">在插件设置中</span>启用`Enable Markdown Extra syntax support (Experimental)`选项后，你可以在笔记正文中使用Markdown扩展语法在笔记的任何位置添加`定义语句`，或是执行命令面板中的`Abbreviations and Acronyms：Insert extra definition`命令将选中的文本转化为`略语`，建议在定义语句的前后各空一行，一旦添加成功，则直到下一处`定义语句`为止，该`略语`都将指向这里所赋予的定义，`定义语句`只会显示在`实时渲染模式`和`源码模式`中，不会显示在`阅读模式`中[^2]：
+<span id="refs">在插件设置中</span>启用`Enable Markdown Extra syntax support`选项后，你可以在笔记正文中使用Markdown扩展语法在笔记的任何位置添加`定义语句`，或是执行命令面板中的`Abbreviations and Acronyms：Insert extra definition`命令将选中的文本转化为`略语`，建议在定义语句的前后各空一行，一旦添加成功，则直到下一处`定义语句`为止，该`略语`都将指向这里所赋予的定义，`定义语句`只会显示在`实时渲染模式`和`源码模式`中，不会显示在`阅读模式`中[^2]：
 
 ```
 *[W3C]: World Wide Web Consortium
@@ -77,7 +77,7 @@ RAM.
 ## 插件选项
 
 - `Metadata keyword`：在空白栏处填入的单词将被视为用来存放`略语`的`属性名称`。
-- `Enable Markdown Extra syntax support (Experimental)`：启用该选项后，则可使用Markdown扩展语法，[详见上文](#refs)。
+- `Enable Markdown Extra syntax support`：启用该选项后，则可使用Markdown扩展语法，[详见上文](#refs)。
 - `Mark abbreviations in Source mode`：启用该选项后，在`源码模式`中`略语`也会被添加下划线。
 - `Enable abbreviation detection for languages not separated by spaces`：启用该选项后，插件将侦测以中日韩等不以空格分隔词语的语言写成的`略语`，例：
 

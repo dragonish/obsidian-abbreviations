@@ -58,9 +58,9 @@ abbr:
 ### Markdown Extra syntax
 
 > [!NOTE]
-> This feature is experimental. Currently, there is no unified syntax specification, and the implementation of this plugin is similar to [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/#abbr).
+> Currently, there is no unified syntax specification, and the implementation of this plugin is similar to [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/#abbr).
 
-You need to enable "Enable Markdown Extra syntax support (Experimental)" in the plugin settings to activate this feature.
+You need to enable "Enable Markdown Extra syntax support" in the plugin settings to activate this feature.
 
 Gets the abbreviations by reading the specified format in the note, and automatically render the abbreviations in the note content.
 
@@ -167,7 +167,7 @@ Using style sheets, you can keep your `CSS` presentation layer and `HTML` conten
 
 ### Insert extra definition
 
-*This command is only allowed after enabling the "Enable Markdown Extra syntax support (Experimental)" setting.*
+*This command is only allowed after enabling the "Enable Markdown Extra syntax support" setting.*
 
 Insert definition of Markdown Extra syntax at current cursor position in activity editor.
 
