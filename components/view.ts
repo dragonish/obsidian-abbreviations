@@ -12,6 +12,7 @@ import type { AbbrPluginData } from "../common/data";
 import {
   abbrClassName,
   extraAsteriskClassName,
+  extraDefinitionLineClassName,
   METADATA_BORDER,
 } from "../common/data";
 import { Parser } from "../common/parser";
@@ -128,6 +129,13 @@ export class AbbrViewPlugin implements PluginValue {
 
           conversion.handler(lineText, i, (markWords, isDefinition) => {
             if (isDefinition) {
+              const lineDeco = Decoration.line({
+                attributes: {
+                  class: extraDefinitionLineClassName,
+                },
+              });
+              builder.add(line.from, line.from, lineDeco);
+
               if (isLivePreviwMode) {
                 //? Hide the asterisks in continuous definition rows in the live preview.
                 const deco = Decoration.mark({

@@ -7,3 +7,7 @@ p.abbreviations-plugin-extra-definition {
   > .abbreviations-plugin-extra-asterisk:not(.cm-formatting) {
   display: none;
 }
+
+.abbreviations-plugin-extra-definition-line .cm-em {
+  font-style: normal;
+}
