@@ -1,15 +1,10 @@
 import { MarkdownPostProcessorContext } from "obsidian";
 import type { AbbreviationInstance } from "../common/data";
-import {
-  abbrClassName,
-  extraDefinitionClassName,
-  elementListSelector,
-} from "../common/data";
+import { abbrClassName, elementListSelector } from "../common/data";
 import {
   getWords,
   queryAbbreviationTitle,
   isAbbreviationsEmpty,
-  isExtraDefinitions,
 } from "../common/tool";
 
 /**
@@ -134,14 +129,14 @@ export function handlePreviewMarkdown(
 /**
  * Handle preview makrdown (extra version).
  * @param context
- * @param element
+ * @param eleList
  * @param abbrList
  * @param affixList
  * @param detectCJK
  */
 export function handlePreviewMarkdownExtra(
   context: MarkdownPostProcessorContext,
-  element: HTMLElement,
+  eleList: HTMLElement[],
   abbrList: AbbreviationInstance[],
   affixList: string[] = [],
   detectCJK = false
@@ -150,22 +145,7 @@ export function handlePreviewMarkdownExtra(
     return;
   }
 
-  const pList = element.findAll(".markdown-preview-section > .el-p > p");
-  for (const p of pList) {
-    if (p.textContent && isExtraDefinitions(p.textContent)) {
-      p.classList.add(extraDefinitionClassName);
-    }
-  }
-
-  const eleList = element.findAll(elementListSelector);
   for (const ele of eleList) {
-    if (
-      ele.nodeName === "P" &&
-      ele.classList.contains(extraDefinitionClassName)
-    ) {
-      continue;
-    }
-
     const sectionInfo = context.getSectionInfo(ele);
     const lineStart = sectionInfo?.lineStart || 1;
 

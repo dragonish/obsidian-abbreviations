@@ -18,6 +18,7 @@ import type {
   AbbrPluginData,
   OpacityOptions,
 } from "./common/data";
+import { elementListSelector, extraDefinitionClassName } from "./common/data";
 import {
   AbbrViewPlugin,
   abbrDecorationsField,
@@ -36,6 +37,7 @@ import {
   findAbbrIndexFromGlobal,
   getAffixList,
   isWord,
+  isExtraDefinitions,
 } from "./common/tool";
 import { Parser } from "./common/parser";
 import { contentFormatter } from "./common/format";
@@ -73,6 +75,27 @@ export default class AbbrPlugin extends Plugin {
     // Register markdown post processor
     this.registerMarkdownPostProcessor(async (element, context) => {
       if (this.settings.useMarkdownExtraSyntax) {
+        const pList = element.findAll(".el-p > p");
+        for (const p of pList) {
+          if (p.textContent && isExtraDefinitions(p.textContent)) {
+            p.classList.add(extraDefinitionClassName);
+          }
+        }
+
+        const eleList = element.findAll(elementListSelector);
+        if (eleList.length === 0) {
+          return;
+        }
+
+        const filterEleList = eleList.filter(
+          (ele) =>
+            ele.nodeName !== "P" ||
+            !ele.classList.contains(extraDefinitionClassName)
+        );
+        if (filterEleList.length === 0) {
+          return;
+        }
+
         const parser = new Parser(
           this.settings.globalAbbreviations,
           this.settings.metadataKeyword,
@@ -92,7 +115,7 @@ export default class AbbrPlugin extends Plugin {
 
         handlePreviewMarkdownExtra(
           context,
-          element,
+          filterEleList,
           parser.abbreviations,
           this.getAffixList(),
           this.settings.detectCJK
