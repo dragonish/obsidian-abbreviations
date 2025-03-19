@@ -1,6 +1,6 @@
 import { MarkdownPostProcessorContext } from "obsidian";
 import type { AbbreviationInstance } from "../common/data";
-import { abbrClassName, elementListSelector } from "../common/data";
+import { abbrClassName } from "../common/data";
 import {
   getWords,
   queryAbbreviationTitle,
@@ -101,13 +101,13 @@ function replaceWordWithAbbr(
 
 /**
  * Handle preview makrdown.
- * @param element
+ * @param eleList
  * @param abbrList
  * @param affixList
  * @param detectCJK
  */
 export function handlePreviewMarkdown(
-  element: HTMLElement,
+  eleList: HTMLElement[],
   abbrList: AbbreviationInstance[],
   affixList: string[] = [],
   detectCJK = false
@@ -116,7 +116,6 @@ export function handlePreviewMarkdown(
     return;
   }
 
-  const eleList = element.findAll(elementListSelector);
   for (const ele of eleList) {
     const childNodes = ele.childNodes;
     for (let i = 0; i < childNodes.length; i++) {

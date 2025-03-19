@@ -15,6 +15,7 @@ import {
   extraDefinitionLineClassName,
   previewDecoratorClassName,
   sourceDecoratorClassName,
+  elementListSelector,
   METADATA_BORDER,
 } from "../common/data";
 import { Parser } from "../common/parser";
@@ -192,7 +193,7 @@ export class AbbrViewPlugin implements PluginValue {
       //? Render Tables and Callouts
       //TODO Unable to obtain the corresponding row number in the rendered Table and Callout views.
       handlePreviewMarkdown(
-        view.dom,
+        view.dom.findAll(elementListSelector),
         parser.abbreviations,
         pluginData.suffixes,
         pluginData.detectCJK

@@ -121,8 +121,12 @@ export default class AbbrPlugin extends Plugin {
           this.settings.detectCJK
         );
       } else {
-        let frontmatter: undefined | FrontMatterCache = context.frontmatter;
+        const eleList = element.findAll(elementListSelector);
+        if (eleList.length === 0) {
+          return;
+        }
 
+        let frontmatter: undefined | FrontMatterCache = context.frontmatter;
         if (this.settings.metadataKeyword) {
           if (!frontmatter) {
             //? It may be Tables or Callouts rendered in Live Preview.
@@ -141,7 +145,7 @@ export default class AbbrPlugin extends Plugin {
 
         const abbrList = this.getAbbrList(frontmatter);
         handlePreviewMarkdown(
-          element,
+          eleList,
           abbrList,
           this.getAffixList(),
           this.settings.detectCJK
