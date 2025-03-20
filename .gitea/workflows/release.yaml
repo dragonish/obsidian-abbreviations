@@ -46,7 +46,7 @@ jobs:
           zip "./release/${plugin_name}_v${{ steps.git_tags.outputs.current }}.zip" "main.js" "styles.css" "manifest.json"
       - name: Create changelog text
         id: changelog_text
-        uses: dragonish/tag-changelog@7ec9e81e765a457f012bf0747f7a5a60831899e2
+        uses: loopwerk/tag-changelog@v1
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           config_file: ../.gitea/scripts/tag-changelog-config.cjs
