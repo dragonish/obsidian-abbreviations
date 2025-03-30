@@ -66,7 +66,7 @@ p.abbreviations-plugin-extra-definition {
   ):not(:has(.cm-formatting))::after {
   opacity: 70%;
 }
-.ab.is-live-preview
+.is-live-preview
   .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator[data-decorator-opacity="80%"]:not(
     .cm-active
   ):not(:has(.cm-formatting))::after {
