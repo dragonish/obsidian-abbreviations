@@ -1,7 +1,5 @@
 # Abbreviations and Acronyms
 
-> Obsidian Plugin
-
 <p align="center"><b>English</b> | <a href="./README-zh_CN.md">简体中文</a></p>
 
 ## Introduction
