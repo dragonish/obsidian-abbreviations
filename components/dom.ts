@@ -41,7 +41,7 @@ function replaceWordWithAbbr(
 
   const text = node.textContent;
   if (text) {
-    const fragment = document.createDocumentFragment();
+    const fragment = createFragment();
 
     const words = getWords(text);
     words.forEach((word) => {

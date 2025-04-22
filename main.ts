@@ -671,7 +671,7 @@ class AbbrSettingTab extends PluginSettingTab {
           })
       );
 
-    const metadataKeywordDesc = document.createDocumentFragment();
+    const metadataKeywordDesc = createFragment();
     metadataKeywordDesc.append(
       "The key name that reads the abbreviation information from the ",
       createEl("a", {
@@ -711,7 +711,7 @@ class AbbrSettingTab extends PluginSettingTab {
           });
       });
 
-    const detectCJKDesc = document.createDocumentFragment();
+    const detectCJKDesc = createFragment();
     detectCJKDesc.append(
       "Detect abbreviations in languages that do not use spaces for word segmentation, such as ",
       createEl("abbr", {
@@ -731,7 +731,7 @@ class AbbrSettingTab extends PluginSettingTab {
         });
       });
 
-    const globalAbbreviationsDesc = document.createDocumentFragment();
+    const globalAbbreviationsDesc = createFragment();
     globalAbbreviationsDesc.append(
       "Configure global abbreviations, but their priority is lower than ",
       createEl("a", {
@@ -756,7 +756,7 @@ class AbbrSettingTab extends PluginSettingTab {
           });
       });
 
-    const useMarkdownExtraSyntaxDesc = document.createDocumentFragment();
+    const useMarkdownExtraSyntaxDesc = createFragment();
     useMarkdownExtraSyntaxDesc.append(
       "Toggle this setting to enable or disable the feature. Definition format: ",
       createEl("b", {
@@ -844,7 +844,7 @@ class AbbrSettingTab extends PluginSettingTab {
           });
       });
 
-    const affixesDesc = document.createDocumentFragment();
+    const affixesDesc = createFragment();
     affixesDesc.append(
       "The list content uses comma-separated string, for example: ",
       createEl("b", {
