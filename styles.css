@@ -1,3 +1,7 @@
+body {
+  --abbreviations-definition-decorator-margin: var(--size-4-2);
+}
+
 p.abbreviations-plugin-extra-definition {
   display: none;
 }
@@ -21,7 +25,7 @@ p.abbreviations-plugin-extra-definition {
   ):not(:has(.cm-formatting))::after {
   content: attr(data-abbreviation-decorator);
   opacity: 20%;
-  margin-inline-start: var(--size-4-2);
+  margin-inline-start: var(--abbreviations-definition-decorator-margin);
 }
 
 .is-live-preview
@@ -90,7 +94,7 @@ p.abbreviations-plugin-extra-definition {
   )::after {
   content: attr(data-abbreviation-decorator);
   opacity: 20%;
-  margin-inline-start: var(--size-4-2);
+  margin-inline-start: var(--abbreviations-definition-decorator-margin);
 }
 
 .abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator[data-decorator-opacity="10%"]:not(

@@ -250,6 +250,14 @@ In addition, you can show a decorator for extra syntax definitions in the editin
 
 ![decorator-example](images/definition-decorator.jpg)
 
+The CSS variable `--abbreviations-definition-decorator-margin` can be used to define the spacing of decorators, for example:
+
+```css
+body {
+  --abbreviations-definition-decorator-margin: 12px;
+}
+```
+
 ### Suffixes
 
 This plugin allows match supplementary suffixes for abbreviations. For example, it can make the `OS` match other `OSes`. More information can see: [#3](https://github.com/dragonish/obsidian-abbreviations/issues/3).
