@@ -30,7 +30,7 @@ import {
   handlePreviewMarkdownExtra,
 } from "./components/dom";
 import { AbbreviationInputModal } from "./components/modal";
-import { AbbreviationListModal } from "./components/list";
+import { AbbreviationListModal, type ActionType } from "./components/list";
 import {
   calcAbbrListFromFrontmatter,
   findAbbrIndexFromFrontmatter,
@@ -563,33 +563,45 @@ export default class AbbrPlugin extends Plugin {
     }
   }
 
-  private jumpToAbbreviationDefinition(abbr: AbbreviationInstance) {
-    if (abbr.type === "extra") {
-      const editor = this.app.workspace.activeEditor?.editor;
-      if (editor) {
-        const dest = abbr.position - 1;
-        editor.setCursor(dest >= 0 ? dest : 0);
-      }
-    } else {
-      new AbbreviationInputModal(
-        this.app,
-        abbr,
-        (abbrKey, abbrTitle, action) => {
-          if (action === "delete") {
-            if (abbr.type === "metadata") {
-              this.deleteAbbreviationFromFrontmatter(abbr);
-            } else if (abbr.type === "global") {
-              this.deleteAbbreviationFromGlobal(abbr);
-            }
-          } else if (action === "edit") {
-            if (abbr.type === "metadata") {
-              this.modifyAbbreviationInFrontmatter(abbr, abbrKey, abbrTitle);
-            } else if (abbr.type === "global") {
-              this.modifyAbbreviationInGlobal(abbr, abbrKey, abbrTitle);
+  private async jumpToAbbreviationDefinition(
+    abbr: AbbreviationInstance,
+    action: ActionType
+  ) {
+    if (action === "edit") {
+      if (abbr.type === "extra") {
+        const editor = this.app.workspace.activeEditor?.editor;
+        if (editor) {
+          const dest = abbr.position - 1;
+          editor.setCursor(dest >= 0 ? dest : 0);
+        }
+      } else {
+        new AbbreviationInputModal(
+          this.app,
+          abbr,
+          (abbrKey, abbrTitle, action) => {
+            if (action === "delete") {
+              if (abbr.type === "metadata") {
+                this.deleteAbbreviationFromFrontmatter(abbr);
+              } else if (abbr.type === "global") {
+                this.deleteAbbreviationFromGlobal(abbr);
+              }
+            } else if (action === "edit") {
+              if (abbr.type === "metadata") {
+                this.modifyAbbreviationInFrontmatter(abbr, abbrKey, abbrTitle);
+              } else if (abbr.type === "global") {
+                this.modifyAbbreviationInGlobal(abbr, abbrKey, abbrTitle);
+              }
             }
           }
-        }
-      ).open();
+        ).open();
+      }
+    } else if (action === "global") {
+      this.settings.globalAbbreviations.push({
+        key: abbr.key,
+        title: abbr.title,
+      });
+      await this.saveSettings();
+      this.sendNotification(`Added ${abbr.key} to global abbreviations.`);
     }
   }
 

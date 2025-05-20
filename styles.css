@@ -147,3 +147,14 @@ p.abbreviations-plugin-extra-definition {
   )::after {
   opacity: 100%;
 }
+
+.abbreviations-plugin-list-item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.abbreviations-plugin--list-item-button {
+  cursor: pointer;
+  margin-inline-start: var(--size-4-2);
+}
