@@ -1,4 +1,3 @@
-import type { AbbreviationInfo, MarkItem } from "./data";
 import { Parser } from "./parser";
 import { Conversion } from "./conversion";
 

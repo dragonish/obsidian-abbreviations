@@ -1,5 +1,4 @@
 import { MarkdownPostProcessorContext } from "obsidian";
-import type { AbbreviationInstance } from "../common/data";
 import { abbrClassName } from "../common/data";
 import {
   getWords,

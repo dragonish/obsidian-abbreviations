@@ -1,5 +1,3 @@
-import type { SpecialState, CodeBlocks, Quotes } from "./data";
-
 export abstract class Base {
   protected state: SpecialState;
 

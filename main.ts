@@ -12,12 +12,6 @@ import {
   Modal,
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
-import type {
-  AbbreviationInstance,
-  AbbrPluginSettings,
-  AbbrPluginData,
-  OpacityOptions,
-} from "./common/data";
 import { elementListSelector, extraDefinitionClassName } from "./common/data";
 import {
   AbbrViewPlugin,

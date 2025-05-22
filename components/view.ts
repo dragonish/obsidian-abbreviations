@@ -8,7 +8,6 @@ import {
 } from "@codemirror/view";
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
 import { handlePreviewMarkdown } from "./dom";
-import type { AbbrPluginData } from "../common/data";
 import {
   abbrClassName,
   extraAsteriskClassName,

@@ -1,6 +1,5 @@
 import { App, Modal, Setting } from "obsidian";
 import { isWord } from "../common/tool";
-import type { AbbreviationInstance } from "../common/data";
 
 type ActionType = "edit" | "delete";
 type SubmitCallback = (

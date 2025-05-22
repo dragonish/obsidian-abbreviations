@@ -1,10 +1,3 @@
-import type {
-  TextItem,
-  MarkItem,
-  AbbreviationInfo,
-  AbbreviationInstance,
-} from "./data";
-
 type MetadataAbbrType = string | Record<string, unknown>;
 type OverlapState =
   | "intersection"

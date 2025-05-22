@@ -1,4 +1,3 @@
-import type { AbbreviationInfo, AbbreviationInstance, MarkItem } from "./data";
 import { METADATA_BORDER } from "./data";
 import { Base } from "./base";
 import { MarkBuffer } from "./mark";
