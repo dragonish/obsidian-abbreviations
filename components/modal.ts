@@ -1,11 +1,11 @@
 import { App, Modal, Setting } from "obsidian";
 import { isWord } from "../common/tool";
 
-type ActionType = "edit" | "delete";
+type ModalActionType = "edit" | "delete";
 type SubmitCallback = (
   abbr: string,
   tooltip: string,
-  action?: ActionType
+  action?: ModalActionType
 ) => void;
 
 export class AbbreviationInputModal extends Modal {
@@ -27,7 +27,7 @@ export class AbbreviationInputModal extends Modal {
     this.onSubmit = onSubmit;
   }
 
-  private submitModal(abbr: string, tip: string, action?: ActionType) {
+  private submitModal(abbr: string, tip: string, action?: ModalActionType) {
     if (abbr) {
       this.close();
       this.onSubmit(abbr, tip, action);

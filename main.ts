@@ -24,7 +24,7 @@ import {
   handlePreviewMarkdownExtra,
 } from "./components/dom";
 import { AbbreviationInputModal } from "./components/modal";
-import { AbbreviationListModal, type ActionType } from "./components/list";
+import { AbbreviationListModal, type ListActionType } from "./components/list";
 import {
   calcAbbrListFromFrontmatter,
   findAbbrIndexFromFrontmatter,
@@ -564,7 +564,7 @@ export default class AbbrPlugin extends Plugin {
 
   private async jumpToAbbreviationDefinition(
     abbr: AbbreviationInstance,
-    action: ActionType
+    action: ListActionType
   ) {
     if (action === "edit") {
       if (abbr.type === "extra") {
