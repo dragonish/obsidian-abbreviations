@@ -23,7 +23,7 @@ p.abbreviations-plugin-extra-definition {
   .abbreviations-plugin-extra-definition-line.abbreviations-plugin-preview-decorator:not(
     .cm-focused .cm-active
   ):not(:has(.cm-formatting))::after {
-  content: attr(data-abbreviation-decorator);
+  content: attr(data-abbr-decorator);
   opacity: 20%;
   margin-inline-start: var(--abbreviations-definition-decorator-margin);
 }
@@ -92,7 +92,7 @@ p.abbreviations-plugin-extra-definition {
 .abbreviations-plugin-extra-definition-line.abbreviations-plugin-source-decorator:not(
     .cm-focused .cm-active
   )::after {
-  content: attr(data-abbreviation-decorator);
+  content: attr(data-abbr-decorator);
   opacity: 20%;
   margin-inline-start: var(--abbreviations-definition-decorator-margin);
 }

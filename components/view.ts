@@ -141,7 +141,7 @@ export class AbbrViewPlugin implements PluginValue {
                   : extraDefinitionLineClassName,
               };
               if (pluginData.useExtraDefinitionDecorator) {
-                attributes["data-abbreviation-decorator"] =
+                attributes["data-abbr-decorator"] =
                   pluginData.extraDefinitionDecoratorContent
                     .replaceAll("${abbr}", definition.key)
                     .replaceAll("${tooltip}", definition.title);
