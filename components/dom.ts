@@ -70,6 +70,11 @@ function replaceWordWithAbbr(
               cls: abbrClassName,
               title: item.title,
               text: item.text,
+              attr: {
+                "data-abbr-key": item.key,
+                "data-abbr-type": item.type,
+                "data-abbr-position": (item.position || -1).toString(),
+              },
             });
             fragment.appendChild(abbr);
 
@@ -84,8 +89,13 @@ function replaceWordWithAbbr(
         } else if (abbrTitle) {
           const abbr = fragment.createEl("abbr", {
             cls: abbrClassName,
-            title: abbrTitle,
+            title: abbrTitle.title,
             text: word.text,
+            attr: {
+              "data-abbr-key": abbrTitle.key,
+              "data-abbr-type": abbrTitle.type,
+              "data-abbr-position": (abbrTitle.position || -1).toString(),
+            },
           });
           fragment.appendChild(abbr);
         } else {

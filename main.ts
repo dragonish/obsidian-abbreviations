@@ -25,6 +25,7 @@ import {
 } from "./components/dom";
 import { AbbreviationInputModal } from "./components/modal";
 import { AbbreviationListModal, type ListActionType } from "./components/list";
+import { AbbreviationContextMenu } from "./components/menu";
 import {
   calcAbbrListFromFrontmatter,
   findAbbrIndexFromFrontmatter,
@@ -178,6 +179,17 @@ export default class AbbrPlugin extends Plugin {
     this.registerEvent(
       this.app.workspace.on("layout-change", this.handleModeChange.bind(this))
     );
+
+    // Dom context menu
+    const acm = new AbbreviationContextMenu(
+      this.abbreviationActionHandler.bind(this)
+    );
+    this.registerDomEvent(
+      this.app.workspace.containerEl,
+      "contextmenu",
+      acm.readingViewDomHandlers.bind(acm)
+    );
+    this.registerEditorExtension(acm.editorViewDomHandlers());
 
     // Register command
     this.addCommand({
@@ -442,7 +454,7 @@ export default class AbbrPlugin extends Plugin {
         this.app,
         abbrList,
         selectedText,
-        this.jumpToAbbreviationDefinition.bind(this)
+        this.abbreviationActionHandler.bind(this)
       ).open();
     }
   }
@@ -562,7 +574,7 @@ export default class AbbrPlugin extends Plugin {
     }
   }
 
-  private async jumpToAbbreviationDefinition(
+  private async abbreviationActionHandler(
     abbr: AbbreviationInstance,
     action: ListActionType
   ) {

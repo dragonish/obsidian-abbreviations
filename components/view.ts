@@ -139,6 +139,8 @@ export class AbbrViewPlugin implements PluginValue {
                         : sourceDecoratorClassName
                     }`
                   : extraDefinitionLineClassName,
+                "data-abbr-key": definition.key,
+                "data-abbr-title": definition.title,
               };
               if (pluginData.useExtraDefinitionDecorator) {
                 attributes["data-abbr-decorator"] =
@@ -174,6 +176,9 @@ export class AbbrViewPlugin implements PluginValue {
                     text: word.text,
                     title: word.title,
                     class: abbrClassName,
+                    "data-abbr-key": word.key,
+                    "data-abbr-type": word.type,
+                    "data-abbr-position": (word.position || -1).toString(),
                   },
                 });
                 builder.add(from, to, deco);

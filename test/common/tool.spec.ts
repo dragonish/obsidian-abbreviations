@@ -410,97 +410,128 @@ describe("common/tool", function () {
     expect(
       selectNonOverlappingItems([
         {
+          type: "metadata",
+          key: "test",
+          title: "test1",
           index: 0,
           text: "test",
-          title: "test1",
           abbrPos: -1,
         },
       ])
     ).to.deep.eq([
       {
+        type: "metadata",
+        key: "test",
+        title: "test1",
         index: 0,
         text: "test",
-        title: "test1",
       },
     ]);
 
     expect(
       selectNonOverlappingItems([
         {
+          type: "metadata",
+          key: "test",
+          title: "test1",
           index: 1,
           text: "test",
-          title: "test1",
           abbrPos: -1,
         },
         {
+          type: "metadata",
+          key: "ate",
+          title: "test2",
           index: 0,
           text: "ate",
-          title: "test2",
           abbrPos: 9,
         },
       ])
     ).to.deep.eq([
       {
+        type: "metadata",
+        key: "test",
+        title: "test1",
         index: 1,
         text: "test",
-        title: "test1",
       },
     ]);
 
     expect(
       selectNonOverlappingItems([
         {
+          type: "metadata",
+          key: "ate",
+          title: "test1",
           index: 0,
           text: "ate",
-          title: "test1",
           abbrPos: -1,
         },
         {
+          type: "metadata",
+          key: "test",
+          title: "test2",
           index: 1,
           text: "test",
-          title: "test2",
           abbrPos: -1,
         },
         {
+          type: "extra",
+          position: 9,
+          key: "sta",
+          title: "test3",
           index: 3,
           text: "sta",
-          title: "test3",
           abbrPos: 9,
         },
       ])
     ).to.deep.eq([
       {
+        type: "metadata",
+        key: "test",
+        title: "test2",
         index: 1,
         text: "test",
-        title: "test2",
       },
     ]);
 
     expect(
       selectNonOverlappingItems([
         {
+          type: "extra",
+          position: 9,
+          key: "test",
+          title: "test1",
           index: 0,
           text: "test",
-          title: "test1",
           abbrPos: 9,
         },
         {
+          type: "extra",
+          position: 9,
+          key: "test",
+          title: "test1",
           index: 4,
           text: "test",
-          title: "test1",
           abbrPos: 9,
         },
       ])
     ).to.deep.eq([
       {
+        type: "extra",
+        position: 9,
+        key: "test",
+        title: "test1",
         index: 0,
         text: "test",
-        title: "test1",
       },
       {
+        type: "extra",
+        position: 9,
+        key: "test",
+        title: "test1",
         index: 4,
         text: "test",
-        title: "test1",
       },
     ]);
   });
@@ -531,19 +562,32 @@ describe("common/tool", function () {
       },
     ];
 
-    expect(queryAbbreviationTitle("HTML", abbrList1, 1)).to.eq(
-      "HyperText Markup Language"
-    );
-    expect(queryAbbreviationTitle("CSS", abbrList1, 1)).to.eq(
-      "Cascading Style Sheets"
-    );
-    expect(queryAbbreviationTitle("CSS", abbrList1, 30)).to.eq(
-      "Cross Site Scripting"
-    );
-    expect(queryAbbreviationTitle("CSS", abbrList1, 60)).to.be.empty;
+    expect(queryAbbreviationTitle("HTML", abbrList1, 1)).to.deep.eq({
+      key: "HTML",
+      title: "HyperText Markup Language",
+      type: "global",
+      index: 0,
+      text: "HTML",
+    });
+    expect(queryAbbreviationTitle("CSS", abbrList1, 1)).to.deep.eq({
+      key: "CSS",
+      title: "Cascading Style Sheets",
+      type: "metadata",
+      index: 0,
+      text: "CSS",
+    });
+    expect(queryAbbreviationTitle("CSS", abbrList1, 30)).to.deep.eq({
+      key: "CSS",
+      title: "Cross Site Scripting",
+      type: "extra",
+      index: 0,
+      text: "CSS",
+      position: 25,
+    });
+    expect(queryAbbreviationTitle("CSS", abbrList1, 60)).to.be.null;
 
-    expect(queryAbbreviationTitle("", abbrList1, 1)).to.be.empty;
-    expect(queryAbbreviationTitle("html", abbrList1, 1)).to.be.empty;
+    expect(queryAbbreviationTitle("", abbrList1, 1)).to.be.null;
+    expect(queryAbbreviationTitle("html", abbrList1, 1)).to.be.null;
 
     const abbrList2: AbbreviationInstance[] = [
       {
@@ -559,9 +603,23 @@ describe("common/tool", function () {
         position: 38,
       },
     ];
-    expect(queryAbbreviationTitle("HTM", abbrList2, 32)).to.eq("Test");
-    expect(queryAbbreviationTitle("HTM", abbrList2, 36)).to.eq("Test");
-    expect(queryAbbreviationTitle("HTM", abbrList2, 40)).to.be.empty;
+    expect(queryAbbreviationTitle("HTM", abbrList2, 32)).to.deep.eq({
+      key: "HTM",
+      title: "Test",
+      type: "extra",
+      index: 0,
+      text: "HTM",
+      position: 34,
+    });
+    expect(queryAbbreviationTitle("HTM", abbrList2, 36)).to.deep.eq({
+      key: "HTM",
+      title: "Test",
+      type: "extra",
+      index: 0,
+      text: "HTM",
+      position: 34,
+    });
+    expect(queryAbbreviationTitle("HTM", abbrList2, 40)).to.be.null;
   });
 
   it("queryAbbreviationTitle with affixList", function () {
@@ -591,21 +649,39 @@ describe("common/tool", function () {
     ];
     const affixList = ["s", "es", "less"];
 
-    expect(queryAbbreviationTitle("HTMLs", abbrList1, 1, affixList)).to.eq(
-      "HyperText Markup Language"
+    expect(queryAbbreviationTitle("HTMLs", abbrList1, 1, affixList)).to.deep.eq(
+      {
+        key: "HTML",
+        title: "HyperText Markup Language",
+        type: "global",
+        index: 0,
+        text: "HTMLs",
+      }
     );
-    expect(queryAbbreviationTitle("CSSes", abbrList1, 1, affixList)).to.eq(
-      "Cascading Style Sheets"
+    expect(queryAbbreviationTitle("CSSes", abbrList1, 1, affixList)).to.deep.eq(
+      {
+        key: "CSS",
+        title: "Cascading Style Sheets",
+        type: "metadata",
+        index: 0,
+        text: "CSSes",
+      }
     );
-    expect(queryAbbreviationTitle("CSSes", abbrList1, 30, affixList)).to.eq(
-      "Cross Site Scripting"
-    );
+    expect(
+      queryAbbreviationTitle("CSSes", abbrList1, 30, affixList)
+    ).to.deep.eq({
+      key: "CSS",
+      title: "Cross Site Scripting",
+      type: "extra",
+      index: 0,
+      text: "CSSes",
+      position: 25,
+    });
     expect(queryAbbreviationTitle("CSSes", abbrList1, 60, affixList)).to.be
-      .empty;
+      .null;
 
-    expect(queryAbbreviationTitle("", abbrList1, 1, affixList)).to.be.empty;
-    expect(queryAbbreviationTitle("htmls", abbrList1, 1, affixList)).to.be
-      .empty;
+    expect(queryAbbreviationTitle("", abbrList1, 1, affixList)).to.be.null;
+    expect(queryAbbreviationTitle("htmls", abbrList1, 1, affixList)).to.be.null;
 
     const abbrList2: AbbreviationInstance[] = [
       {
@@ -621,14 +697,28 @@ describe("common/tool", function () {
         position: 38,
       },
     ];
-    expect(queryAbbreviationTitle("HTMs", abbrList2, 32, affixList)).to.eq(
-      "Test"
+    expect(queryAbbreviationTitle("HTMs", abbrList2, 32, affixList)).to.deep.eq(
+      {
+        key: "HTM",
+        type: "extra",
+        title: "Test",
+        index: 0,
+        text: "HTMs",
+        position: 34,
+      }
     );
-    expect(queryAbbreviationTitle("HTMes", abbrList2, 36, affixList)).to.eq(
-      "Test"
-    );
+    expect(
+      queryAbbreviationTitle("HTMes", abbrList2, 36, affixList)
+    ).to.deep.eq({
+      key: "HTM",
+      type: "extra",
+      title: "Test",
+      index: 0,
+      text: "HTMes",
+      position: 34,
+    });
     expect(queryAbbreviationTitle("HTMless", abbrList2, 40, affixList)).to.be
-      .empty;
+      .null;
 
     const abbrList3: AbbreviationInstance[] = [
       {
@@ -642,12 +732,20 @@ describe("common/tool", function () {
         type: "metadata",
       },
     ];
-    expect(queryAbbreviationTitle("HTMs", abbrList3, 1, affixList)).to.eq(
-      "Test1"
-    );
-    expect(queryAbbreviationTitle("HTM", abbrList3, 1, affixList)).to.eq(
-      "Test2"
-    );
+    expect(queryAbbreviationTitle("HTMs", abbrList3, 1, affixList)).to.deep.eq({
+      key: "HTMs",
+      title: "Test1",
+      type: "metadata",
+      index: 0,
+      text: "HTMs",
+    });
+    expect(queryAbbreviationTitle("HTM", abbrList3, 1, affixList)).to.deep.eq({
+      key: "HTM",
+      title: "Test2",
+      type: "metadata",
+      index: 0,
+      text: "HTM",
+    });
 
     const abbrList4: AbbreviationInstance[] = [
       {
@@ -656,7 +754,7 @@ describe("common/tool", function () {
         type: "metadata",
       },
     ];
-    expect(queryAbbreviationTitle("es", abbrList4, 1, affixList)).to.be.empty;
+    expect(queryAbbreviationTitle("es", abbrList4, 1, affixList)).to.be.null;
   });
 
   it("queryAbbreviationTitle with detectCJK", function () {
@@ -669,11 +767,13 @@ describe("common/tool", function () {
     ];
 
     expect(queryAbbreviationTitle("我是一名北大学子", abbrList1, 1, [], false))
-      .to.be.empty;
+      .to.be.null;
     expect(
       queryAbbreviationTitle("我是一名北大学子", abbrList1, 1, [], true)
     ).to.deep.eq([
       {
+        key: "北大",
+        type: "metadata",
         index: 4,
         text: "北大",
         title: "北京大学",
@@ -696,6 +796,8 @@ describe("common/tool", function () {
       queryAbbreviationTitle("我是一名北大学子", abbrList2, 1, [], true)
     ).to.deep.eq([
       {
+        key: "北大学",
+        type: "metadata",
         index: 4,
         text: "北大学",
         title: "测试",
@@ -719,6 +821,9 @@ describe("common/tool", function () {
       queryAbbreviationTitle("我是一名北大学子", abbrList3, 1, [], true)
     ).to.deep.eq([
       {
+        key: "北大学",
+        type: "extra",
+        position: 99,
         index: 4,
         text: "北大学",
         title: "测试",
@@ -734,11 +839,16 @@ describe("common/tool", function () {
       )
     ).to.deep.eq([
       {
+        key: "北大学",
+        type: "extra",
+        position: 99,
         index: 4,
         text: "北大学",
         title: "测试",
       },
       {
+        key: "北大",
+        type: "metadata",
         index: 10,
         text: "北大",
         title: "北京大学",

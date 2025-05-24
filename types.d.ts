@@ -38,6 +38,13 @@ interface MarkItem extends TextItem {
   title: string;
 }
 
+interface MarkInstance extends TextItem {
+  type: AbbrInstanceType;
+  position?: number;
+  key: string;
+  title: string;
+}
+
 type OpacityOptions = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
 
 interface AbbrPluginSettings {

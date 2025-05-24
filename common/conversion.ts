@@ -46,7 +46,10 @@ export class Conversion extends Base {
   handler(
     text: string,
     lineStart: number,
-    callback: (marks: MarkItem[], definition: AbbreviationInfo | null) => void
+    callback: (
+      marks: MarkInstance[],
+      definition: AbbreviationInfo | null
+    ) => void
   ): void {
     if (lineStart === 1 && text === METADATA_BORDER) {
       this.state = "metadata";
@@ -106,7 +109,7 @@ export class Conversion extends Base {
         }
       }
 
-      const results: MarkItem[] = [];
+      const results: MarkInstance[] = [];
       const words = this.mark.handler(text);
       words.forEach((word) => {
         const abbrTitle = queryAbbreviationTitle(
@@ -119,17 +122,19 @@ export class Conversion extends Base {
 
         if (Array.isArray(abbrTitle)) {
           for (const item of abbrTitle) {
+            const { index, ...other } = item;
             results.push({
-              index: word.position + item.index,
-              text: item.text,
-              title: item.title,
+              index: word.position + index,
+              ...other,
             });
           }
         } else if (abbrTitle) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { index: _index, text: _text, ...other } = abbrTitle;
           results.push({
             index: word.position,
             text: word.text,
-            title: abbrTitle,
+            ...other,
           });
         }
       });

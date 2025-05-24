@@ -12,7 +12,7 @@ interface WordItem {
   isSpecial: boolean;
 }
 
-interface QueryItem extends MarkItem {
+interface QueryItem extends MarkInstance {
   abbrPos: number;
 }
 
@@ -271,8 +271,8 @@ export function queryOverlap(left: TextItem, right: TextItem): OverlapState {
  * @param list
  * @returns
  */
-export function selectNonOverlappingItems(list: QueryItem[]): MarkItem[] {
-  const res: MarkItem[] = [];
+export function selectNonOverlappingItems(list: QueryItem[]): MarkInstance[] {
+  const res: MarkInstance[] = [];
 
   if (list.length === 0) {
     return [];
@@ -300,10 +300,10 @@ export function selectNonOverlappingItems(list: QueryItem[]): MarkItem[] {
     }
 
     if (add) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { abbrPos: _abbrPos, ...other } = list[i];
       res.push({
-        index: list[i].index,
-        text: list[i].text,
-        title: list[i].title,
+        ...other,
       });
     }
   }
@@ -320,10 +320,10 @@ export function selectNonOverlappingItems(list: QueryItem[]): MarkItem[] {
     }
 
     if (add) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { abbrPos: _abbrPos, ...other } = list[j];
       res.push({
-        index: list[j].index,
-        text: list[j].text,
-        title: list[j].title,
+        ...other,
       });
     }
   }
@@ -338,7 +338,7 @@ export function selectNonOverlappingItems(list: QueryItem[]): MarkItem[] {
  * @param lineStart
  * @param affixList
  * @param detectCJK
- * @returns the abbreviation title. *An empty string indicates that the abbreviation is disabled*
+ * @returns the abbreviation title.
  */
 export function queryAbbreviationTitle(
   text: string,
@@ -346,9 +346,9 @@ export function queryAbbreviationTitle(
   lineStart = 1,
   affixList: string[] = [],
   detectCJK = false
-): string | MarkItem[] {
-  let fullRes: string | null = null;
-  let affixFullRes: string | null = null;
+): null | MarkInstance | MarkInstance[] {
+  let fullRes: MarkInstance | null = null;
+  let affixFullRes: MarkInstance | null = null;
   let cjkRes: QueryItem[] = [];
 
   let detectAffixes = affixList.length > 0;
@@ -360,7 +360,12 @@ export function queryAbbreviationTitle(
     }
 
     if (text === abbr.key) {
-      fullRes = abbr.title;
+      fullRes = {
+        ...abbr,
+        index: 0,
+        text: text,
+      };
+
       if (abbr.type === "extra") {
         if (abbr.position <= lineStart) {
           break;
@@ -373,7 +378,11 @@ export function queryAbbreviationTitle(
         let affixMatch = false;
         for (const affix of affixList) {
           if (text === abbr.key + affix) {
-            affixFullRes = abbr.title;
+            affixFullRes = {
+              ...abbr,
+              index: 0,
+              text: text,
+            };
             affixMatch = true;
             break;
           }
@@ -417,9 +426,9 @@ export function queryAbbreviationTitle(
 
           if (add) {
             cjkRes.push({
+              ...abbr,
               index,
               text: abbr.key,
-              title: abbr.title,
               abbrPos: abbr.type === "extra" ? abbr.position - lineStart : -1,
             });
           }
@@ -429,17 +438,17 @@ export function queryAbbreviationTitle(
   }
 
   if (fullRes != null) {
-    return fullRes;
+    return fullRes.title ? fullRes : null;
   } else if (affixFullRes != null) {
-    return affixFullRes;
+    return affixFullRes.title ? affixFullRes : null;
   } else if (cjkRes.length > 0) {
     const res = selectNonOverlappingItems(cjkRes)
       .filter((item) => item.title)
       .sort((a, b) => a.index - b.index);
-    return res.length > 0 ? res : "";
+    return res.length > 0 ? res : null;
   }
 
-  return "";
+  return null;
 }
 
 /**
