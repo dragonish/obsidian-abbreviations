@@ -1,6 +1,24 @@
 import { Parser } from "./parser";
 import { Conversion } from "./conversion";
 
+const escapeObject: Record<string, string> = {
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+  "&": "&amp;",
+};
+
+/**
+ * Escape HTML special characters in a string.
+ *
+ * @param str The input string.
+ * @returns The escaped HTML string.
+ */
+export function escapeHtml(str: string) {
+  return str.replace(/[<>"'&]/g, (c) => escapeObject[c]);
+}
+
 /**
  * Get formatted line content as an `<abbr>` string.
  * @param content
@@ -18,7 +36,9 @@ export function lineMarkupFormatter(
     if (mark.index > lastIndex) {
       results.push(content.substring(lastIndex, mark.index));
     }
-    results.push(`<abbr title="${mark.title}">${mark.text}</abbr>`);
+    results.push(
+      `<abbr title="${escapeHtml(mark.title)}">${escapeHtml(mark.text)}</abbr>`
+    );
     lastIndex = mark.index + mark.text.length;
   });
 

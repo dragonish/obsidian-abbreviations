@@ -5,6 +5,17 @@ import { loadWithMockedObsidian } from "../helpers/obsidianMock";
 const formatModule = loadWithMockedObsidian("../../common/format");
 
 describe("common/format", function () {
+  it("escapeHtml", function () {
+    const escapeHtml = formatModule.escapeHtml;
+    expect(escapeHtml("")).to.be.empty;
+    expect(escapeHtml("<")).to.eq("&lt;");
+    expect(escapeHtml(">")).to.eq("&gt;");
+    expect(escapeHtml('"')).to.eq("&quot;");
+    expect(escapeHtml("'")).to.eq("&#39;");
+    expect(escapeHtml("&")).to.eq("&amp;");
+    expect(escapeHtml("a")).to.eq("a");
+  });
+
   it("lineMarkupFormatter", function () {
     const lineMarkupFormatter = formatModule.lineMarkupFormatter;
 
