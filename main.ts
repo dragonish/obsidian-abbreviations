@@ -195,7 +195,7 @@ export default class AbbrPlugin extends Plugin {
     this.addCommand({
       id: "add-abbreviation",
       name: "Add abbreviation",
-      editorCheckCallback: (checking) => {
+      checkCallback: (checking) => {
         const keywordState = this.settings.metadataKeyword;
         if (keywordState) {
           if (!checking) {
@@ -230,7 +230,7 @@ export default class AbbrPlugin extends Plugin {
     this.addCommand({
       id: "list-abbreviations",
       name: "List abbreviations",
-      editorCallback: () => {
+      callback: () => {
         this.showAbbreviationListModal();
       },
     });
