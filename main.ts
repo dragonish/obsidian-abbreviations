@@ -24,7 +24,7 @@ import {
   handlePreviewMarkdownExtra,
 } from "./components/dom";
 import { AbbreviationInputModal } from "./components/modal";
-import { AbbreviationListModal, type ListActionType } from "./components/list";
+import { AbbreviationListModal } from "./components/list";
 import { AbbreviationContextMenu } from "./components/menu";
 import {
   calcAbbrListFromFrontmatter,
@@ -35,7 +35,7 @@ import {
   isExtraDefinitions,
 } from "./common/tool";
 import { Parser } from "./common/parser";
-import { contentFormatter } from "./common/format";
+import { contentFormatter, escapeHtml } from "./common/format";
 
 interface ObsidianEditor extends Editor {
   cm: EditorView;
@@ -584,7 +584,7 @@ export default class AbbrPlugin extends Plugin {
 
   private async abbreviationActionHandler(
     abbr: AbbreviationInstance,
-    action: ListActionType
+    action: MenuActionType
   ) {
     if (action === "edit") {
       if (abbr.type === "extra") {
@@ -631,6 +631,38 @@ export default class AbbrPlugin extends Plugin {
       });
       await this.saveSettings();
       this.sendNotification(`Added ${abbr.key} to global abbreviations.`);
+    } else if (action.includes("copy")) {
+      let payload = "";
+      switch (action) {
+        case "copy-text":
+          payload = abbr.key;
+          break;
+        case "copy-title":
+          payload = abbr.title;
+          break;
+        case "copy-metadata":
+          payload = `${abbr.key}: ${abbr.title}`;
+          break;
+        case "copy-extra":
+          payload = `*[${abbr.key}]: ${abbr.title}`;
+          break;
+        case "copy-html":
+          payload = `<abbr title="${escapeHtml(abbr.title)}">${escapeHtml(
+            abbr.key
+          )}</abbr>`;
+          break;
+      }
+
+      if (payload) {
+        try {
+          await navigator.clipboard.writeText(payload);
+          this.sendNotification("Content has been copied!");
+        } catch {
+          this.sendNotification("Error: Unable to copy content!");
+        }
+      } else {
+        this.sendNotification("Warn: The copied content is empty!");
+      }
     }
   }
 

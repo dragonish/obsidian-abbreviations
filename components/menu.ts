@@ -2,7 +2,6 @@ import { Menu } from "obsidian";
 import { EditorView } from "@codemirror/view";
 import { abbrClassName, extraDefinitionLineClassName } from "../common/data";
 
-type MenuActionType = "edit" | "global";
 type MenuActionCallback = (
   abbr: AbbreviationInstance,
   action: MenuActionType
@@ -27,7 +26,6 @@ export class AbbreviationContextMenu {
       evt.preventDefault();
       evt.stopPropagation();
 
-      const menu = new Menu();
       const abbrTitle = target.title;
       const abbrPosition = parseInt(target.dataset.abbrPosition || "") || -1;
       const abbrIns = {
@@ -37,51 +35,7 @@ export class AbbreviationContextMenu {
         position: abbrPosition,
       };
 
-      menu.addItem((item) => {
-        item.setTitle(`Type: ${abbrType}`).setIcon("type").setDisabled(true);
-      });
-      menu.addItem((item) => {
-        item
-          .setTitle(`Text: ${abbrKey}`)
-          .setIcon("whole-word")
-          .setDisabled(true);
-      });
-      menu.addItem((item) => {
-        item
-          .setTitle(`Title: ${abbrTitle}`)
-          .setIcon("message-square-quote")
-          .setDisabled(true);
-      });
-      if (abbrType === "extra") {
-        menu.addItem((item) => {
-          item
-            .setTitle(`Line: ${abbrPosition}`)
-            .setIcon("map-pin")
-            .setDisabled(true);
-        });
-      }
-      menu.addSeparator();
-
-      menu.addItem((item) =>
-        item
-          .setTitle("Edit abbreviation")
-          .setIcon("square-pen")
-          .onClick(() => {
-            this.menuAction(abbrIns, "edit");
-          })
-      );
-
-      if (abbrType === "metadata" || abbrType === "extra") {
-        menu.addItem((item) => {
-          item
-            .setTitle("Add to global")
-            .setIcon("square-plus")
-            .onClick(() => {
-              this.menuAction(abbrIns, "global");
-            });
-        });
-      }
-
+      const menu = this.menuGenerator(abbrIns);
       menu.showAtMouseEvent(evt);
     }
   }
@@ -103,7 +57,6 @@ export class AbbreviationContextMenu {
             evt.preventDefault();
             evt.stopPropagation();
 
-            const menu = new Menu();
             const abbrTitle = target.title;
             const abbrPosition =
               parseInt(target.dataset.abbrPosition || "") || -1;
@@ -114,54 +67,7 @@ export class AbbreviationContextMenu {
               position: abbrPosition,
             };
 
-            menu.addItem((item) => {
-              item
-                .setTitle(`Type: ${abbrType}`)
-                .setIcon("type")
-                .setDisabled(true);
-            });
-            menu.addItem((item) => {
-              item
-                .setTitle(`Text: ${abbrKey}`)
-                .setIcon("whole-word")
-                .setDisabled(true);
-            });
-            menu.addItem((item) => {
-              item
-                .setTitle(`Title: ${abbrTitle}`)
-                .setIcon("message-square-quote")
-                .setDisabled(true);
-            });
-            if (abbrType === "extra") {
-              menu.addItem((item) => {
-                item
-                  .setTitle(`Line: ${abbrPosition}`)
-                  .setIcon("map-pin")
-                  .setDisabled(true);
-              });
-            }
-            menu.addSeparator();
-
-            menu.addItem((item) =>
-              item
-                .setTitle("Edit abbreviation")
-                .setIcon("square-pen")
-                .onClick(() => {
-                  this.menuAction(abbrIns, "edit");
-                })
-            );
-
-            if (abbrType === "metadata" || abbrType === "extra") {
-              menu.addItem((item) => {
-                item
-                  .setTitle("Add to global")
-                  .setIcon("square-plus")
-                  .onClick(() => {
-                    this.menuAction(abbrIns, "global");
-                  });
-              });
-            }
-
+            const menu = this.menuGenerator(abbrIns);
             menu.showAtMouseEvent(evt);
 
             return true;
@@ -178,7 +84,6 @@ export class AbbreviationContextMenu {
               evt.preventDefault();
               evt.stopPropagation();
 
-              const menu = new Menu();
               const abbrTitle = line.dataset.abbrTitle || "";
               const abbrIns: AbbreviationInstance = {
                 key: abbrKey,
@@ -187,36 +92,7 @@ export class AbbreviationContextMenu {
                 position: -1,
               };
 
-              menu.addItem((item) => {
-                item
-                  .setTitle(`Type: definition`)
-                  .setIcon("type")
-                  .setDisabled(true);
-              });
-              menu.addItem((item) => {
-                item
-                  .setTitle(`Text: ${abbrKey}`)
-                  .setIcon("whole-word")
-                  .setDisabled(true);
-              });
-              menu.addItem((item) => {
-                item
-                  .setTitle(`Title: ${abbrTitle}`)
-                  .setIcon("message-square-quote")
-                  .setDisabled(true);
-              });
-              menu.addSeparator();
-              menu.addSeparator();
-
-              menu.addItem((item) => {
-                item
-                  .setTitle("Add to global")
-                  .setIcon("square-plus")
-                  .onClick(() => {
-                    this.menuAction(abbrIns, "global");
-                  });
-              });
-
+              const menu = this.menuGenerator(abbrIns, true);
               menu.showAtMouseEvent(evt);
 
               return true;
@@ -226,5 +102,105 @@ export class AbbreviationContextMenu {
         return false;
       },
     });
+  }
+
+  private menuGenerator(abbr: AbbreviationInstance, isDefinition = false) {
+    const menu = new Menu();
+
+    menu.addItem((item) => {
+      item
+        .setTitle(`Type: ${isDefinition ? "definition" : abbr.type}`)
+        .setIcon("type")
+        .setDisabled(true);
+    });
+    menu.addItem((item) => {
+      item
+        .setTitle(`Text: ${abbr.key}`)
+        .setIcon("whole-word")
+        .setDisabled(true);
+    });
+    menu.addItem((item) => {
+      item
+        .setTitle(`Title: ${abbr.title}`)
+        .setIcon("message-square-quote")
+        .setDisabled(true);
+    });
+    if (abbr.type === "extra" && !isDefinition) {
+      menu.addItem((item) => {
+        item
+          .setTitle(`Line: ${abbr.position}`)
+          .setIcon("map-pin")
+          .setDisabled(true);
+      });
+    }
+    menu.addSeparator();
+
+    if (!isDefinition) {
+      menu.addItem((item) =>
+        item
+          .setTitle("Edit abbreviation")
+          .setIcon("square-pen")
+          .onClick(() => {
+            this.menuAction(abbr, "edit");
+          })
+      );
+    }
+
+    if (abbr.type === "metadata" || abbr.type === "extra") {
+      menu.addItem((item) => {
+        item
+          .setTitle("Add to global abbreviations")
+          .setIcon("square-plus")
+          .onClick(() => {
+            this.menuAction(abbr, "global");
+          });
+      });
+    }
+
+    menu.addSeparator();
+    menu.addItem((item) => {
+      item
+        .setTitle("Copy abbreviation text")
+        .setIcon("copy")
+        .onClick(() => {
+          this.menuAction(abbr, "copy-text");
+        });
+    });
+    if (abbr.title) {
+      menu.addItem((item) => {
+        item
+          .setTitle("Copy abbreviation title")
+          .setIcon("copy")
+          .onClick(() => {
+            this.menuAction(abbr, "copy-title");
+          });
+      });
+    }
+    menu.addItem((item) => {
+      item
+        .setTitle("Copy metadata format definition")
+        .setIcon("copy")
+        .onClick(() => {
+          this.menuAction(abbr, "copy-metadata");
+        });
+    });
+    menu.addItem((item) => {
+      item
+        .setTitle("Copy extra format definition")
+        .setIcon("copy")
+        .onClick(() => {
+          this.menuAction(abbr, "copy-extra");
+        });
+    });
+    menu.addItem((item) => {
+      item
+        .setTitle("Copy HTML format definition")
+        .setIcon("copy")
+        .onClick(() => {
+          this.menuAction(abbr, "copy-html");
+        });
+    });
+
+    return menu;
   }
 }

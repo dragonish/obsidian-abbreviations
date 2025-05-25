@@ -1,6 +1,5 @@
 import { App, FuzzyMatch, FuzzySuggestModal, renderResults } from "obsidian";
 
-export type ListActionType = "edit" | "global";
 type ActionCallback = (
   abbr: AbbreviationInstance,
   action: ListActionType

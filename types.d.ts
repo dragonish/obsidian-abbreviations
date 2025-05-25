@@ -45,6 +45,15 @@ interface MarkInstance extends TextItem {
   title: string;
 }
 
+type ListActionType = "edit" | "global";
+type CopyActionType =
+  | "copy-text"
+  | "copy-title"
+  | "copy-metadata"
+  | "copy-extra"
+  | "copy-html";
+type MenuActionType = ListActionType | CopyActionType;
+
 type OpacityOptions = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
 
 interface AbbrPluginSettings {
