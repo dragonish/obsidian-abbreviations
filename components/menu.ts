@@ -54,16 +54,14 @@ export class AbbreviationContextMenu {
       });
       menu.addSeparator();
 
-      if (abbrType === "global" || abbrType === "metadata") {
-        menu.addItem((item) =>
-          item
-            .setTitle("Edit abbreviation")
-            .setIcon("square-pen")
-            .onClick(() => {
-              this.menuAction(abbrIns, "edit");
-            })
-        );
-      }
+      menu.addItem((item) =>
+        item
+          .setTitle("Edit abbreviation")
+          .setIcon("square-pen")
+          .onClick(() => {
+            this.menuAction(abbrIns, "edit");
+          })
+      );
 
       if (abbrType === "metadata" || abbrType === "extra") {
         menu.addItem((item) => {

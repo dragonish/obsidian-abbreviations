@@ -41,6 +41,14 @@ interface ObsidianEditor extends Editor {
   cm: EditorView;
 }
 
+interface ObsidianCommands {
+  executeCommandById(commandId: string): void;
+}
+
+interface ObsidianApp extends App {
+  commands: ObsidianCommands;
+}
+
 const DEFAULT_SETTINGS: AbbrPluginSettings = {
   metadataKeyword: "abbr",
   detectCJK: false,
@@ -582,6 +590,20 @@ export default class AbbrPlugin extends Plugin {
       if (abbr.type === "extra") {
         const editor = this.app.workspace.activeEditor?.editor;
         if (editor) {
+          const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+          if (view) {
+            //? "source" for editing view (Live Preview & Source mode),
+            //? "preview" for reading view.
+            const isReadingView = view.getMode() === "preview";
+
+            //! Toggle reading view to editing view.
+            if (isReadingView) {
+              (this.app as ObsidianApp).commands.executeCommandById(
+                "markdown:toggle-preview"
+              );
+            }
+          }
+
           const dest = abbr.position - 1;
           editor.setCursor(dest >= 0 ? dest : 0);
         }
