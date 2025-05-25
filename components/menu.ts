@@ -52,6 +52,14 @@ export class AbbreviationContextMenu {
           .setIcon("message-square-quote")
           .setDisabled(true);
       });
+      if (abbrType === "extra") {
+        menu.addItem((item) => {
+          item
+            .setTitle(`Line: ${abbrPosition}`)
+            .setIcon("map-pin")
+            .setDisabled(true);
+        });
+      }
       menu.addSeparator();
 
       menu.addItem((item) =>
@@ -124,6 +132,14 @@ export class AbbreviationContextMenu {
                 .setIcon("message-square-quote")
                 .setDisabled(true);
             });
+            if (abbrType === "extra") {
+              menu.addItem((item) => {
+                item
+                  .setTitle(`Line: ${abbrPosition}`)
+                  .setIcon("map-pin")
+                  .setDisabled(true);
+              });
+            }
             menu.addSeparator();
 
             menu.addItem((item) =>
