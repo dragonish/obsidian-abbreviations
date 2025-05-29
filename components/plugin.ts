@@ -21,11 +21,11 @@ import {
 import { Parser } from "../common/parser";
 import { contentFormatter, escapeHtml } from "../common/format";
 import {
-  AbbrViewPlugin,
+  AbbrEditorViewPlugin,
   abbrDecorationsField,
   editorModeField,
   updateEditorMode,
-} from "./view";
+} from "./editor";
 import { handlePreviewMarkdown, handlePreviewMarkdownExtra } from "./dom";
 import { AbbreviationInputModal } from "./modal";
 import { AbbreviationListModal } from "./list";
@@ -267,7 +267,7 @@ export class AbbrPlugin extends Plugin {
 
   private createAbbrViewPlugin(getPluginData: () => Promise<AbbrPluginData>) {
     return ViewPlugin.fromClass(
-      class extends AbbrViewPlugin {
+      class extends AbbrEditorViewPlugin {
         constructor(view: EditorView) {
           super(view, getPluginData);
         }

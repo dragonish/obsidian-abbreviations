@@ -57,7 +57,7 @@ export const editorModeField = StateField.define<boolean>({
   },
 });
 
-export class AbbrViewPlugin implements PluginValue {
+export class AbbrEditorViewPlugin implements PluginValue {
   getPluginData: () => Promise<AbbrPluginData>;
 
   constructor(view: EditorView, getPluginData: () => Promise<AbbrPluginData>) {
