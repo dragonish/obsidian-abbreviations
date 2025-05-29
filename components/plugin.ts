@@ -27,11 +27,11 @@ import {
   updateEditorMode,
 } from "./editor";
 import { handlePreviewMarkdown, handlePreviewMarkdownExtra } from "./dom";
-import { AbbreviationInputModal } from "./modal";
-import { AbbreviationListModal } from "./list";
 import { AbbreviationContextMenu } from "./menu";
-import { AbbrSettingTab } from "./setting-tab";
+import { AbbreviationListModal } from "./list-modal";
+import { AbbreviationInputModal } from "./input-modal";
 import { AbbreviationManagerModal } from "./manager-modal";
+import { AbbrSettingTab } from "./setting-tab";
 
 interface ObsidianEditor extends Editor {
   cm: EditorView;
