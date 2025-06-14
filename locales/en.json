@@ -7,8 +7,8 @@
   },
   "text": {
     "abbrLabel": "Abbreviation:",
-    "abbrPlaceholder": "Short word",
-    "tipPlaceholder": "Tooltip"
+    "abbrPlaceholder": "Short form",
+    "tipPlaceholder": "Full form"
   },
   "command": {
     "add": "Add abbreviation",
@@ -50,12 +50,12 @@
   "menu": {
     "type": "Type: {type}",
     "text": "Text: {text}",
-    "title": "Title: {title}",
+    "tooltip": "Tooltip: {tooltip}",
     "line": "Line: {line}",
     "edit": "Edit abbreviation",
     "add": "Add to global abbreviations",
     "copyText": "Copy abbreviation text",
-    "copyTitle": "Copy abbreviation title",
+    "copyTooltip": "Copy abbreviation tooltip",
     "copyMetadata": "Copy metadata format definition",
     "copyExtra": "Copy extra format definition",
     "copyHtml": "Copy HTML format definition"
@@ -72,7 +72,7 @@
     "globalAbbreviations": "Global abbreviations",
     "globalAbbreviationsButton": "Manage abbreviations",
     "globalAbbreviationsDesc": "Configure global abbreviations, but their priority is lower than {placeholder}.",
-    "extraHeading": "Markdown extra syntax",
+    "extraHeading": "Markdown Extra",
     "useMarkdownExtraSyntax": "Enable Markdown Extra syntax support",
     "useMarkdownExtraSyntaxDesc": "Toggle this setting to enable or disable the feature. Definition format: {placeholder}.",
     "useExtraDefinitionDecorator": "Enable extra definition decorator",

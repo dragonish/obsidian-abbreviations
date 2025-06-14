@@ -128,7 +128,7 @@ export class AbbreviationContextMenu {
     });
     menu.addItem((item) => {
       item
-        .setTitle(this.plugin.i18n.t("menu.title", { title: abbr.title }))
+        .setTitle(this.plugin.i18n.t("menu.tooltip", { tooltip: abbr.title }))
         .setIcon("message-square-quote")
         .setDisabled(true);
     });
@@ -178,7 +178,7 @@ export class AbbreviationContextMenu {
     if (abbr.title) {
       menu.addItem((item) => {
         item
-          .setTitle("Copy abbreviation title")
+          .setTitle(this.plugin.i18n.t("menu.copyTooltip"))
           .setIcon("copy")
           .onClick(() => {
             this.menuAction(abbr, "copy-title");
