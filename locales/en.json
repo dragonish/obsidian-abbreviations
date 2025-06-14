@@ -1,0 +1,91 @@
+{
+  "button": {
+    "delete": "Delete",
+    "submit": "Submit",
+    "add": "Add",
+    "back": "Back"
+  },
+  "text": {
+    "abbrLabel": "Abbreviation:",
+    "abbrPlaceholder": "Short word",
+    "tipPlaceholder": "Tooltip"
+  },
+  "command": {
+    "add": "Add abbreviation",
+    "copy": "Copy and format content",
+    "insert": "Insert extra definition",
+    "list": "List abbreviations",
+    "manage": "Manage global abbreviations"
+  },
+  "notification": {
+    "copied": "Content has been copied!",
+    "copyWarn": "Warn: The copied content is empty!",
+    "copyError": "Error: Unable to copy content!",
+    "metadataAdded": "Added metadata abbreviation: {abbr}.",
+    "metadataDeleted": "Deleted metadata abbreviation: {abbr}.",
+    "metadataError": "Error: Metadata keyword is empty!",
+    "globalAdded": "Added global abbreviation: {abbr}.",
+    "globalDeleted": "Deleted global abbreviation: {abbr}.",
+    "formatWarn": "Warn: Abbreviation format is incorrect!",
+    "notFoundWarn": "Warn: No original abbreviation found!",
+    "unexpectedError": "Error: Unexpected error!",
+    "fileError": "Error: No active file found!"
+  },
+  "input": {
+    "editTitle": "Edit {type} abbreviation",
+    "addTitle": "Add metadata abbreviation"
+  },
+  "list": {
+    "empty": "No abbreviations found.",
+    "placeholder": "Type the search term",
+    "global": "Global",
+    "globalTip": "Add it to global abbreviations",
+    "type": "type: {type}",
+    "position": " - position: {position}"
+  },
+  "manager": {
+    "title": "Manage global abbreviations",
+    "addTip": "Add new abbreviation"
+  },
+  "menu": {
+    "type": "Type: {type}",
+    "text": "Text: {text}",
+    "title": "Title: {title}",
+    "line": "Line: {line}",
+    "edit": "Edit abbreviation",
+    "add": "Add to global abbreviations",
+    "copyText": "Copy abbreviation text",
+    "copyTitle": "Copy abbreviation title",
+    "copyMetadata": "Copy metadata format definition",
+    "copyExtra": "Copy extra format definition",
+    "copyHtml": "Copy HTML format definition"
+  },
+  "setting": {
+    "metadataKeyword": "Metadata keyword",
+    "metadataKeywordDesc": "The key name that reads the abbreviation information from the {placeholder}.",
+    "metadataKeywordPlaceholder": "Enter the keyword",
+    "properties": "properties",
+    "markInSourceMode": "Mark abbreviations in Source mode",
+    "markInSourceModeDesc": "In Source mode, mark abbreviations just like in Live Preview and Reading view.",
+    "detectCJK": "Enable abbreviation detection for languages not separated by spaces",
+    "detectCJKDesc": "Detect abbreviations in languages that do not use spaces for word segmentation, such as {placeholder}.",
+    "globalAbbreviations": "Global abbreviations",
+    "globalAbbreviationsButton": "Manage abbreviations",
+    "globalAbbreviationsDesc": "Configure global abbreviations, but their priority is lower than {placeholder}.",
+    "extraHeading": "Markdown extra syntax",
+    "useMarkdownExtraSyntax": "Enable Markdown Extra syntax support",
+    "useMarkdownExtraSyntaxDesc": "Toggle this setting to enable or disable the feature. Definition format: {placeholder}.",
+    "useExtraDefinitionDecorator": "Enable extra definition decorator",
+    "useExtraDefinitionDecoratorDesc": "Display a decorator at the end of the extra definition that this is an abbreviation definition.",
+    "extraDefinitionDecoratorOpacity": "Extra definition decorator opacity",
+    "extraDefinitionDecoratorOpacityDesc": "Opacity of the extra definition decorator. The value is the form of percentage.",
+    "extraDefinitionDecoratorContent": "Extra definition decorator content",
+    "extraDefinitionDecoratorContentDesc": "Content of the extra definition decorator. Two variables can be used: ${abbr} and ${tooltip}. To introduce certain information of the current definition into the content.",
+    "suffixesHeading": "Suffixes",
+    "detectAffixes": "Enable detect suffixes",
+    "detectAffixesDesc": "Detect supplementary suffixes for abbreviations.",
+    "affixes": "Suffix list",
+    "affixesPlaceholder": "A string separated by ,",
+    "affixesDesc": "The list content uses comma-separated string, for example: {placeholder}."
+  }
+}

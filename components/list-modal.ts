@@ -1,4 +1,5 @@
 import { App, FuzzyMatch, FuzzySuggestModal, renderResults } from "obsidian";
+import type { AbbrPlugin } from "./plugin";
 
 type ActionCallback = (
   abbr: AbbreviationInstance,
@@ -6,6 +7,7 @@ type ActionCallback = (
 ) => void;
 
 export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstance> {
+  private plugin: AbbrPlugin;
   private abbrList: AbbreviationInstance[];
   private selectedText: string;
   private action: ActionCallback;
@@ -14,17 +16,19 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
 
   constructor(
     app: App,
+    plugin: AbbrPlugin,
     abbrList: AbbreviationInstance[],
     selectedText: string,
     onAction: ActionCallback
   ) {
     super(app);
+    this.plugin = plugin;
     this.abbrList = abbrList;
     this.selectedText = selectedText;
     this.action = onAction;
 
-    this.emptyStateText = "No abbreviations found.";
-    this.setPlaceholder("Type the search term");
+    this.emptyStateText = this.plugin.i18n.t("list.empty");
+    this.setPlaceholder(this.plugin.i18n.t("list.placeholder"));
   }
 
   onOpen(): void {
@@ -68,8 +72,8 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
       buttons
         .createEl("button", {
           cls: AbbreviationListModal.ButtonCls,
-          text: "Global",
-          title: "Add it to global abbreviations",
+          text: this.plugin.i18n.t("list.global"),
+          title: this.plugin.i18n.t("list.globalTip"),
         })
         .onClickEvent((ev) => {
           ev.stopPropagation();
@@ -80,8 +84,12 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
 
     el.createEl("small", {
       text:
-        `type: ${match.item.type}` +
-        (match.item.position ? ` - postion: ${match.item.position}` : ""),
+        this.plugin.i18n.t("list.type", { type: match.item.type }) +
+        (match.item.position
+          ? this.plugin.i18n.t("list.position", {
+              position: match.item.position.toString(),
+            })
+          : ""),
     });
   }
 }

@@ -12,7 +12,7 @@ export class AbbreviationManagerModal extends Modal {
   onOpen() {
     const { contentEl } = this;
     manageGlobalAbbreviations(this.plugin, contentEl, () => {
-      this.setTitle("Manage global abbreviations");
+      this.setTitle(this.plugin.i18n.t("manager.title"));
     });
   }
 
@@ -32,10 +32,10 @@ export function manageGlobalAbbreviations(
 
   plugin.settings.globalAbbreviations.forEach((abbr, index) => {
     new Setting(containerEl)
-      .setName("Abbreviation:")
+      .setName(plugin.i18n.t("text.abbrLabel"))
       .addText((text) =>
         text
-          .setPlaceholder("Short word")
+          .setPlaceholder(plugin.i18n.t("text.abbrPlaceholder"))
           .setValue(abbr.key)
           .onChange(async (value) => {
             plugin.settings.globalAbbreviations[index].key = value.trim();
@@ -44,7 +44,7 @@ export function manageGlobalAbbreviations(
       )
       .addText((text) =>
         text
-          .setPlaceholder("Tooltip")
+          .setPlaceholder(plugin.i18n.t("text.tipPlaceholder"))
           .setValue(abbr.title)
           .onChange(async (value) => {
             plugin.settings.globalAbbreviations[index].title = value.trim();
@@ -53,7 +53,7 @@ export function manageGlobalAbbreviations(
       )
       .addButton((button) =>
         button
-          .setButtonText("Delete")
+          .setButtonText(plugin.i18n.t("button.delete"))
           .setWarning()
           .onClick(async () => {
             plugin.settings.globalAbbreviations.splice(index, 1);
@@ -65,9 +65,9 @@ export function manageGlobalAbbreviations(
 
   new Setting(containerEl).addButton((button) =>
     button
-      .setButtonText("Add")
+      .setButtonText(plugin.i18n.t("button.add"))
       .setCta()
-      .setTooltip("Add new abbreviation")
+      .setTooltip(plugin.i18n.t("manager.addTip"))
       .onClick(async () => {
         plugin.settings.globalAbbreviations.push({
           key: "",

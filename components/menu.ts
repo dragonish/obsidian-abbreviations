@@ -1,5 +1,6 @@
 import { Menu } from "obsidian";
 import { EditorView } from "@codemirror/view";
+import type { AbbrPlugin } from "./plugin";
 import { abbrClassName, extraDefinitionLineClassName } from "../common/data";
 
 type MenuActionCallback = (
@@ -8,9 +9,11 @@ type MenuActionCallback = (
 ) => void;
 
 export class AbbreviationContextMenu {
+  private plugin: AbbrPlugin;
   private menuAction: MenuActionCallback;
 
-  constructor(onMenuAction: MenuActionCallback) {
+  constructor(plugin: AbbrPlugin, onMenuAction: MenuActionCallback) {
+    this.plugin = plugin;
     this.menuAction = onMenuAction;
   }
 
@@ -109,26 +112,32 @@ export class AbbreviationContextMenu {
 
     menu.addItem((item) => {
       item
-        .setTitle(`Type: ${isDefinition ? "definition" : abbr.type}`)
+        .setTitle(
+          this.plugin.i18n.t("menu.type", {
+            type: isDefinition ? "definition" : abbr.type,
+          })
+        )
         .setIcon("type")
         .setDisabled(true);
     });
     menu.addItem((item) => {
       item
-        .setTitle(`Text: ${abbr.key}`)
+        .setTitle(this.plugin.i18n.t("menu.text", { text: abbr.key }))
         .setIcon("whole-word")
         .setDisabled(true);
     });
     menu.addItem((item) => {
       item
-        .setTitle(`Title: ${abbr.title}`)
+        .setTitle(this.plugin.i18n.t("menu.title", { title: abbr.title }))
         .setIcon("message-square-quote")
         .setDisabled(true);
     });
     if (abbr.type === "extra" && !isDefinition) {
       menu.addItem((item) => {
         item
-          .setTitle(`Line: ${abbr.position}`)
+          .setTitle(
+            this.plugin.i18n.t("menu.line", { line: abbr.position.toString() })
+          )
           .setIcon("map-pin")
           .setDisabled(true);
       });
@@ -138,7 +147,7 @@ export class AbbreviationContextMenu {
     if (!isDefinition) {
       menu.addItem((item) =>
         item
-          .setTitle("Edit abbreviation")
+          .setTitle(this.plugin.i18n.t("menu.edit"))
           .setIcon("square-pen")
           .onClick(() => {
             this.menuAction(abbr, "edit");
@@ -149,7 +158,7 @@ export class AbbreviationContextMenu {
     if (abbr.type === "metadata" || abbr.type === "extra") {
       menu.addItem((item) => {
         item
-          .setTitle("Add to global abbreviations")
+          .setTitle(this.plugin.i18n.t("menu.add"))
           .setIcon("square-plus")
           .onClick(() => {
             this.menuAction(abbr, "global");
@@ -160,7 +169,7 @@ export class AbbreviationContextMenu {
     menu.addSeparator();
     menu.addItem((item) => {
       item
-        .setTitle("Copy abbreviation text")
+        .setTitle(this.plugin.i18n.t("menu.copyText"))
         .setIcon("copy")
         .onClick(() => {
           this.menuAction(abbr, "copy-text");
@@ -178,7 +187,7 @@ export class AbbreviationContextMenu {
     }
     menu.addItem((item) => {
       item
-        .setTitle("Copy metadata format definition")
+        .setTitle(this.plugin.i18n.t("menu.copyMetadata"))
         .setIcon("copy")
         .onClick(() => {
           this.menuAction(abbr, "copy-metadata");
@@ -186,7 +195,7 @@ export class AbbreviationContextMenu {
     });
     menu.addItem((item) => {
       item
-        .setTitle("Copy extra format definition")
+        .setTitle(this.plugin.i18n.t("menu.copyExtra"))
         .setIcon("copy")
         .onClick(() => {
           this.menuAction(abbr, "copy-extra");
@@ -194,7 +203,7 @@ export class AbbreviationContextMenu {
     });
     menu.addItem((item) => {
       item
-        .setTitle("Copy HTML format definition")
+        .setTitle(this.plugin.i18n.t("menu.copyHtml"))
         .setIcon("copy")
         .onClick(() => {
           this.menuAction(abbr, "copy-html");

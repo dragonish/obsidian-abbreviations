@@ -9,6 +9,7 @@ import {
   Notice,
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
+import { i18n } from "../locales";
 import { elementListSelector, extraDefinitionClassName } from "../common/data";
 import {
   calcAbbrListFromFrontmatter,
@@ -60,6 +61,7 @@ const DEFAULT_SETTINGS: AbbrPluginSettings = {
 
 export class AbbrPlugin extends Plugin {
   settings: AbbrPluginSettings;
+  i18n = i18n;
 
   async onload() {
     await this.loadSettings();
@@ -186,6 +188,7 @@ export class AbbrPlugin extends Plugin {
 
     // Dom context menu
     const acm = new AbbreviationContextMenu(
+      this,
       this.abbreviationActionHandler.bind(this)
     );
     this.registerDomEvent(
@@ -198,7 +201,7 @@ export class AbbrPlugin extends Plugin {
     // Register command
     this.addCommand({
       id: "add-abbreviation",
-      name: "Add abbreviation",
+      name: this.i18n.t("command.add"),
       checkCallback: (checking) => {
         const keywordState = this.settings.metadataKeyword;
         if (keywordState) {
@@ -212,14 +215,14 @@ export class AbbrPlugin extends Plugin {
     });
     this.addCommand({
       id: "copy-with-format",
-      name: "Copy and format content",
+      name: this.i18n.t("command.copy"),
       callback: () => {
         this.copyAndFormatContent();
       },
     });
     this.addCommand({
       id: "insert-extra-definition",
-      name: "Insert extra definition",
+      name: this.i18n.t("command.insert"),
       editorCheckCallback: (checking) => {
         const extraState = this.settings.useMarkdownExtraSyntax;
         if (extraState) {
@@ -233,20 +236,20 @@ export class AbbrPlugin extends Plugin {
     });
     this.addCommand({
       id: "list-abbreviations",
-      name: "List abbreviations",
+      name: this.i18n.t("command.list"),
       callback: () => {
         this.showAbbreviationListModal();
       },
     });
     this.addCommand({
       id: "manage-global-abbreviations",
-      name: "Manage global abbreviations",
+      name: this.i18n.t("command.manage"),
       callback: () => {
         this.showManageAbbreviationsModal();
       },
     });
 
-    this.addRibbonIcon("text-search", "List abbreviations", () => {
+    this.addRibbonIcon("text-search", this.i18n.t("command.list"), () => {
       this.showAbbreviationListModal();
     });
 
@@ -377,12 +380,7 @@ export class AbbrPlugin extends Plugin {
         this.settings.detectCJK
       );
 
-      try {
-        await navigator.clipboard.writeText(formatContent);
-        this.sendNotification("Formatted content has been copied!");
-      } catch {
-        this.sendNotification("Error: Unable to copy content!");
-      }
+      this.copyContent(formatContent);
     }
   }
 
@@ -414,6 +412,7 @@ export class AbbrPlugin extends Plugin {
       const selectedText = editor.getSelection();
       new AbbreviationInputModal(
         this.app,
+        this,
         selectedText,
         this.addAbbreviationToFrontmatter.bind(this)
       ).open();
@@ -456,6 +455,7 @@ export class AbbrPlugin extends Plugin {
 
       new AbbreviationListModal(
         this.app,
+        this,
         abbrList,
         selectedText,
         this.abbreviationActionHandler.bind(this)
@@ -480,7 +480,9 @@ export class AbbrPlugin extends Plugin {
           } else {
             frontmatter[metadataKeyword] = [item];
           }
-          this.sendNotification(`Added metadata abbreviation: ${abbr}.`);
+          this.sendNotification(
+            this.i18n.t("notification.metadataAdded", { abbr })
+          );
         }
       });
     } catch (err) {
@@ -531,7 +533,7 @@ export class AbbrPlugin extends Plugin {
           if (index > -1) {
             (frontmatter[metadataKeyword] as unknown[]).splice(index, 1);
             this.sendNotification(
-              `Deleted metadata abbreviation: ${abbr.key}.`
+              this.i18n.t("notification.metadataDeleted", { abbr: abbr.key })
             );
           }
         }
@@ -574,7 +576,9 @@ export class AbbrPlugin extends Plugin {
     if (index > -1) {
       this.settings.globalAbbreviations.splice(index, 1);
       this.saveSettings();
-      this.sendNotification(`Deleted global abbreviation: ${abbr.key}.`);
+      this.sendNotification(
+        this.i18n.t("notification.globalDeleted", { abbr: abbr.key })
+      );
     }
   }
 
@@ -604,21 +608,26 @@ export class AbbrPlugin extends Plugin {
           editor.setCursor(dest >= 0 ? dest : 0);
         }
       } else {
-        new AbbreviationInputModal(this.app, abbr, (abbrKey, abbrTitle, ac) => {
-          if (ac === "delete") {
-            if (abbr.type === "metadata") {
-              this.deleteAbbreviationFromFrontmatter(abbr);
-            } else if (abbr.type === "global") {
-              this.deleteAbbreviationFromGlobal(abbr);
-            }
-          } else if (ac === "edit") {
-            if (abbr.type === "metadata") {
-              this.modifyAbbreviationInFrontmatter(abbr, abbrKey, abbrTitle);
-            } else if (abbr.type === "global") {
-              this.modifyAbbreviationInGlobal(abbr, abbrKey, abbrTitle);
+        new AbbreviationInputModal(
+          this.app,
+          this,
+          abbr,
+          (abbrKey, abbrTitle, ac) => {
+            if (ac === "delete") {
+              if (abbr.type === "metadata") {
+                this.deleteAbbreviationFromFrontmatter(abbr);
+              } else if (abbr.type === "global") {
+                this.deleteAbbreviationFromGlobal(abbr);
+              }
+            } else if (ac === "edit") {
+              if (abbr.type === "metadata") {
+                this.modifyAbbreviationInFrontmatter(abbr, abbrKey, abbrTitle);
+              } else if (abbr.type === "global") {
+                this.modifyAbbreviationInGlobal(abbr, abbrKey, abbrTitle);
+              }
             }
           }
-        }).open();
+        ).open();
       }
     } else if (action === "global") {
       this.settings.globalAbbreviations.push({
@@ -626,7 +635,9 @@ export class AbbrPlugin extends Plugin {
         title: abbr.title,
       });
       await this.saveSettings();
-      this.sendNotification(`Added ${abbr.key} to global abbreviations.`);
+      this.sendNotification(
+        this.i18n.t("notification.globalAdded", { abbr: abbr.key })
+      );
     } else if (action.includes("copy")) {
       let payload = "";
       switch (action) {
@@ -650,15 +661,19 @@ export class AbbrPlugin extends Plugin {
       }
 
       if (payload) {
-        try {
-          await navigator.clipboard.writeText(payload);
-          this.sendNotification("Content has been copied!");
-        } catch {
-          this.sendNotification("Error: Unable to copy content!");
-        }
+        this.copyContent(payload);
       } else {
-        this.sendNotification("Warn: The copied content is empty!");
+        this.sendNotification(this.i18n.t("notification.copyWarn"));
       }
+    }
+  }
+
+  private async copyContent(content: string) {
+    try {
+      await navigator.clipboard.writeText(content);
+      this.sendNotification(this.i18n.t("notification.copied"));
+    } catch {
+      this.sendNotification(this.i18n.t("notification.copyError"));
     }
   }
 
@@ -668,13 +683,13 @@ export class AbbrPlugin extends Plugin {
     if (typeof frontmatter === "object" && frontmatter) {
       return true;
     }
-    this.sendNotification("Error: Unexpected error!");
+    this.sendNotification(this.i18n.t("notification.unexpectedError"));
     return false;
   }
 
   private strictCheckAbbreviationFormat(abbr: string) {
     if (!isWord(abbr)) {
-      throw new Error("Warn: Abbreviation format is incorrect!");
+      throw new Error(this.i18n.t("notification.formatWarn"));
     }
     return;
   }
@@ -684,7 +699,7 @@ export class AbbrPlugin extends Plugin {
     if (metadataKeyword) {
       return metadataKeyword;
     }
-    throw new Error("Error: Metadata keyword is empty!");
+    throw new Error(this.i18n.t("notification.metadataError"));
   }
 
   private strictGetActiveFile() {
@@ -692,7 +707,7 @@ export class AbbrPlugin extends Plugin {
     if (file) {
       return file;
     }
-    throw new Error("Error: No active file found!");
+    throw new Error(this.i18n.t("notification.fileError"));
   }
 
   private sendErrorNotification(err: unknown) {
@@ -702,11 +717,11 @@ export class AbbrPlugin extends Plugin {
   }
 
   private sendFormatWarn() {
-    this.sendNotification("Warn: Abbreviation format is incorrect!");
+    this.sendNotification(this.i18n.t("notification.formatWarn"));
   }
 
   private sendNotFoundWarn() {
-    this.sendNotification("Warn: No original abbreviation found!");
+    this.sendNotification(this.i18n.t("notification.notFoundWarn"));
   }
 
   private sendNotification(message: string) {

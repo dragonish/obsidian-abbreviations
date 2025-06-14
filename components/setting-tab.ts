@@ -3,7 +3,7 @@ import type { AbbrPlugin } from "./plugin";
 import { manageGlobalAbbreviations } from "./manager-modal";
 
 export class AbbrSettingTab extends PluginSettingTab {
-  plugin: AbbrPlugin;
+  private plugin: AbbrPlugin;
 
   constructor(app: App, plugin: AbbrPlugin) {
     super(app, plugin);
@@ -17,10 +17,12 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* metadataKeyword
     const metadataKeywordSetting = new Setting(containerEl)
-      .setName("Metadata keyword")
+      .setName(this.plugin.i18n.t("setting.metadataKeyword"))
       .addText((text) =>
         text
-          .setPlaceholder("Enter the keyword")
+          .setPlaceholder(
+            this.plugin.i18n.t("setting.metadataKeywordPlaceholder")
+          )
           .setValue(this.plugin.settings.metadataKeyword)
           .onChange(async (value) => {
             this.plugin.settings.metadataKeyword = value.trim();
@@ -29,22 +31,23 @@ export class AbbrSettingTab extends PluginSettingTab {
       );
 
     const metadataKeywordDesc = createFragment();
+    const metadataKeywordDescTuple = this.getPlaceholderTuple(
+      this.plugin.i18n.t("setting.metadataKeywordDesc")
+    );
     metadataKeywordDesc.append(
-      "The key name that reads the abbreviation information from the ",
+      metadataKeywordDescTuple[0],
       createEl("a", {
         href: "https://help.obsidian.md/Editing+and+formatting/Properties",
-        text: "properties",
+        text: this.plugin.i18n.t("setting.properties"),
       }),
-      "."
+      metadataKeywordDescTuple[1]
     );
     metadataKeywordSetting.descEl.appendChild(metadataKeywordDesc);
 
     //* markInSourceMode
     new Setting(containerEl)
-      .setName("Mark abbreviations in Source mode")
-      .setDesc(
-        "In Source mode, mark abbreviations just like in Live Preview and Reading view."
-      )
+      .setName(this.plugin.i18n.t("setting.markInSourceMode"))
+      .setDesc(this.plugin.i18n.t("setting.markInSourceModeDesc"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.markInSourceMode)
@@ -56,9 +59,7 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* detectCJK
     const detectCJKSetting = new Setting(containerEl)
-      .setName(
-        "Enable abbreviation detection for languages not separated by spaces"
-      )
+      .setName(this.plugin.i18n.t("setting.detectCJK"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.detectCJK)
@@ -69,41 +70,53 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const detectCJKDesc = createFragment();
+    const detectCJKDescTuple = this.getPlaceholderTuple(
+      this.plugin.i18n.t("setting.detectCJKDesc")
+    );
     detectCJKDesc.append(
-      "Detect abbreviations in languages that do not use spaces for word segmentation, such as ",
+      detectCJKDescTuple[0],
       createEl("abbr", {
         text: "CJK",
         title: "Chinese, Japanese, Korean",
       }),
-      "."
+      detectCJKDescTuple[1]
     );
     detectCJKSetting.descEl.appendChild(detectCJKDesc);
 
     //* globalAbbreviations
     const globalAbbreviationsSetting = new Setting(containerEl)
-      .setName("Global abbreviations")
+      .setName(this.plugin.i18n.t("setting.globalAbbreviations"))
       .addButton((button) => {
-        button.setButtonText("Manage abbreviations").onClick(() => {
-          this.displayGlobalAbbreviations();
-        });
+        button
+          .setButtonText(
+            this.plugin.i18n.t("setting.globalAbbreviationsButton")
+          )
+          .onClick(() => {
+            this.displayGlobalAbbreviations();
+          });
       });
 
     const globalAbbreviationsDesc = createFragment();
+    const globalAbbreviationsDescTuple = this.getPlaceholderTuple(
+      this.plugin.i18n.t("setting.globalAbbreviationsDesc")
+    );
     globalAbbreviationsDesc.append(
-      "Configure global abbreviations, but their priority is lower than ",
+      globalAbbreviationsDescTuple[0],
       createEl("a", {
         href: "https://help.obsidian.md/Editing+and+formatting/Properties",
-        text: "properties",
+        text: this.plugin.i18n.t("setting.properties"),
       }),
-      "."
+      globalAbbreviationsDescTuple[1]
     );
     globalAbbreviationsSetting.descEl.appendChild(globalAbbreviationsDesc);
 
-    new Setting(containerEl).setName("Markdown extra syntax").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.extraHeading"))
+      .setHeading();
 
     //* useMarkdownExtraSyntax
     const useMarkdownExtraSyntaxSetting = new Setting(containerEl)
-      .setName("Enable Markdown Extra syntax support")
+      .setName(this.plugin.i18n.t("setting.useMarkdownExtraSyntax"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.useMarkdownExtraSyntax)
@@ -114,12 +127,15 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const useMarkdownExtraSyntaxDesc = createFragment();
+    const useMarkdownExtraSyntaxDescTuple = this.getPlaceholderTuple(
+      this.plugin.i18n.t("setting.useMarkdownExtraSyntaxDesc")
+    );
     useMarkdownExtraSyntaxDesc.append(
-      "Toggle this setting to enable or disable the feature. Definition format: ",
+      useMarkdownExtraSyntaxDescTuple[0],
       createEl("b", {
         text: "*[W3C]: World Wide Web Consortium",
       }),
-      "."
+      useMarkdownExtraSyntaxDescTuple[1]
     );
     useMarkdownExtraSyntaxSetting.descEl.appendChild(
       useMarkdownExtraSyntaxDesc
@@ -127,10 +143,8 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* useExtraDefinitionDecorator
     new Setting(containerEl)
-      .setName("Enable extra definition decorator")
-      .setDesc(
-        "Display a decorator at the end of the extra definition that this is an abbreviation definition."
-      )
+      .setName(this.plugin.i18n.t("setting.useExtraDefinitionDecorator"))
+      .setDesc(this.plugin.i18n.t("setting.useExtraDefinitionDecoratorDesc"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.useExtraDefinitionDecorator)
@@ -142,9 +156,9 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* extraDefinitionDecoratorOpacity
     new Setting(containerEl)
-      .setName("Extra definition decorator opacity")
+      .setName(this.plugin.i18n.t("setting.extraDefinitionDecoratorOpacity"))
       .setDesc(
-        "Opacity of the extra definition decorator. The value is the form of percentage."
+        this.plugin.i18n.t("setting.extraDefinitionDecoratorOpacityDesc")
       )
       .addSlider((slider) => {
         slider
@@ -160,9 +174,9 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* extraDefinitionDecoratorContent
     new Setting(containerEl)
-      .setName("Extra definition decorator content")
+      .setName(this.plugin.i18n.t("setting.extraDefinitionDecoratorContent"))
       .setDesc(
-        "Content of the extra definition decorator. Two variables can be used: ${abbr} and ${tooltip}. To introduce certain information of the current definition into the content."
+        this.plugin.i18n.t("setting.extraDefinitionDecoratorContentDesc")
       )
       .addText((text) => {
         text
@@ -173,12 +187,14 @@ export class AbbrSettingTab extends PluginSettingTab {
           });
       });
 
-    new Setting(containerEl).setName("Suffixes").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.suffixesHeading"))
+      .setHeading();
 
     //* detectAffixes
     new Setting(containerEl)
-      .setName("Enable detect suffixes")
-      .setDesc("Detect supplementary suffixes for abbreviations.")
+      .setName(this.plugin.i18n.t("setting.detectAffixes"))
+      .setDesc(this.plugin.i18n.t("setting.detectAffixesDesc"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.detectAffixes)
@@ -190,10 +206,10 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* affixes
     const affixesSetting = new Setting(containerEl)
-      .setName("Suffix list")
+      .setName(this.plugin.i18n.t("setting.affixes"))
       .addText((text) => {
         text
-          .setPlaceholder("A string separated by ,")
+          .setPlaceholder(this.plugin.i18n.t("setting.affixesPlaceholder"))
           .setValue(this.plugin.settings.affixes)
           .onChange(async (value) => {
             this.plugin.settings.affixes = value.trim();
@@ -202,12 +218,15 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const affixesDesc = createFragment();
+    const affixesDescTuple = this.getPlaceholderTuple(
+      this.plugin.i18n.t("setting.affixesDesc")
+    );
     affixesDesc.append(
-      "The list content uses comma-separated string, for example: ",
+      affixesDescTuple[0],
       createEl("b", {
         text: "s, es, less",
       }),
-      "."
+      affixesDescTuple[1]
     );
     affixesSetting.descEl.appendChild(affixesDesc);
   }
@@ -216,12 +235,14 @@ export class AbbrSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     manageGlobalAbbreviations(this.plugin, containerEl, () => {
       new Setting(containerEl)
-        .setName("Global abbreviations")
+        .setName(this.plugin.i18n.t("setting.globalAbbreviations"))
         .setHeading()
         .addButton((button) => {
-          button.setButtonText("Back").onClick(() => {
-            this.display();
-          });
+          button
+            .setButtonText(this.plugin.i18n.t("button.back"))
+            .onClick(() => {
+              this.display();
+            });
         });
     });
   }
@@ -231,5 +252,16 @@ export class AbbrSettingTab extends PluginSettingTab {
       return true;
     }
     return false;
+  }
+
+  private getPlaceholderTuple(text: string): [string, string] {
+    const parts = text.split("{placeholder}");
+    if (parts.length === 1) {
+      return [parts[0], ""];
+    } else if (parts.length >= 2) {
+      return [parts[0], parts[1]];
+    }
+
+    return ["", ""];
   }
 }

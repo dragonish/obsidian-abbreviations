@@ -48,5 +48,8 @@
     "skip": {
       "changelog": true
     }
+  },
+  "dependencies": {
+    "obsidian-plugin-i18n": "^0.1.2"
   }
 }

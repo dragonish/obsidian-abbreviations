@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      obsidian-plugin-i18n:
+        specifier: ^0.1.2
+        version: 0.1.2
     devDependencies:
       '@codemirror/state':
         specifier: ^6.5.2
@@ -1334,6 +1338,9 @@ packages:
 
   nwsapi@2.2.20:
     resolution: {integrity: sha512-/ieB+mDe4MrrKMT8z+mQL8klXydZWGR5Dowt4RAGKbJ3kIGEx3X4ljUo+6V73IXtUPWgfOlU5B9MlGxFO5T+cA==}
+
+  obsidian-plugin-i18n@0.1.2:
+    resolution: {integrity: sha512-97YDTmA18nZqAJKMCsU+EEUJaPciWCQllc9hc0atca9nZJi4H+MATrCfR0Oq6J0UdyHwIL+3jfeyyYc8DxYqcQ==}
 
   obsidian@1.8.7:
     resolution: {integrity: sha512-h4bWwNFAGRXlMlMAzdEiIM2ppTGlrh7uGOJS6w4gClrsjc+ei/3YAtU2VdFUlCiPuTHpY4aBpFJJW75S1Tl/JA==}
@@ -3116,6 +3123,8 @@ snapshots:
       validate-npm-package-license: 3.0.4
 
   nwsapi@2.2.20: {}
+
+  obsidian-plugin-i18n@0.1.2: {}
 
   obsidian@1.8.7(@codemirror/state@6.5.2)(@codemirror/view@6.37.2):
     dependencies:

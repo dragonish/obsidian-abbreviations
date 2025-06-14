@@ -1,4 +1,5 @@
 import { App, Modal, Setting } from "obsidian";
+import type { AbbrPlugin } from "./plugin";
 import { isWord } from "../common/tool";
 
 type ModalActionType = "edit" | "delete";
@@ -9,16 +10,19 @@ type SubmitCallback = (
 ) => void;
 
 export class AbbreviationInputModal extends Modal {
+  private plugin: AbbrPlugin;
   private selectedText?: string;
   private selectedAbbr?: AbbreviationInstance;
   private onSubmit: SubmitCallback;
 
   constructor(
     app: App,
+    plugin: AbbrPlugin,
     selectedTextOrAbbr: string | AbbreviationInstance,
     onSubmit: SubmitCallback
   ) {
     super(app);
+    this.plugin = plugin;
     if (typeof selectedTextOrAbbr === "string") {
       this.selectedText = selectedTextOrAbbr;
     } else {
@@ -40,12 +44,12 @@ export class AbbreviationInputModal extends Modal {
 
     if (this.selectedAbbr) {
       const { type, key, title } = this.selectedAbbr;
-      this.setTitle(`Edit ${type} abbreviation`);
+      this.setTitle(this.plugin.i18n.t("input.editTitle", { type }));
 
       abbr = key;
       tip = title;
     } else {
-      this.setTitle("Add metadata abbreviation");
+      this.setTitle(this.plugin.i18n.t("input.addTitle"));
 
       if (this.selectedText) {
         const sText = this.selectedText.replace(/\n/, " ").trim();
@@ -60,10 +64,10 @@ export class AbbreviationInputModal extends Modal {
     const { contentEl } = this;
 
     new Setting(contentEl)
-      .setName("Abbreviation:")
+      .setName(this.plugin.i18n.t("text.abbrLabel"))
       .addText((text) => {
         text
-          .setPlaceholder("Short word")
+          .setPlaceholder(this.plugin.i18n.t("text.abbrPlaceholder"))
           .setValue(abbr)
           .onChange((value) => {
             abbr = value.trim();
@@ -86,7 +90,7 @@ export class AbbreviationInputModal extends Modal {
       })
       .addText((text) => {
         text
-          .setPlaceholder("Tooltip")
+          .setPlaceholder(this.plugin.i18n.t("text.tipPlaceholder"))
           .setValue(tip)
           .onChange((value) => {
             tip = value.trim();
@@ -104,7 +108,7 @@ export class AbbreviationInputModal extends Modal {
     if (this.selectedAbbr) {
       buttonSetting.addButton((btn) => {
         btn
-          .setButtonText("Delete")
+          .setButtonText(this.plugin.i18n.t("button.delete"))
           .setWarning()
           .onClick(() => {
             this.submitModal(abbr, tip, "delete");
@@ -114,7 +118,7 @@ export class AbbreviationInputModal extends Modal {
 
     buttonSetting.addButton((btn) => {
       btn
-        .setButtonText("Submit")
+        .setButtonText(this.plugin.i18n.t("button.submit"))
         .setCta()
         .onClick(() => {
           this.submitModal(abbr, tip, "edit");
