@@ -1,0 +1,91 @@
+{
+  "button": {
+    "delete": "删除",
+    "submit": "提交",
+    "add": "添加",
+    "back": "返回"
+  },
+  "text": {
+    "abbrLabel": "缩略语：",
+    "abbrPlaceholder": "缩写",
+    "tipPlaceholder": "全称"
+  },
+  "command": {
+    "add": "添加缩略语",
+    "copy": "复制并格式化内容",
+    "insert": "插入 Extra 定义",
+    "list": "缩略语列表",
+    "manage": "管理全局缩略语"
+  },
+  "notification": {
+    "copied": "内容已复制！",
+    "copyWarn": "警告：复制的内容为空！",
+    "copyError": "错误：无法复制内容！",
+    "metadataAdded": "已添加元数据缩略语：{abbr}。",
+    "metadataDeleted": "已删除元数据缩略语：{abbr}。",
+    "metadataError": "错误：元数据关键词为空！",
+    "globalAdded": "已添加全局缩略语：{abbr}。",
+    "globalDeleted": "已删除全局缩略语：{abbr}。",
+    "formatWarn": "警告：缩略语格式不正确！",
+    "notFoundWarn": "警告：未找到原始缩略语！",
+    "unexpectedError": "错误：意外错误！",
+    "fileError": "错误：未找到活动文件！"
+  },
+  "input": {
+    "editTitle": "编辑缩略语 ({type})",
+    "addTitle": "添加元数据缩略语"
+  },
+  "list": {
+    "empty": "未找到缩略语。",
+    "placeholder": "输入搜索词",
+    "global": "全局",
+    "globalTip": "将其添加到全局缩略语中",
+    "type": "类型：{type}",
+    "position": " - 位置：{position}"
+  },
+  "manager": {
+    "title": "管理全局缩略语",
+    "addTip": "添加新的缩略语"
+  },
+  "menu": {
+    "type": "类型：{type}",
+    "text": "缩写：{text}",
+    "tooltip": "全称：{tooltip}",
+    "line": "行号：{line}",
+    "edit": "编辑缩略语",
+    "add": "添加到全局缩略语",
+    "copyText": "复制缩写",
+    "copyTooltip": "复制全称",
+    "copyMetadata": "复制元数据格式定义",
+    "copyExtra": "复制 Extra 格式定义",
+    "copyHtml": "复制 HTML 格式定义"
+  },
+  "setting": {
+    "metadataKeyword": "元数据关键词",
+    "metadataKeywordDesc": "从{placeholder}中读取缩略语信息的键名。",
+    "metadataKeywordPlaceholder": "输入关键词",
+    "properties": "属性",
+    "markInSourceMode": "在源码模式中标记缩略语",
+    "markInSourceModeDesc": "在源码模式下标记缩略语，与在实时阅览和阅读视图中一样。",
+    "detectCJK": "启用非空格分隔语言的缩略语检测",
+    "detectCJKDesc": "检测不使用空格进行分词的语言(如 {placeholder})中的缩略语。",
+    "globalAbbreviations": "全局缩略语",
+    "globalAbbreviationsButton": "管理缩略语",
+    "globalAbbreviationsDesc": "配置全局缩略语，但其优先级低于{placeholder}。",
+    "extraHeading": "Markdown Extra",
+    "useMarkdownExtraSyntax": "启用 Markdown Extra 语法支持",
+    "useMarkdownExtraSyntaxDesc": "切换此设置以启用或禁用该功能。定义格式：{placeholder}。",
+    "useExtraDefinitionDecorator": "启用 Extra 定义装饰器",
+    "useExtraDefinitionDecoratorDesc": "显示一个装饰器元素在 Extra 定义末尾，表明这是一个缩略语定义。",
+    "extraDefinitionDecoratorOpacity": "Extra 定义装饰器不透明度",
+    "extraDefinitionDecoratorOpacityDesc": "Extra 定义装饰器的不透明度，值是百分比的形式。",
+    "extraDefinitionDecoratorContent": "Extra 定义装饰器内容",
+    "extraDefinitionDecoratorContentDesc": "Extra 定义装饰器的内容。可以使用两个变量：${abbr} 和 ${tooltip}，用于将当前定义的某些信息引入内容。",
+    "suffixesHeading": "后缀",
+    "detectAffixes": "启用后缀检测",
+    "detectAffixesDesc": "检测带有词尾的缩略语。",
+    "affixes": "后缀列表",
+    "affixesPlaceholder": "用逗号(,)分隔的字符串",
+    "affixesDesc": "列表内容为使用逗号(,)分隔的字符串，例如：{placeholder}。"
+  }
+}
