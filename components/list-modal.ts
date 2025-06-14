@@ -10,7 +10,7 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
   private selectedText: string;
   private action: ActionCallback;
 
-  private static ButtonCls = "abbreviations-plugin--list-item-button";
+  private static ButtonCls = "abbreviations-plugin-list-item-button";
 
   constructor(
     app: App,
@@ -62,7 +62,7 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
     );
 
     const buttons = mainItem.createSpan(
-      "abbreviations-plugin--list-item-buttons"
+      "abbreviations-plugin-list-item-buttons"
     );
     if (match.item.type === "metadata" || match.item.type === "extra") {
       buttons

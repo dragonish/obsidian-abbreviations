@@ -154,7 +154,7 @@ p.abbreviations-plugin-extra-definition {
   justify-content: space-between;
 }
 
-.abbreviations-plugin--list-item-button {
+.abbreviations-plugin-list-item-button {
   cursor: pointer;
   margin-inline-start: var(--size-4-2);
 }
