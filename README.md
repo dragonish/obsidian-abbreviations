@@ -1,6 +1,6 @@
 # Abbreviations and Acronyms
 
-<p align="center"><b>English</b> | <a href="./README-zh_CN.md">简体中文</a></p>
+**English** | [简体中文](./README-zh_CN.md)
 
 ## Introduction
 
@@ -12,21 +12,17 @@ This plugin supports rendering in both editing view (*Live Preview*), reading vi
 
 ## Usage
 
-### Properties
+### Define abbreviations
 
-Gets the abbreviations by reading the specified field in the note [properties(metadata)](https://help.obsidian.md/Editing+and+formatting/Properties), and automatically render the abbreviations in the note content.
+You can define abbreviations in [properties](#properties) or using [Markdown Extra](#markdown-extra) syntax.
 
-#### Metadata format
+#### Properties
 
-You can use arrays of strings or key-value pairs.
-
-Given that Obsidian's properties [support the JSON format](https://help.obsidian.md/Editing+and+formatting/Properties#JSON+Properties), you can also write in an equivalent JSON format for the following YAML. *However, Obsidian itself saves JSON block as YAML, so it is recommended to write properties in the YAML format.*
+The plugin gets abbreviations by reading the specified field in the note [properties(metadata)](https://help.obsidian.md/Editing+and+formatting/Properties). You can define abbreviations using a list of [strings](#strings) or a list of [key-value pairs](#key-value-pairs).
 
 ##### Strings
 
-Use a colon (`:`) in the string to separate the abbreviation and the tooltip.
-
-Example:
+Use a colon (`:`) in the string to separate the abbreviation and the tooltip. Example:
 
 ```yaml
 ---
@@ -41,9 +37,7 @@ abbr:
 
 ##### Key-value pairs
 
-Use the abbreviation for key and the tooltip for value.
-
-Example:
+Use the abbreviation for key and the tooltip for value. Example:
 
 ```yaml
 ---
@@ -53,32 +47,28 @@ abbr:
 ---
 ```
 
-### Markdown Extra syntax
+#### Markdown Extra
 
 > [!NOTE]
 > Currently, there is no unified syntax specification, and the implementation of this plugin is similar to [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/#abbr).
 
-You need to enable "Enable Markdown Extra syntax support" in the plugin settings to activate this feature.
-
-Gets the abbreviations by reading the specified format in the note, and automatically render the abbreviations in the note content.
-
-#### Definition format
+You need to enable *[Enable Markdown Extra syntax support](#markdown-extra-syntax)* in the plugin settings to activate this feature. The plugin gets abbreviations by reading the specified format in the note.
 
 Declare at the beginning of a line, for example:
 
-```
+```text
 *[W3C]: World Wide Web Consortium
 ```
 
 Disable a specific abbreviation:
 
-```
+```text
 *[W3C]: 
 ```
 
 It is recommended to use blank lines to separate the definition area from the main content. For example:
 
-```
+```text
 You can use CSS to style your HTML. 
 
 *[HTML]: HyperText Markup Language
@@ -87,11 +77,11 @@ You can use CSS to style your HTML.
 Using style sheets, you can keep your CSS presentation layer and HTML content layer separate.
 ```
 
-#### Same abbreviations
+### Same abbreviations
 
 When there are multiple same abbreviations, the scope is as follows:
 
-```
+```text
 ---
 abbr:
   - RAM: Random Access Memory
@@ -137,7 +127,7 @@ Copy the note content and convert abbreviations to `<abbr>` tags, so that they c
 
 For example, for the following note content:
 
-```
+```text
 ---
 tags:
   - test
@@ -153,7 +143,7 @@ You can use CSS to style your HTML.
 Using style sheets, you can keep your `CSS` presentation layer and `HTML` content layer separate.
 ```
 
-After using the command, you get:
+This command will copy the following content to the clipboard:
 
 ```markdown
 # Example
@@ -165,19 +155,19 @@ Using style sheets, you can keep your `CSS` presentation layer and `HTML` conten
 
 ### Insert extra definition
 
-*This command is only allowed after enabling the "Enable Markdown Extra syntax support" setting.*
+This command is only allowed after enabling the *[Enable Markdown Extra syntax support](#markdown-extra-syntax)* setting.
 
 Insert definition of Markdown Extra syntax at current cursor position in activity editor.
 
 When no text is selected, insert the following content:
 
-```
+```text
 *[<cursor_position>]: 
 ```
 
 When selected text exists, insert the following content:
 
-```
+```text
 *[<selected_text>]: <cursor_position>
 ```
 
@@ -205,7 +195,7 @@ Detect abbreviations in languages that do not use spaces for word segmentation, 
 
 For example, for the following note content:
 
-```
+```text
 ---
 abbr:
   - "北大: 北京大学"
@@ -222,29 +212,17 @@ Only when this option is enabled will it render as:
 
 Otherwise, keep it as is:
 
-```
+```html
 我是一名北大学子。
 ```
 
 ### Global abbreviations
 
-This plugin allows you to customize globally available abbreviations.
-
-If you want to disable a specific abbreviation in your notes, you can declaring the abbreviation as an empty string value in the [properties](https://help.obsidian.md/Editing+and+formatting/Properties).
-
-Example:
-
-```yaml
----
-abbr:
-  - "HTML:  " # string format
-  - CSS: "" # key-value pair format
----
-```
+This plugin allows you to customize globally available abbreviations. Their priority is lower than abbreviations defined in the notes.
 
 ### Markdown extra syntax
 
-The usage can refer to the [previous text](#markdown-extra-syntax).
+The usage can refer to the [previous text](#markdown-extra).
 
 In addition, you can show a decorator for extra syntax definitions in the editing view. The content of the decorator can use two variables: `${abbr}` and `${tooltip}`. To introduce certain information of the current definition into the content. For example, for `→ ${abbr}`:
 
