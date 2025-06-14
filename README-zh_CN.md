@@ -1,6 +1,6 @@
 # Abbreviations and Acronyms
 
-[English](./README.md) | **简体中文**
+[English](./README.md) | **简体中文** | [繁體中文](./README-zh_TW.md)
 
 ## 介绍
 
