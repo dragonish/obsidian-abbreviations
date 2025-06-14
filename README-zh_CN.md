@@ -1,30 +1,43 @@
 # Abbreviations and Acronyms
 
-<p align="center"><a href="./README.md">English</a> | <b>简体中文</b></p>
+[English](./README.md) | **简体中文**
 
-## 术语解说
+## 介绍
 
-- `Abbreviation（缩写）`本身指的是在使用拼音文字的语言中，对于常用词组（多为专有名词）及少数常用词所采用的简便写法，如以 cm 指代 centimeter，No. 指代 numerō 或 UN 指代 the United Nations等情况，缩写后所得到的词称为`略语`。[^1]类似于汉语中的`简称`，如“四化”指代“四个现代化”。
-- `Acronym（首字母缩略词）`常见于英语和法语，它指的是那些以词的形式发音，而非逐字母拼读的`略语`，如以 NATO 指代 North Atlantic Treaty Organization（北约），或是法语中以 UNESCO 指代 Organisation des Nations unies pour l'éducation, la science et la culture（联合国教科文组织）。
-- 此外还存在所谓的`Initialism`，即逐字母拼读的`略语`，如以BBC指代British Broadcasting Corporation（英国广播公司）或以NBA指代National Basketball Association（美国职业篮球联赛）。事实上，不同词典对`Initialism`和`Acronym`的区分并不统一，有的词典会将二者归为一类，在本插件中就没分得那么细。
-- 在了解了基本概念之后，需要明确的是，本插件只是借用了词汇学中的术语，实际上，这里的“Acronym”完全可以不是`略语`，而是一个完整的词语（但中间不能有空格）。`定义语句`的后半部分也完全可以不是单个术语而是长句解释。下文用`略语`指代`定义语句`中的前半部分仅仅是出于简洁需要。
-- 本插件适合用在术语不具有全局性的某篇文献的阅读笔记中，举例来说，我并非医学专业，只是出于个人保健需要阅读中国高血脂防治指南，那么阅读笔记就可以用这个插件来进行术语略语工作，而不像`note definitions`插件那样需要单独增加一个笔记文件，`note definitions`插件的使用方法详见[PKMer_Obsidian 插件：note definitions 创建属于你自己的术语表](https://pkmer.cn/show/20240823150047)。
+这是一个用于 [Obsidian](https://obsidian.md) 的插件，实现自动标记缩略语和术语。
 
-## 插件用法
+此插件支持在阅读视图、编辑视图（*实时阅览*）和源码模式（可选）渲染，同时支持列出当前文件中的所有缩略语，以及缩略语元素的上下文菜单。
 
-以下语法仅作举例，在实际操作中都可以通过命令面板执行相关命令进行快速填写。
+## 用法
 
-在设置中指定某个`属性名称`为存放`定义语句`的位置，`Abbreviations and Acronyms`插件就会自动监测笔记中的`略语`，并为它们添加下划虚线，你既可以用字符串写`定义语句`：
+### 定义缩略语
 
-```
+您可以在[属性](#属性)或者使用 [Markdown Extra](#markdown-extra) 语法定义缩略语。
+
+#### 属性
+
+插件通过读取笔记[属性（元数据）](https://help.obsidian.md/Editing+and+formatting/Properties)中的指定字段获取缩略语。您可以使用[字符串](#字符串)列表或[键值对](#键值对)列表来定义缩略语。
+
+##### 字符串
+
+在字符串中使用冒号(`:`)分隔缩写和全称。示例：
+
+```yaml
 ---
 abbr:
   - "HTML: HyperText Markup Language"
   - "CSS: Cascading Style Sheets"
 ---
 ```
-也可以用键值对写：
-```
+
+> [!TIP]
+> 这种格式的优点是可以在显示模式中直接添加或删除缩写。
+
+##### 键值对
+
+使用缩写作为键，全称作为值。示例：
+
+```yaml
 ---
 abbr:
   - HTML: HyperText Markup Language
@@ -32,25 +45,41 @@ abbr:
 ---
 ```
 
-值得一提的是，如果`定义语句`是由字符串写成，且`OB系统设置→编辑器→笔记属性`选择`显示`或`源码`的情况下，可以在阅读模式的正文中直接编辑或删除`定义语句`。
+#### Markdown Extra
 
----
+> [!NOTE]
+> 目前还没有统一的语法规范，该插件的实现类似于 [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/#abbr)。
 
-<span id="refs">在插件设置中</span>启用`Enable Markdown Extra syntax support`选项后，你可以在笔记正文中使用Markdown扩展语法在笔记的任何位置添加`定义语句`，或是执行命令面板中的`Abbreviations and Acronyms：Insert extra definition`命令将选中的文本转化为`略语`，建议在定义语句的前后各空一行，一旦添加成功，则直到下一处`定义语句`为止，该`略语`都将指向这里所赋予的定义，`定义语句`只会显示在`实时渲染模式`和`源码模式`中，不会显示在`阅读模式`中[^2]：
+您需要在插件设置中[启用 Markdown Extra 语法支持](#markdown-extra-语法)才能激活此功能。插件通过读取笔记中指定格式的内容来获取缩略语。
 
-```
+要定义一个缩略语，只需在笔记中某一行的开头声明，例如：
+
+```text
 *[W3C]: World Wide Web Consortium
 ```
 
-如果你想将下文中的`略语`转为普通文本，使其不再指向特定术语，只需在冒号后留空，什么也不填：
+也可以通过将值置为空来禁用指定缩略语：
 
-```
+```text
 *[W3C]: 
 ```
 
-如此一来，即便在同一篇笔记存在使用相同`略语`文本的不同术语，也可根据需要随时调整`略语`所指代的术语，例：
+建议使用空行将定义区域与主要内容分隔开。例如：
 
+```text
+You can use CSS to style your HTML. 
+
+*[HTML]: HyperText Markup Language
+*[CSS]: Cascading Style Sheets
+
+Using style sheets, you can keep your CSS presentation layer and HTML content layer separate.
 ```
+
+### 相同的缩略语
+
+当存在多个相同的缩略语时，其适用范围如下：
+
+```text
 ---
 abbr:
   - RAM: Random Access Memory
@@ -72,16 +101,99 @@ RAM.
 
 ```
 
-在以上例子中，当鼠标悬浮在正文中的前三个“RAM.”上时，将依次显示“Random Access Memory”、“Reliability, Availability, Maintainability”、“Remote Access Management”字样，而第四个“RAM.”将什么也不显示。
+渲染为：
 
-## 插件选项
+```html
+<abbr title="Random Access Memory">RAM</abbr>.
 
-- `Metadata keyword`：在空白栏处填入的单词将被视为用来存放`略语`的`属性名称`。
-- `Enable Markdown Extra syntax support`：启用该选项后，则可使用Markdown扩展语法，[详见上文](#refs)。
-- `Mark abbreviations in Source mode`：启用该选项后，在`源码模式`中`略语`也会被添加下划线。
-- `Enable abbreviation detection for languages not separated by spaces`：启用该选项后，插件将侦测以中日韩等不以空格分隔词语的语言写成的`略语`，例：
+<abbr title="Reliability, Availability, Maintainability">RAM</abbr>.
 
+<abbr title="Remote Access Management">RAM</abbr>.
+
+RAM.
 ```
+
+## 命令
+
+### 添加缩略语
+
+快速将缩略语添加到[属性（元数据）](https://help.obsidian.md/Editing+and+formatting/Properties)。
+
+### 复制并格式化内容
+
+复制笔记内容并将缩略语转换为 `<abbr>` 标签，以便在不支持类似语法的其他 Markdown 编辑器中显示它们。
+
+例如，对于以下笔记内容：
+
+```text
+---
+tags:
+  - test
+abbr:
+  - HTML: HyperText Markup Language
+---
+# Example
+
+You can use CSS to style your HTML. 
+
+*[CSS]: Cascading Style Sheets
+
+Using style sheets, you can keep your `CSS` presentation layer and `HTML` content layer separate.
+```
+
+此命令将复制以下内容到剪贴板：
+
+```markdown
+# Example
+
+You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>. 
+
+Using style sheets, you can keep your `CSS` presentation layer and `HTML` content layer separate.
+```
+
+### 插入 Extra 定义
+
+*此命令仅在[启用 Markdown Extra 语法支持](#markdown-extra-语法)设置后才允许使用。*
+
+在活动编辑器中，将 Markdown Extra 语法定义插入到当前光标位置。
+
+当未选择任何文本时，插入以下内容：
+
+```text
+*[<光标位置>]: 
+```
+
+当选定文本时，插入以下内容：
+
+```text
+*[<选定文本>]: <光标位置>
+```
+
+### 缩略语列表
+
+列出当前文件中所有缩略语，然后选择一个并跳转到其定义位置（对于 Markdown Extra 语法定义的缩略语），或直接编辑它（对于元数据或全局缩略语）。
+
+### 管理全局缩略语
+
+快速地管理 [全局缩略语](#全局缩略语)。
+
+## 设置
+
+### 元数据关键词
+
+此插件允许您自定义从[属性](https：//help.obsidian.md/Editing+and+formatting/Properties)中读取缩略语的关键词，默认值为 `abbr`。
+
+### 在源码模式中标记缩略语
+
+在源码模式下标记缩略语，与在实时阅览和阅读视图中一样。
+
+### 启用非空格分隔语言的缩略语检测
+
+检测不使用空格进行分词的语言中的缩略语，例如中文。
+
+举例来说，对于以下笔记内容：
+
+```text
 ---
 abbr:
   - "北大: 北京大学"
@@ -90,18 +202,58 @@ abbr:
 我是一名北大学子。
 ```
 
-- `Global abbreviations`：点击本选项后的`Manage abbreviations`，在弹出的界面中添加`略语`及其定义，可在整个笔记库范围内添加全局`略语`与定义的配对，但它的优先级要低于`笔记属性`中的`定义语句`。如果你不想在某篇特定笔记中采用这一全局`略语`，则可以在`笔记属性`中以空字符串或键值对声明：
+仅当启用此选项时，它才会渲染为：
 
-```
----
-abbr:
-  - "HTML: " # 字符串
-  - CSS: ""  # 键值对
----
+```html
+我是一名<abbr title="北京大学">北大</abbr>学子。
 ```
 
-- `Enable detect Suffixes`：启用本选项后，则插件会自动侦测文中带有指定后缀的`略语`，并为它们也添加下划线，举例来说，如将`es`指定为后缀，则`alias`和`aliases`将被视为同一术语的`略语`。
-- `Suffix list`：在空白栏处填入的单词将被视为后缀，不同后缀之间以英文输入法逗号隔开。
+否则，保持原样：
 
-[^1]: https://zh.wikipedia.org/wiki/%E7%B8%AE%E5%AF%AB
-[^2]: https://michelf.ca/projects/php-markdown/extra/#abbr
+```html
+我是一名北大学子。
+```
+
+### 全局缩略语
+
+此插件允许您自定义全局可用的缩略语。它们的优先级低于在笔记中定义的缩略语。
+
+### Markdown Extra 语法
+
+控制是否启用 Markdown Extra 语法功能。
+
+此外，您还可以向编辑视图中显示一个装饰器，用于标识 Markdown Extra 语法的定义。装饰器的内容可以使用两个变量：`${abbr}` 和 `${tooltip}`，用于将当前定义的某些信息引入内容。例如，对于 `→ ${abbr}`：
+
+![decorator-example](images/definition-decorator.jpg)
+
+CSS 变量 `--abbreviations-definition-decorator-margin` 可用于定义装饰器的间距，例如：
+
+```css
+body {
+  --abbreviations-definition-decorator-margin: 12px;
+}
+```
+
+### 后缀
+
+此插件允许匹配带有词尾的缩略语。例如，它可以使得 `OS` 能够匹配到 `OSes`。更多信息请参见：[#3](https://github.com/dragonish/obsidian-abbreviations/issues/3)。
+
+后缀列表由用户定义，值以逗号(`,`)分隔的字符串形式设置，例如：`s, es, less`。
+
+## 预览
+
+**实时阅览：**
+
+| 源码模式 | 实时阅览 |
+| :---------: | :----------: |
+| ![source-mode](images/source-mode.png) | ![live-preview](images/live-preview.png) |
+
+**阅读视图：**
+
+| 源码模式 | 阅读视图 |
+| :---------: | :-----: |
+| ![source-mode](images/source-mode.png) | ![reading](images/reading.png) |
+
+## 许可
+
+[MIT](/LICENSE)
