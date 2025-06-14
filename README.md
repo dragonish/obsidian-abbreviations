@@ -4,11 +4,9 @@
 
 ## Introduction
 
-This is a plugin for [Obsidian](https://obsidian.md).
+This is a plugin for [Obsidian](https://obsidian.md). Implements automatic marking of abbreviations and acronyms (terminology).
 
-Implements automatic marking of abbreviations and acronyms (terminology).
-
-This plugin supports rendering in both editing view (*Live Preview*), reading view and source mode (optional). Simultaneously support listing all abbreviations in the current file, and the context menu of the abbreviation element.
+This plugin supports rendering in both reading view, editing view (*Live Preview*) and source mode (optional). Simultaneously support listing all abbreviations in the current file, and the context menu of the abbreviation element.
 
 ## Usage
 
@@ -52,9 +50,9 @@ abbr:
 > [!NOTE]
 > Currently, there is no unified syntax specification, and the implementation of this plugin is similar to [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/#abbr).
 
-You need to enable *[Enable Markdown Extra syntax support](#markdown-extra-syntax)* in the plugin settings to activate this feature. The plugin gets abbreviations by reading the specified format in the note.
+You need to [Enable Markdown Extra syntax support](#markdown-extra-syntax) in the plugin settings to activate this feature. The plugin gets abbreviations by reading the specified format in the note.
 
-Declare at the beginning of a line, for example:
+To define an abbreviation, simply declare it at the beginning of a line in your notes, for example:
 
 ```text
 *[W3C]: World Wide Web Consortium
@@ -155,7 +153,7 @@ Using style sheets, you can keep your `CSS` presentation layer and `HTML` conten
 
 ### Insert extra definition
 
-This command is only allowed after enabling the *[Enable Markdown Extra syntax support](#markdown-extra-syntax)* setting.
+*This command is only allowed after enabling the [Enable Markdown Extra syntax support](#markdown-extra-syntax) setting.*
 
 Insert definition of Markdown Extra syntax at current cursor position in activity editor.
 
@@ -177,7 +175,7 @@ List all abbreviations in the current file, then select one and jump to its defi
 
 ### Manage global abbreviations
 
-Manage [global abbreviations](#global-abbreviations) quickly.
+Quickly manage [global abbreviations](#global-abbreviations).
 
 ## Settings
 
@@ -220,9 +218,9 @@ Otherwise, keep it as is:
 
 This plugin allows you to customize globally available abbreviations. Their priority is lower than abbreviations defined in the notes.
 
-### Markdown extra syntax
+### Markdown Extra syntax
 
-The usage can refer to the [previous text](#markdown-extra).
+Enable or disable Markdown Extra syntax features.
 
 In addition, you can show a decorator for extra syntax definitions in the editing view. The content of the decorator can use two variables: `${abbr}` and `${tooltip}`. To introduce certain information of the current definition into the content. For example, for `→ ${abbr}`:
 

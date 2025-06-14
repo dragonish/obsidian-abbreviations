@@ -72,7 +72,7 @@
     "globalAbbreviations": "全局缩略语",
     "globalAbbreviationsButton": "管理缩略语",
     "globalAbbreviationsDesc": "配置全局缩略语，但其优先级低于{placeholder}。",
-    "extraHeading": "Markdown Extra",
+    "extraHeading": "Markdown Extra 语法",
     "useMarkdownExtraSyntax": "启用 Markdown Extra 语法支持",
     "useMarkdownExtraSyntaxDesc": "切换此设置以启用或禁用该功能。定义格式：{placeholder}。",
     "useExtraDefinitionDecorator": "启用 Extra 定义装饰器",

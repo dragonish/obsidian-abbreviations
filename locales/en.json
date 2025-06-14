@@ -72,7 +72,7 @@
     "globalAbbreviations": "Global abbreviations",
     "globalAbbreviationsButton": "Manage abbreviations",
     "globalAbbreviationsDesc": "Configure global abbreviations, but their priority is lower than {placeholder}.",
-    "extraHeading": "Markdown Extra",
+    "extraHeading": "Markdown Extra syntax",
     "useMarkdownExtraSyntax": "Enable Markdown Extra syntax support",
     "useMarkdownExtraSyntaxDesc": "Toggle this setting to enable or disable the feature. Definition format: {placeholder}.",
     "useExtraDefinitionDecorator": "Enable extra definition decorator",
