@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       obsidian-plugin-i18n:
-        specifier: ^0.1.3
-        version: 0.1.3
+        specifier: ^0.2.0
+        version: 0.2.0
     devDependencies:
       '@codemirror/state':
         specifier: ^6.5.2
@@ -1339,8 +1339,8 @@ packages:
   nwsapi@2.2.20:
     resolution: {integrity: sha512-/ieB+mDe4MrrKMT8z+mQL8klXydZWGR5Dowt4RAGKbJ3kIGEx3X4ljUo+6V73IXtUPWgfOlU5B9MlGxFO5T+cA==}
 
-  obsidian-plugin-i18n@0.1.3:
-    resolution: {integrity: sha512-uX4J3bi8M9YT20ObFF1nBix+vED7Pbkp2/CP+OLCPCrgFL4cWMpNdHjhFpbYvBIgwlz/5RKo5wL6QwipcN2Hgg==}
+  obsidian-plugin-i18n@0.2.0:
+    resolution: {integrity: sha512-uUYLb4L+k9Zl/0O/aRxjlqV2GaZR3PVq6rE2W2D6yv4C7usVCwQoMEhE25NE9O7rG6o8qVeX60XSMQcuhs61AQ==}
 
   obsidian@1.8.7:
     resolution: {integrity: sha512-h4bWwNFAGRXlMlMAzdEiIM2ppTGlrh7uGOJS6w4gClrsjc+ei/3YAtU2VdFUlCiPuTHpY4aBpFJJW75S1Tl/JA==}
@@ -3124,7 +3124,7 @@ snapshots:
 
   nwsapi@2.2.20: {}
 
-  obsidian-plugin-i18n@0.1.3: {}
+  obsidian-plugin-i18n@0.2.0: {}
 
   obsidian@1.8.7(@codemirror/state@6.5.2)(@codemirror/view@6.37.2):
     dependencies:

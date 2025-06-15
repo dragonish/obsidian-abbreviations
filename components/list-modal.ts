@@ -87,7 +87,7 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
         this.plugin.i18n.t("list.type", { type: match.item.type }) +
         (match.item.position
           ? this.plugin.i18n.t("list.position", {
-              position: match.item.position.toString(),
+              position: match.item.position,
             })
           : ""),
     });

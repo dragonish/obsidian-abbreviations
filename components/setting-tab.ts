@@ -31,8 +31,8 @@ export class AbbrSettingTab extends PluginSettingTab {
       );
 
     const metadataKeywordDesc = createFragment();
-    const metadataKeywordDescTuple = this.getPlaceholderTuple(
-      this.plugin.i18n.t("setting.metadataKeywordDesc")
+    const metadataKeywordDescTuple = this.plugin.i18n.getPlaceholderTuple(
+      "setting.metadataKeywordDesc"
     );
     metadataKeywordDesc.append(
       metadataKeywordDescTuple[0],
@@ -70,8 +70,8 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const detectCJKDesc = createFragment();
-    const detectCJKDescTuple = this.getPlaceholderTuple(
-      this.plugin.i18n.t("setting.detectCJKDesc")
+    const detectCJKDescTuple = this.plugin.i18n.getPlaceholderTuple(
+      "setting.detectCJKDesc"
     );
     detectCJKDesc.append(
       detectCJKDescTuple[0],
@@ -97,8 +97,8 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const globalAbbreviationsDesc = createFragment();
-    const globalAbbreviationsDescTuple = this.getPlaceholderTuple(
-      this.plugin.i18n.t("setting.globalAbbreviationsDesc")
+    const globalAbbreviationsDescTuple = this.plugin.i18n.getPlaceholderTuple(
+      "setting.globalAbbreviationsDesc"
     );
     globalAbbreviationsDesc.append(
       globalAbbreviationsDescTuple[0],
@@ -127,9 +127,10 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const useMarkdownExtraSyntaxDesc = createFragment();
-    const useMarkdownExtraSyntaxDescTuple = this.getPlaceholderTuple(
-      this.plugin.i18n.t("setting.useMarkdownExtraSyntaxDesc")
-    );
+    const useMarkdownExtraSyntaxDescTuple =
+      this.plugin.i18n.getPlaceholderTuple(
+        "setting.useMarkdownExtraSyntaxDesc"
+      );
     useMarkdownExtraSyntaxDesc.append(
       useMarkdownExtraSyntaxDescTuple[0],
       createEl("b", {
@@ -218,8 +219,8 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const affixesDesc = createFragment();
-    const affixesDescTuple = this.getPlaceholderTuple(
-      this.plugin.i18n.t("setting.affixesDesc")
+    const affixesDescTuple = this.plugin.i18n.getPlaceholderTuple(
+      "setting.affixesDesc"
     );
     affixesDesc.append(
       affixesDescTuple[0],
@@ -252,16 +253,5 @@ export class AbbrSettingTab extends PluginSettingTab {
       return true;
     }
     return false;
-  }
-
-  private getPlaceholderTuple(text: string): [string, string] {
-    const parts = text.split("{placeholder}");
-    if (parts.length === 1) {
-      return [parts[0], ""];
-    } else if (parts.length >= 2) {
-      return [parts[0], parts[1]];
-    }
-
-    return ["", ""];
   }
 }

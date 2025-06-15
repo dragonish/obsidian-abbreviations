@@ -135,9 +135,7 @@ export class AbbreviationContextMenu {
     if (abbr.type === "extra" && !isDefinition) {
       menu.addItem((item) => {
         item
-          .setTitle(
-            this.plugin.i18n.t("menu.line", { line: abbr.position.toString() })
-          )
+          .setTitle(this.plugin.i18n.t("menu.line", { line: abbr.position }))
           .setIcon("map-pin")
           .setDisabled(true);
       });
