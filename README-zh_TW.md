@@ -245,13 +245,13 @@ body {
 **實際預覽：**
 
 | 原始碼模式 | 實際預覽 |
-| :---------: | :----------: |
+| :------: | -----: |
 | ![source-mode](images/source-mode.png) | ![live-preview](images/live-preview.png) |
 
 **閱讀：**
 
 | 原始碼模式 | 閱讀 |
-| :---------: | :-----: |
+| :-----: | :--: |
 | ![source-mode](images/source-mode.png) | ![reading](images/reading.png) |
 
 ## 許可

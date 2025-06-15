@@ -245,13 +245,13 @@ body {
 **实时阅览：**
 
 | 源码模式 | 实时阅览 |
-| :---------: | :----------: |
+| :----: | :-----: |
 | ![source-mode](images/source-mode.png) | ![live-preview](images/live-preview.png) |
 
 **阅读视图：**
 
 | 源码模式 | 阅读视图 |
-| :---------: | :-----: |
+| :----: | :-----: |
 | ![source-mode](images/source-mode.png) | ![reading](images/reading.png) |
 
 ## 许可
