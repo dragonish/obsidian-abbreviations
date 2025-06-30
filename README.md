@@ -214,10 +214,6 @@ Otherwise, keep it as is:
 我是一名北大学子。
 ```
 
-### Global abbreviations
-
-This plugin allows you to customize globally available abbreviations. Their priority is lower than abbreviations defined in the notes.
-
 ### Markdown Extra syntax
 
 Enable or disable Markdown Extra syntax features.
@@ -233,6 +229,12 @@ body {
   --abbreviations-definition-decorator-margin: 12px;
 }
 ```
+
+### Global abbreviations
+
+This plugin allows you to customize globally available abbreviations. Their priority is lower than abbreviations defined in the notes.
+
+You can add global abbreviations in the settings panel, or specify a global file and add abbreviations in the file.
 
 ### Suffixes
 
