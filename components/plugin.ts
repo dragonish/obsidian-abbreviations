@@ -57,14 +57,17 @@ const DEFAULT_SETTINGS: AbbrPluginSettings = {
   useExtraDefinitionDecorator: false,
   extraDefinitionDecoratorOpacity: 20,
   extraDefinitionDecoratorContent: "→ ${abbr}",
+  globalFile: "",
 };
 
 export class AbbrPlugin extends Plugin {
   settings: AbbrPluginSettings;
+  globalFileAbbreviations: AbbreviationInstance[] = [];
   i18n = i18n;
 
   async onload() {
     await this.loadSettings();
+    await this.parseGlobalFile();
 
     // Register editor extension
     this.registerEditorExtension([
@@ -117,7 +120,9 @@ export class AbbrPlugin extends Plugin {
         handlePreviewMarkdownExtra(
           context,
           filterEleList,
-          parser.abbreviations,
+          context.sourcePath === this.settings.globalFile
+            ? parser.abbreviations
+            : this.globalFileAbbreviations.concat(parser.abbreviations),
           this.getAffixList(),
           this.settings.detectCJK
         );
@@ -147,7 +152,9 @@ export class AbbrPlugin extends Plugin {
         const abbrList = this.getAbbrList(frontmatter);
         handlePreviewMarkdown(
           eleList,
-          abbrList,
+          context.sourcePath === this.settings.globalFile
+            ? abbrList
+            : this.globalFileAbbreviations.concat(abbrList),
           this.getAffixList(),
           this.settings.detectCJK
         );
@@ -184,6 +191,22 @@ export class AbbrPlugin extends Plugin {
     );
     this.registerEvent(
       this.app.workspace.on("layout-change", this.handleModeChange.bind(this))
+    );
+
+    // Listen for file changes
+    this.registerEvent(
+      this.app.vault.on("modify", (file) => {
+        if (file.path === this.settings.globalFile) {
+          this.parseGlobalFile();
+        }
+      })
+    );
+    this.registerEvent(
+      this.app.vault.on("delete", (file) => {
+        if (file.path === this.settings.globalFile) {
+          this.globalFileAbbreviations = [];
+        }
+      })
     );
 
     // Dom context menu
@@ -262,8 +285,12 @@ export class AbbrPlugin extends Plugin {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
 
-  async saveSettings() {
+  async saveSettings(isChangeGlobalFile = false) {
     await this.saveData(this.settings);
+
+    if (isChangeGlobalFile) {
+      await this.parseGlobalFile();
+    }
 
     this.debouncedSaveSettings();
   }
@@ -334,16 +361,20 @@ export class AbbrPlugin extends Plugin {
 
   async getPluginData(): Promise<AbbrPluginData> {
     const { metadataKeyword, ...other } = this.settings;
+    const file = this.getActiveFile();
 
     const data: AbbrPluginData = {
       metadataKeyword,
       frontmatterCache: undefined,
       suffixes: this.getAffixList(),
+      globalFileAbbreviations:
+        file?.path === this.settings.globalFile
+          ? []
+          : this.globalFileAbbreviations,
       ...other,
     };
 
     if (metadataKeyword) {
-      const file = this.getActiveFile();
       if (file) {
         data.frontmatterCache =
           this.app.metadataCache.getFileCache(file)?.frontmatter;
@@ -456,7 +487,9 @@ export class AbbrPlugin extends Plugin {
       new AbbreviationListModal(
         this.app,
         this,
-        abbrList,
+        file.path === this.settings.globalFile
+          ? abbrList
+          : this.globalFileAbbreviations.concat(abbrList),
         selectedText,
         this.abbreviationActionHandler.bind(this)
       ).open();
@@ -607,6 +640,38 @@ export class AbbrPlugin extends Plugin {
           const dest = abbr.position - 1;
           editor.setCursor(dest >= 0 ? dest : 0);
         }
+      } else if (abbr.type === "global-file") {
+        const file = this.app.vault.getAbstractFileByPath(
+          this.settings.globalFile || ""
+        );
+        if (!(file instanceof TFile)) {
+          this.sendNotification(this.i18n.t("notification.fileNotExistError"));
+        } else {
+          const leaf = this.app.workspace.getLeaf("tab");
+          await leaf.openFile(file, { active: true });
+
+          if (abbr.position && abbr.position > 0) {
+            const editor = this.app.workspace.activeEditor?.editor;
+            if (editor) {
+              const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+              if (view) {
+                //? "source" for editing view (Live Preview & Source mode),
+                //? "preview" for reading view.
+                const isReadingView = view.getMode() === "preview";
+
+                //! Toggle reading view to editing view.
+                if (isReadingView) {
+                  (this.app as ObsidianApp).commands.executeCommandById(
+                    "markdown:toggle-preview"
+                  );
+                }
+              }
+
+              const dest = abbr.position - 1;
+              editor.setCursor(dest >= 0 ? dest : 0);
+            }
+          }
+        }
       } else {
         new AbbreviationInputModal(
           this.app,
@@ -665,6 +730,48 @@ export class AbbrPlugin extends Plugin {
       } else {
         this.sendNotification(this.i18n.t("notification.copyWarn"));
       }
+    }
+  }
+
+  private async parseGlobalFile() {
+    if (!this.settings.globalFile) {
+      this.globalFileAbbreviations = [];
+      return;
+    }
+    const file = this.app.vault.getFileByPath(this.settings.globalFile);
+    if (!file) {
+      this.globalFileAbbreviations = [];
+      return;
+    }
+
+    const frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter;
+
+    if (this.settings.useMarkdownExtraSyntax) {
+      const parser = new Parser([], this.settings.metadataKeyword, {
+        extra: true,
+      });
+      parser.readAbbreviationsFromCache(frontmatter);
+
+      const sourceContent = await this.app.vault.cachedRead(file);
+      sourceContent.split("\n").forEach((line, index) => {
+        parser.handler(line, index + 1);
+      });
+
+      this.globalFileAbbreviations = parser.abbreviations.map((abbr) => ({
+        key: abbr.key,
+        title: abbr.title,
+        position: abbr.position,
+        type: "global-file",
+      }));
+    } else {
+      this.globalFileAbbreviations = calcAbbrListFromFrontmatter(
+        frontmatter
+      ).map((abbr) => ({
+        key: abbr.key,
+        title: abbr.title,
+        position: abbr.position,
+        type: "global-file",
+      }));
     }
   }
 

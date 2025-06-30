@@ -29,7 +29,8 @@
     "formatWarn": "警告：縮略語格式不正確！",
     "notFoundWarn": "警告：未找到原始縮略語！",
     "unexpectedError": "錯誤：意外錯誤！",
-    "fileError": "錯誤：未找到活動檔案！"
+    "fileError": "錯誤：未找到活動檔案！",
+    "fileNotExistError": "錯誤：檔案不存在！"
   },
   "input": {
     "editTitle": "編輯縮略語 ({type})",
@@ -86,6 +87,9 @@
     "detectAffixesDesc": "檢測帶有字尾的縮略語。",
     "affixes": "字尾列表",
     "affixesPlaceholder": "用逗號(,)分隔的字串",
-    "affixesDesc": "列表內容為使用逗號(,)分隔的字串，例如：{placeholder}。"
+    "affixesDesc": "列表內容為使用逗號(,)分隔的字串，例如：{placeholder}。",
+    "global": "全域性",
+    "globalFile": "全域性檔案",
+    "globalFileDesc": "從該檔案中讀取縮略語並全域性生效。"
   }
 }

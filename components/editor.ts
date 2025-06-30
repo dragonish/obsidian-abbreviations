@@ -117,9 +117,13 @@ export class AbbrEditorViewPlugin implements PluginValue {
         }
       }
 
+      const resAbbreviations = pluginData.globalFileAbbreviations.concat(
+        parser.abbreviations
+      );
+
       if (!parser.isAbbreviationsEmpty()) {
         const conversion = new Conversion(
-          parser.abbreviations,
+          resAbbreviations,
           pluginData.useMarkdownExtraSyntax,
           pluginData.suffixes,
           pluginData.detectCJK
@@ -198,7 +202,7 @@ export class AbbrEditorViewPlugin implements PluginValue {
       //TODO Unable to obtain the corresponding row number in the rendered Table and Callout views.
       handlePreviewMarkdown(
         view.dom.findAll(elementListSelector),
-        parser.abbreviations,
+        resAbbreviations,
         pluginData.suffixes,
         pluginData.detectCJK
       );

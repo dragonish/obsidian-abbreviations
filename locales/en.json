@@ -29,7 +29,8 @@
     "formatWarn": "Warn: Abbreviation format is incorrect!",
     "notFoundWarn": "Warn: No original abbreviation found!",
     "unexpectedError": "Error: Unexpected error!",
-    "fileError": "Error: No active file found!"
+    "fileError": "Error: No active file found!",
+    "fileNotExistError": "Error: The file does not exist!"
   },
   "input": {
     "editTitle": "Edit {type} abbreviation",
@@ -86,6 +87,9 @@
     "detectAffixesDesc": "Detect supplementary suffixes for abbreviations.",
     "affixes": "Suffix list",
     "affixesPlaceholder": "A string separated by ,",
-    "affixesDesc": "The list content uses comma-separated string, for example: {placeholder}."
+    "affixesDesc": "The list content uses comma-separated string, for example: {placeholder}.",
+    "global": "Global",
+    "globalFile": "Global file",
+    "globalFileDesc": "Read abbreviations from this file and take effect globally."
   }
 }

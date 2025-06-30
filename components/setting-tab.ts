@@ -1,6 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import type { AbbrPlugin } from "./plugin";
 import { manageGlobalAbbreviations } from "./manager-modal";
+import { FileSuggest } from "./suggest";
 
 export class AbbrSettingTab extends PluginSettingTab {
   private plugin: AbbrPlugin;
@@ -83,33 +84,6 @@ export class AbbrSettingTab extends PluginSettingTab {
     );
     detectCJKSetting.descEl.appendChild(detectCJKDesc);
 
-    //* globalAbbreviations
-    const globalAbbreviationsSetting = new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.globalAbbreviations"))
-      .addButton((button) => {
-        button
-          .setButtonText(
-            this.plugin.i18n.t("setting.globalAbbreviationsButton")
-          )
-          .onClick(() => {
-            this.displayGlobalAbbreviations();
-          });
-      });
-
-    const globalAbbreviationsDesc = createFragment();
-    const globalAbbreviationsDescTuple = this.plugin.i18n.getPlaceholderTuple(
-      "setting.globalAbbreviationsDesc"
-    );
-    globalAbbreviationsDesc.append(
-      globalAbbreviationsDescTuple[0],
-      createEl("a", {
-        href: "https://help.obsidian.md/Editing+and+formatting/Properties",
-        text: this.plugin.i18n.t("setting.properties"),
-      }),
-      globalAbbreviationsDescTuple[1]
-    );
-    globalAbbreviationsSetting.descEl.appendChild(globalAbbreviationsDesc);
-
     new Setting(containerEl)
       .setName(this.plugin.i18n.t("setting.extraHeading"))
       .setHeading();
@@ -186,6 +160,60 @@ export class AbbrSettingTab extends PluginSettingTab {
             this.plugin.settings.extraDefinitionDecoratorContent = value;
             await this.plugin.saveSettings();
           });
+      });
+
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.global"))
+      .setHeading();
+
+    //* globalAbbreviations
+    const globalAbbreviationsSetting = new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.globalAbbreviations"))
+      .addButton((button) => {
+        button
+          .setButtonText(
+            this.plugin.i18n.t("setting.globalAbbreviationsButton")
+          )
+          .onClick(() => {
+            this.displayGlobalAbbreviations();
+          });
+      });
+
+    const globalAbbreviationsDesc = createFragment();
+    const globalAbbreviationsDescTuple = this.plugin.i18n.getPlaceholderTuple(
+      "setting.globalAbbreviationsDesc"
+    );
+    globalAbbreviationsDesc.append(
+      globalAbbreviationsDescTuple[0],
+      createEl("a", {
+        href: "https://help.obsidian.md/Editing+and+formatting/Properties",
+        text: this.plugin.i18n.t("setting.properties"),
+      }),
+      globalAbbreviationsDescTuple[1]
+    );
+    globalAbbreviationsSetting.descEl.appendChild(globalAbbreviationsDesc);
+
+    //* globalFile
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.globalFile"))
+      .setDesc(this.plugin.i18n.t("setting.globalFileDesc"))
+      .addText((text) => {
+        text
+          .setValue(this.plugin.settings.globalFile || "")
+          .onChange(async (value) => {
+            const isChange = this.plugin.settings.globalFile !== value;
+            this.plugin.settings.globalFile = value;
+            await this.plugin.saveSettings(isChange);
+          });
+
+        const suggest = new FileSuggest(this.app, text.inputEl);
+        suggest.onSelect(async (value) => {
+          const isChange = this.plugin.settings.globalFile !== value;
+          text.setValue(value);
+          this.plugin.settings.globalFile = value;
+          suggest.close();
+          await this.plugin.saveSettings(isChange);
+        });
       });
 
     new Setting(containerEl)

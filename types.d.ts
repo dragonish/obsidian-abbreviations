@@ -3,7 +3,7 @@ interface AbbreviationInfo {
   title: string;
 }
 
-type AbbrInstanceType = "global" | "metadata" | "extra";
+type AbbrInstanceType = "global-file" | "global" | "metadata" | "extra";
 
 interface ExtraAbbreviationInstance extends AbbreviationInfo {
   type: "extra";
@@ -68,10 +68,13 @@ interface AbbrPluginSettings {
   useExtraDefinitionDecorator: boolean;
   extraDefinitionDecoratorOpacity: OpacityOptions;
   extraDefinitionDecoratorContent: string;
+
+  globalFile?: string;
 }
 
 interface AbbrPluginData
   extends Omit<AbbrPluginSettings, "detectAffixes" | "affixes"> {
   frontmatterCache?: Record<string, unknown>;
   suffixes?: string[];
+  globalFileAbbreviations: AbbreviationInstance[];
 }
