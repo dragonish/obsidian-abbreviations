@@ -67,7 +67,6 @@ export class AbbrPlugin extends Plugin {
 
   async onload() {
     await this.loadSettings();
-    await this.parseGlobalFile();
 
     // Register editor extension
     this.registerEditorExtension([
@@ -75,6 +74,10 @@ export class AbbrPlugin extends Plugin {
       editorModeField,
       this.createAbbrViewPlugin(this.getPluginData.bind(this)),
     ]);
+
+    this.app.workspace.onLayoutReady(() => {
+      this.parseGlobalFile();
+    });
 
     // Register markdown post processor
     this.registerMarkdownPostProcessor(async (element, context) => {
