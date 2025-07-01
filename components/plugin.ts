@@ -641,10 +641,10 @@ export class AbbrPlugin extends Plugin {
           editor.setCursor(dest >= 0 ? dest : 0);
         }
       } else if (abbr.type === "global-file") {
-        const file = this.app.vault.getAbstractFileByPath(
+        const file = this.app.vault.getFileByPath(
           this.settings.globalFile || ""
         );
-        if (!(file instanceof TFile)) {
+        if (!file) {
           this.sendNotification(this.i18n.t("notification.fileNotExistError"));
         } else {
           const leaf = this.app.workspace.getLeaf("tab");
