@@ -747,35 +747,22 @@ export class AbbrPlugin extends Plugin {
       return;
     }
 
-    const frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter;
+    const parser = new Parser([], this.settings.metadataKeyword, {
+      metadata: true,
+      extra: this.settings.useMarkdownExtraSyntax,
+    });
 
-    if (this.settings.useMarkdownExtraSyntax) {
-      const parser = new Parser([], this.settings.metadataKeyword, {
-        extra: true,
-      });
-      parser.readAbbreviationsFromCache(frontmatter);
+    const sourceContent = await this.app.vault.cachedRead(file);
+    sourceContent.split("\n").forEach((line, index) => {
+      parser.handler(line, index + 1);
+    });
 
-      const sourceContent = await this.app.vault.cachedRead(file);
-      sourceContent.split("\n").forEach((line, index) => {
-        parser.handler(line, index + 1);
-      });
-
-      this.globalFileAbbreviations = parser.abbreviations.map((abbr) => ({
-        key: abbr.key,
-        title: abbr.title,
-        position: abbr.position,
-        type: "global-file",
-      }));
-    } else {
-      this.globalFileAbbreviations = calcAbbrListFromFrontmatter(
-        frontmatter
-      ).map((abbr) => ({
-        key: abbr.key,
-        title: abbr.title,
-        position: abbr.position,
-        type: "global-file",
-      }));
-    }
+    this.globalFileAbbreviations = parser.abbreviations.map((abbr) => ({
+      key: abbr.key,
+      title: abbr.title,
+      position: abbr.position,
+      type: "global-file",
+    }));
   }
 
   private async copyContent(content: string) {
