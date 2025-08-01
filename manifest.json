@@ -1,7 +1,7 @@
 {
   "id": "abbreviations-mark",
   "name": "Abbreviations and Acronyms",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "minAppVersion": "0.15.0",
   "description": "Implements automatic marking of abbreviations and acronyms (terminology).",
   "author": "dragonish",
