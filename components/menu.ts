@@ -108,12 +108,13 @@ export class AbbreviationContextMenu {
   }
 
   private menuGenerator(abbr: AbbreviationInstance, isDefinition = false) {
+    const { i18n } = this.plugin;
     const menu = new Menu();
 
     menu.addItem((item) => {
       item
         .setTitle(
-          this.plugin.i18n.t("menu.type", {
+          i18n.t("menu.type", {
             type: isDefinition ? "definition" : abbr.type,
           })
         )
@@ -122,20 +123,20 @@ export class AbbreviationContextMenu {
     });
     menu.addItem((item) => {
       item
-        .setTitle(this.plugin.i18n.t("menu.text", { text: abbr.key }))
+        .setTitle(i18n.t("menu.text", { text: abbr.key }))
         .setIcon("whole-word")
         .setDisabled(true);
     });
     menu.addItem((item) => {
       item
-        .setTitle(this.plugin.i18n.t("menu.tooltip", { tooltip: abbr.title }))
+        .setTitle(i18n.t("menu.tooltip", { tooltip: abbr.title }))
         .setIcon("message-square-quote")
         .setDisabled(true);
     });
     if (abbr.type === "extra" && !isDefinition) {
       menu.addItem((item) => {
         item
-          .setTitle(this.plugin.i18n.t("menu.line", { line: abbr.position }))
+          .setTitle(i18n.t("menu.line", { line: abbr.position }))
           .setIcon("map-pin")
           .setDisabled(true);
       });
@@ -145,7 +146,7 @@ export class AbbreviationContextMenu {
     if (!isDefinition) {
       menu.addItem((item) =>
         item
-          .setTitle(this.plugin.i18n.t("menu.edit"))
+          .setTitle(i18n.t("menu.edit"))
           .setIcon("square-pen")
           .onClick(() => {
             this.menuAction(abbr, "edit");
@@ -156,7 +157,7 @@ export class AbbreviationContextMenu {
     if (abbr.type === "metadata" || abbr.type === "extra") {
       menu.addItem((item) => {
         item
-          .setTitle(this.plugin.i18n.t("menu.add"))
+          .setTitle(i18n.t("menu.add"))
           .setIcon("square-plus")
           .onClick(() => {
             this.menuAction(abbr, "global");
@@ -167,7 +168,7 @@ export class AbbreviationContextMenu {
     menu.addSeparator();
     menu.addItem((item) => {
       item
-        .setTitle(this.plugin.i18n.t("menu.copyText"))
+        .setTitle(i18n.t("menu.copyText"))
         .setIcon("copy")
         .onClick(() => {
           this.menuAction(abbr, "copy-text");
@@ -176,7 +177,7 @@ export class AbbreviationContextMenu {
     if (abbr.title) {
       menu.addItem((item) => {
         item
-          .setTitle(this.plugin.i18n.t("menu.copyTooltip"))
+          .setTitle(i18n.t("menu.copyTooltip"))
           .setIcon("copy")
           .onClick(() => {
             this.menuAction(abbr, "copy-title");
@@ -185,7 +186,7 @@ export class AbbreviationContextMenu {
     }
     menu.addItem((item) => {
       item
-        .setTitle(this.plugin.i18n.t("menu.copyMetadata"))
+        .setTitle(i18n.t("menu.copyMetadata"))
         .setIcon("copy")
         .onClick(() => {
           this.menuAction(abbr, "copy-metadata");
@@ -193,7 +194,7 @@ export class AbbreviationContextMenu {
     });
     menu.addItem((item) => {
       item
-        .setTitle(this.plugin.i18n.t("menu.copyExtra"))
+        .setTitle(i18n.t("menu.copyExtra"))
         .setIcon("copy")
         .onClick(() => {
           this.menuAction(abbr, "copy-extra");
@@ -201,7 +202,7 @@ export class AbbreviationContextMenu {
     });
     menu.addItem((item) => {
       item
-        .setTitle(this.plugin.i18n.t("menu.copyHtml"))
+        .setTitle(i18n.t("menu.copyHtml"))
         .setIcon("copy")
         .onClick(() => {
           this.menuAction(abbr, "copy-html");

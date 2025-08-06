@@ -12,18 +12,19 @@ export class AbbrSettingTab extends PluginSettingTab {
   }
 
   display(): void {
-    const { containerEl } = this;
+    const {
+      containerEl,
+      plugin: { i18n },
+    } = this;
 
     containerEl.empty();
 
     //* metadataKeyword
     const metadataKeywordSetting = new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.metadataKeyword"))
+      .setName(i18n.t("setting.metadataKeyword"))
       .addText((text) =>
         text
-          .setPlaceholder(
-            this.plugin.i18n.t("setting.metadataKeywordPlaceholder")
-          )
+          .setPlaceholder(i18n.t("setting.metadataKeywordPlaceholder"))
           .setValue(this.plugin.settings.metadataKeyword)
           .onChange(async (value) => {
             this.plugin.settings.metadataKeyword = value.trim();
@@ -32,14 +33,14 @@ export class AbbrSettingTab extends PluginSettingTab {
       );
 
     const metadataKeywordDesc = createFragment();
-    const metadataKeywordDescTuple = this.plugin.i18n.getPlaceholderTuple(
+    const metadataKeywordDescTuple = i18n.getPlaceholderTuple(
       "setting.metadataKeywordDesc"
     );
     metadataKeywordDesc.append(
       metadataKeywordDescTuple[0],
       createEl("a", {
         href: "https://help.obsidian.md/Editing+and+formatting/Properties",
-        text: this.plugin.i18n.t("setting.properties"),
+        text: i18n.t("setting.properties"),
       }),
       metadataKeywordDescTuple[1]
     );
@@ -47,8 +48,8 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* markInSourceMode
     new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.markInSourceMode"))
-      .setDesc(this.plugin.i18n.t("setting.markInSourceModeDesc"))
+      .setName(i18n.t("setting.markInSourceMode"))
+      .setDesc(i18n.t("setting.markInSourceModeDesc"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.markInSourceMode)
@@ -60,7 +61,7 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* detectCJK
     const detectCJKSetting = new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.detectCJK"))
+      .setName(i18n.t("setting.detectCJK"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.detectCJK)
@@ -71,7 +72,7 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const detectCJKDesc = createFragment();
-    const detectCJKDescTuple = this.plugin.i18n.getPlaceholderTuple(
+    const detectCJKDescTuple = i18n.getPlaceholderTuple(
       "setting.detectCJKDesc"
     );
     detectCJKDesc.append(
@@ -85,12 +86,12 @@ export class AbbrSettingTab extends PluginSettingTab {
     detectCJKSetting.descEl.appendChild(detectCJKDesc);
 
     new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.extraHeading"))
+      .setName(i18n.t("setting.extraHeading"))
       .setHeading();
 
     //* useMarkdownExtraSyntax
     const useMarkdownExtraSyntaxSetting = new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.useMarkdownExtraSyntax"))
+      .setName(i18n.t("setting.useMarkdownExtraSyntax"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.useMarkdownExtraSyntax)
@@ -101,10 +102,9 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const useMarkdownExtraSyntaxDesc = createFragment();
-    const useMarkdownExtraSyntaxDescTuple =
-      this.plugin.i18n.getPlaceholderTuple(
-        "setting.useMarkdownExtraSyntaxDesc"
-      );
+    const useMarkdownExtraSyntaxDescTuple = i18n.getPlaceholderTuple(
+      "setting.useMarkdownExtraSyntaxDesc"
+    );
     useMarkdownExtraSyntaxDesc.append(
       useMarkdownExtraSyntaxDescTuple[0],
       createEl("b", {
@@ -118,8 +118,8 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* useExtraDefinitionDecorator
     new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.useExtraDefinitionDecorator"))
-      .setDesc(this.plugin.i18n.t("setting.useExtraDefinitionDecoratorDesc"))
+      .setName(i18n.t("setting.useExtraDefinitionDecorator"))
+      .setDesc(i18n.t("setting.useExtraDefinitionDecoratorDesc"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.useExtraDefinitionDecorator)
@@ -131,10 +131,8 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* extraDefinitionDecoratorOpacity
     new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.extraDefinitionDecoratorOpacity"))
-      .setDesc(
-        this.plugin.i18n.t("setting.extraDefinitionDecoratorOpacityDesc")
-      )
+      .setName(i18n.t("setting.extraDefinitionDecoratorOpacity"))
+      .setDesc(i18n.t("setting.extraDefinitionDecoratorOpacityDesc"))
       .addSlider((slider) => {
         slider
           .setLimits(10, 100, 10)
@@ -149,10 +147,8 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* extraDefinitionDecoratorContent
     new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.extraDefinitionDecoratorContent"))
-      .setDesc(
-        this.plugin.i18n.t("setting.extraDefinitionDecoratorContentDesc")
-      )
+      .setName(i18n.t("setting.extraDefinitionDecoratorContent"))
+      .setDesc(i18n.t("setting.extraDefinitionDecoratorContentDesc"))
       .addText((text) => {
         text
           .setValue(this.plugin.settings.extraDefinitionDecoratorContent)
@@ -162,32 +158,28 @@ export class AbbrSettingTab extends PluginSettingTab {
           });
       });
 
-    new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.global"))
-      .setHeading();
+    new Setting(containerEl).setName(i18n.t("setting.global")).setHeading();
 
     //* globalAbbreviations
     const globalAbbreviationsSetting = new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.globalAbbreviations"))
+      .setName(i18n.t("setting.globalAbbreviations"))
       .addButton((button) => {
         button
-          .setButtonText(
-            this.plugin.i18n.t("setting.globalAbbreviationsButton")
-          )
+          .setButtonText(i18n.t("setting.globalAbbreviationsButton"))
           .onClick(() => {
             this.displayGlobalAbbreviations();
           });
       });
 
     const globalAbbreviationsDesc = createFragment();
-    const globalAbbreviationsDescTuple = this.plugin.i18n.getPlaceholderTuple(
+    const globalAbbreviationsDescTuple = i18n.getPlaceholderTuple(
       "setting.globalAbbreviationsDesc"
     );
     globalAbbreviationsDesc.append(
       globalAbbreviationsDescTuple[0],
       createEl("a", {
         href: "https://help.obsidian.md/Editing+and+formatting/Properties",
-        text: this.plugin.i18n.t("setting.properties"),
+        text: i18n.t("setting.properties"),
       }),
       globalAbbreviationsDescTuple[1]
     );
@@ -195,8 +187,8 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* globalFile
     new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.globalFile"))
-      .setDesc(this.plugin.i18n.t("setting.globalFileDesc"))
+      .setName(i18n.t("setting.globalFile"))
+      .setDesc(i18n.t("setting.globalFileDesc"))
       .addText((text) => {
         text
           .setValue(this.plugin.settings.globalFile || "")
@@ -217,13 +209,13 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.suffixesHeading"))
+      .setName(i18n.t("setting.suffixesHeading"))
       .setHeading();
 
     //* detectAffixes
     new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.detectAffixes"))
-      .setDesc(this.plugin.i18n.t("setting.detectAffixesDesc"))
+      .setName(i18n.t("setting.detectAffixes"))
+      .setDesc(i18n.t("setting.detectAffixesDesc"))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.detectAffixes)
@@ -235,10 +227,10 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     //* affixes
     const affixesSetting = new Setting(containerEl)
-      .setName(this.plugin.i18n.t("setting.affixes"))
+      .setName(i18n.t("setting.affixes"))
       .addText((text) => {
         text
-          .setPlaceholder(this.plugin.i18n.t("setting.affixesPlaceholder"))
+          .setPlaceholder(i18n.t("setting.affixesPlaceholder"))
           .setValue(this.plugin.settings.affixes)
           .onChange(async (value) => {
             this.plugin.settings.affixes = value.trim();
@@ -247,9 +239,7 @@ export class AbbrSettingTab extends PluginSettingTab {
       });
 
     const affixesDesc = createFragment();
-    const affixesDescTuple = this.plugin.i18n.getPlaceholderTuple(
-      "setting.affixesDesc"
-    );
+    const affixesDescTuple = i18n.getPlaceholderTuple("setting.affixesDesc");
     affixesDesc.append(
       affixesDescTuple[0],
       createEl("b", {
@@ -261,17 +251,18 @@ export class AbbrSettingTab extends PluginSettingTab {
   }
 
   displayGlobalAbbreviations(): void {
-    const { containerEl } = this;
+    const {
+      containerEl,
+      plugin: { i18n },
+    } = this;
     manageGlobalAbbreviations(this.plugin, containerEl, () => {
       new Setting(containerEl)
-        .setName(this.plugin.i18n.t("setting.globalAbbreviations"))
+        .setName(i18n.t("setting.globalAbbreviations"))
         .setHeading()
         .addButton((button) => {
-          button
-            .setButtonText(this.plugin.i18n.t("button.back"))
-            .onClick(() => {
-              this.display();
-            });
+          button.setButtonText(i18n.t("button.back")).onClick(() => {
+            this.display();
+          });
         });
     });
   }

@@ -26,9 +26,10 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
     this.abbrList = abbrList;
     this.selectedText = selectedText;
     this.action = onAction;
+    const { i18n } = this.plugin;
 
-    this.emptyStateText = this.plugin.i18n.t("list.empty");
-    this.setPlaceholder(this.plugin.i18n.t("list.placeholder"));
+    this.emptyStateText = i18n.t("list.empty");
+    this.setPlaceholder(i18n.t("list.placeholder"));
   }
 
   onOpen(): void {
@@ -54,6 +55,7 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
     match: FuzzyMatch<AbbreviationInstance>,
     el: HTMLElement
   ): void {
+    const { i18n } = this.plugin;
     const mainItem = el.createDiv("abbreviations-plugin-list-item-main");
 
     const suggestion = mainItem.createSpan(
@@ -72,8 +74,8 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
       buttons
         .createEl("button", {
           cls: AbbreviationListModal.ButtonCls,
-          text: this.plugin.i18n.t("list.global"),
-          title: this.plugin.i18n.t("list.globalTip"),
+          text: i18n.t("list.global"),
+          title: i18n.t("list.globalTip"),
         })
         .onClickEvent((ev) => {
           ev.stopPropagation();
@@ -84,9 +86,9 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
 
     el.createEl("small", {
       text:
-        this.plugin.i18n.t("list.type", { type: match.item.type }) +
+        i18n.t("list.type", { type: match.item.type }) +
         (match.item.position
-          ? this.plugin.i18n.t("list.position", {
+          ? i18n.t("list.position", {
               position: match.item.position,
             })
           : ""),

@@ -27,15 +27,16 @@ export function manageGlobalAbbreviations(
   containerEl: HTMLElement,
   header: () => void
 ) {
+  const { i18n } = plugin;
   containerEl.empty();
   header();
 
   plugin.settings.globalAbbreviations.forEach((abbr, index) => {
     new Setting(containerEl)
-      .setName(plugin.i18n.t("text.abbrLabel"))
+      .setName(i18n.t("text.abbrLabel"))
       .addText((text) =>
         text
-          .setPlaceholder(plugin.i18n.t("text.abbrPlaceholder"))
+          .setPlaceholder(i18n.t("text.abbrPlaceholder"))
           .setValue(abbr.key)
           .onChange(async (value) => {
             plugin.settings.globalAbbreviations[index].key = value.trim();
@@ -44,7 +45,7 @@ export function manageGlobalAbbreviations(
       )
       .addText((text) =>
         text
-          .setPlaceholder(plugin.i18n.t("text.tipPlaceholder"))
+          .setPlaceholder(i18n.t("text.tipPlaceholder"))
           .setValue(abbr.title)
           .onChange(async (value) => {
             plugin.settings.globalAbbreviations[index].title = value.trim();
@@ -53,7 +54,7 @@ export function manageGlobalAbbreviations(
       )
       .addButton((button) =>
         button
-          .setButtonText(plugin.i18n.t("button.delete"))
+          .setButtonText(i18n.t("button.delete"))
           .setWarning()
           .onClick(async () => {
             plugin.settings.globalAbbreviations.splice(index, 1);
@@ -65,9 +66,9 @@ export function manageGlobalAbbreviations(
 
   new Setting(containerEl).addButton((button) =>
     button
-      .setButtonText(plugin.i18n.t("button.add"))
+      .setButtonText(i18n.t("button.add"))
       .setCta()
-      .setTooltip(plugin.i18n.t("manager.addTip"))
+      .setTooltip(i18n.t("manager.addTip"))
       .onClick(async () => {
         plugin.settings.globalAbbreviations.push({
           key: "",
