@@ -4,7 +4,6 @@ import {
   findCharCount,
   calcAbbrListFromFrontmatter,
   parseExtraAbbreviation,
-  isAbbreviationsEmpty,
 } from "./tool";
 import { getMetadata } from "./metadata";
 
@@ -50,14 +49,6 @@ export class Parser extends Base {
       this.abbreviationKeyword
     );
     this.abbreviations.push(...list);
-  }
-
-  /**
-   * Determines whether the abbreviation list is empty.
-   * @returns `true` if empty
-   */
-  isAbbreviationsEmpty() {
-    return isAbbreviationsEmpty(this.abbreviations);
   }
 
   /**
