@@ -56,4 +56,17 @@ module.exports = {
     "init",
     "merge",
   ],
+  renderTypeSection: function (label, commits, includeCommitBody) {
+    let text = `\n## ${label}\n`;
+
+    commits.forEach((commit) => {
+      const scope = commit.scope ? `**${commit.scope}:** ` : "";
+      text += `- ${scope}${commit.subject} (${commit.sha})\n`;
+      if (commit.body && includeCommitBody) {
+        text += `${commit.body}\n`;
+      }
+    });
+
+    return text;
+  },
 };
