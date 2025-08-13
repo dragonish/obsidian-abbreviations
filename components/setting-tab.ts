@@ -26,9 +26,9 @@ export class AbbrSettingTab extends PluginSettingTab {
         text
           .setPlaceholder(i18n.t("setting.metadataKeywordPlaceholder"))
           .setValue(this.plugin.settings.metadataKeyword)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.metadataKeyword = value.trim();
-            await this.plugin.saveSettings();
+            this.plugin.saveSettings();
           })
       );
 
@@ -53,9 +53,9 @@ export class AbbrSettingTab extends PluginSettingTab {
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.markInSourceMode)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.markInSourceMode = value;
-            await this.plugin.saveSettings();
+            this.plugin.saveSettings();
           });
       });
 
@@ -63,12 +63,10 @@ export class AbbrSettingTab extends PluginSettingTab {
     const detectCJKSetting = new Setting(containerEl)
       .setName(i18n.t("setting.detectCJK"))
       .addToggle((toggle) => {
-        toggle
-          .setValue(this.plugin.settings.detectCJK)
-          .onChange(async (value) => {
-            this.plugin.settings.detectCJK = value;
-            await this.plugin.saveSettings();
-          });
+        toggle.setValue(this.plugin.settings.detectCJK).onChange((value) => {
+          this.plugin.settings.detectCJK = value;
+          this.plugin.saveSettings();
+        });
       });
 
     const detectCJKDesc = createFragment();
@@ -95,9 +93,9 @@ export class AbbrSettingTab extends PluginSettingTab {
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.useMarkdownExtraSyntax)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.useMarkdownExtraSyntax = value;
-            await this.plugin.saveSettings();
+            this.plugin.saveSettings();
           });
       });
 
@@ -123,9 +121,9 @@ export class AbbrSettingTab extends PluginSettingTab {
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.useExtraDefinitionDecorator)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.useExtraDefinitionDecorator = value;
-            await this.plugin.saveSettings();
+            this.plugin.saveSettings();
           });
       });
 
@@ -137,10 +135,10 @@ export class AbbrSettingTab extends PluginSettingTab {
         slider
           .setLimits(10, 100, 10)
           .setValue(this.plugin.settings.extraDefinitionDecoratorOpacity)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.extraDefinitionDecoratorOpacity =
               this.isOpacityValue(value) ? value : 20;
-            await this.plugin.saveSettings();
+            this.plugin.saveSettings();
           })
           .setDynamicTooltip();
       });
@@ -152,9 +150,9 @@ export class AbbrSettingTab extends PluginSettingTab {
       .addText((text) => {
         text
           .setValue(this.plugin.settings.extraDefinitionDecoratorContent)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.extraDefinitionDecoratorContent = value;
-            await this.plugin.saveSettings();
+            this.plugin.saveSettings();
           });
       });
 
@@ -192,19 +190,19 @@ export class AbbrSettingTab extends PluginSettingTab {
       .addText((text) => {
         text
           .setValue(this.plugin.settings.globalFile || "")
-          .onChange(async (value) => {
+          .onChange((value) => {
             const isChange = this.plugin.settings.globalFile !== value;
             this.plugin.settings.globalFile = value;
-            await this.plugin.saveSettings(isChange);
+            this.plugin.saveSettings(isChange);
           });
 
         const suggest = new FileSuggest(this.app, text.inputEl);
-        suggest.onSelect(async (value) => {
+        suggest.onSelect((value) => {
           const isChange = this.plugin.settings.globalFile !== value;
           text.setValue(value);
           this.plugin.settings.globalFile = value;
           suggest.close();
-          await this.plugin.saveSettings(isChange);
+          this.plugin.saveSettings(isChange);
         });
       });
 
@@ -219,9 +217,9 @@ export class AbbrSettingTab extends PluginSettingTab {
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.settings.detectAffixes)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.detectAffixes = value;
-            await this.plugin.saveSettings();
+            this.plugin.saveSettings();
           });
       });
 
@@ -232,9 +230,9 @@ export class AbbrSettingTab extends PluginSettingTab {
         text
           .setPlaceholder(i18n.t("setting.affixesPlaceholder"))
           .setValue(this.plugin.settings.affixes)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.affixes = value.trim();
-            await this.plugin.saveSettings();
+            this.plugin.saveSettings();
           });
       });
 

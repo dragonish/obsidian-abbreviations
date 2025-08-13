@@ -38,18 +38,18 @@ export function manageGlobalAbbreviations(
         text
           .setPlaceholder(i18n.t("text.abbrPlaceholder"))
           .setValue(abbr.key)
-          .onChange(async (value) => {
+          .onChange((value) => {
             plugin.settings.globalAbbreviations[index].key = value.trim();
-            await plugin.saveSettings();
+            plugin.saveSettings();
           })
       )
       .addText((text) =>
         text
           .setPlaceholder(i18n.t("text.tipPlaceholder"))
           .setValue(abbr.title)
-          .onChange(async (value) => {
+          .onChange((value) => {
             plugin.settings.globalAbbreviations[index].title = value.trim();
-            await plugin.saveSettings();
+            plugin.saveSettings();
           })
       )
       .addButton((button) =>
