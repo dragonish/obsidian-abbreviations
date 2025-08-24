@@ -12,6 +12,8 @@ export const previewDecoratorClassName =
 
 export const sourceDecoratorClassName = "abbreviations-plugin-source-decorator";
 
+export const pListSelector = ".el-p > p";
+
 export const elementListSelector =
   "p, li, h1, h2, h3, h4, h5, h6, th, td, .table-cell-wrapper, .callout-title-inner";
 

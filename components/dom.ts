@@ -164,3 +164,39 @@ export function handlePreviewMarkdownExtra(
     }
   }
 }
+
+/**
+ * Restore abbr to text.
+ * @param node
+ */
+function restoreAbbrToText(node: Node) {
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    const element = node as Element;
+    for (let i = element.childNodes.length - 1; i >= 0; i--) {
+      restoreAbbrToText(element.childNodes[i]);
+    }
+
+    if (
+      element.nodeName === "ABBR" &&
+      element.classList.contains(abbrClassName)
+    ) {
+      const text = element.textContent || "";
+      const textNode = document.createTextNode(text);
+      element.parentNode?.replaceChild(textNode, element);
+    }
+  }
+}
+
+/**
+ * Restore HTML.
+ * @param eleList
+ */
+export function restoreHTML(eleList: HTMLElement[]) {
+  for (const ele of eleList) {
+    const childNodes = ele.childNodes;
+    for (let i = 0; i < childNodes.length; i++) {
+      const node = childNodes[i];
+      restoreAbbrToText(node);
+    }
+  }
+}

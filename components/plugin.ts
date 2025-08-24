@@ -10,7 +10,11 @@ import {
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
 import { i18n } from "../locales";
-import { elementListSelector, extraDefinitionClassName } from "../common/data";
+import {
+  pListSelector,
+  elementListSelector,
+  extraDefinitionClassName,
+} from "../common/data";
 import {
   calcAbbrListFromFrontmatter,
   findAbbrIndexFromFrontmatter,
@@ -27,7 +31,12 @@ import {
   editorModeField,
   updateEditorMode,
 } from "./editor";
-import { handlePreviewMarkdown, handlePreviewMarkdownExtra } from "./dom";
+import { ReadingChild } from "./child";
+import {
+  handlePreviewMarkdown,
+  handlePreviewMarkdownExtra,
+  restoreHTML,
+} from "./dom";
 import { AbbreviationContextMenu } from "./menu";
 import { AbbreviationListModal } from "./list-modal";
 import { AbbreviationInputModal } from "./input-modal";
@@ -65,6 +74,8 @@ export class AbbrPlugin extends Plugin {
   globalFileAbbreviations: AbbreviationInstance[] = [];
   i18n = i18n;
 
+  private readingComponents: ReadingChild[] = [];
+
   async onload() {
     await this.loadSettings();
 
@@ -81,87 +92,131 @@ export class AbbrPlugin extends Plugin {
 
     // Register markdown post processor
     this.registerMarkdownPostProcessor(async (element, context) => {
-      if (this.settings.useMarkdownExtraSyntax) {
-        const pList = element.findAll(".el-p > p");
-        for (const p of pList) {
-          if (p.textContent && isExtraDefinitions(p.textContent)) {
-            p.classList.add(extraDefinitionClassName);
-          }
-        }
-
-        const eleList = element.findAll(elementListSelector);
-        if (eleList.length === 0) {
-          return;
-        }
-
-        const filterEleList = eleList.filter(
-          (ele) =>
-            ele.nodeName !== "P" ||
-            !ele.classList.contains(extraDefinitionClassName)
-        );
-        if (filterEleList.length === 0) {
-          return;
-        }
-
-        const parser = new Parser(
-          this.settings.globalAbbreviations,
-          this.settings.metadataKeyword,
-          {
-            extra: true,
-          }
-        );
-        parser.readAbbreviationsFromCache(context.frontmatter);
-
-        const file = this.getActiveFile(context.sourcePath);
-        if (file) {
-          const sourceContent = await this.app.vault.cachedRead(file);
-          sourceContent.split("\n").forEach((line, index) => {
-            parser.handler(line, index + 1);
-          });
-        }
-
-        handlePreviewMarkdownExtra(
+      let child = this.readingComponents.find((ch) => ch.equal(element));
+      if (!child) {
+        child = new ReadingChild(
+          element,
           context,
-          filterEleList,
-          context.sourcePath === this.settings.globalFile
-            ? parser.abbreviations
-            : this.globalFileAbbreviations.concat(parser.abbreviations),
-          this.getAffixList(),
-          this.settings.detectCJK
-        );
-      } else {
-        const eleList = element.findAll(elementListSelector);
-        if (eleList.length === 0) {
-          return;
-        }
-
-        let frontmatter: undefined | FrontMatterCache = context.frontmatter;
-        if (this.settings.metadataKeyword) {
-          if (!frontmatter) {
-            //? It may be Tables or Callouts rendered in Live Preview.
-            if (
-              element.classList.contains("table-cell-wrapper") ||
-              element.classList.contains("markdown-rendered")
-            ) {
-              const file = this.getActiveFile(context.sourcePath);
-              if (file) {
-                frontmatter =
-                  this.app.metadataCache.getFileCache(file)?.frontmatter;
+          async (container, ctx, fileData) => {
+            if (this.settings.useMarkdownExtraSyntax) {
+              const pList = container.findAll(pListSelector);
+              for (const p of pList) {
+                if (p.textContent && isExtraDefinitions(p.textContent)) {
+                  p.classList.add(extraDefinitionClassName);
+                } else {
+                  p.classList.remove(extraDefinitionClassName);
+                }
               }
-            }
-          }
-        }
 
-        const abbrList = this.getAbbrList(frontmatter);
-        handlePreviewMarkdown(
-          eleList,
-          context.sourcePath === this.settings.globalFile
-            ? abbrList
-            : this.globalFileAbbreviations.concat(abbrList),
-          this.getAffixList(),
-          this.settings.detectCJK
+              const eleList = container.findAll(elementListSelector);
+              if (eleList.length === 0) {
+                return;
+              }
+
+              const filterEleList = eleList.filter(
+                (ele) =>
+                  ele.nodeName !== "P" ||
+                  !ele.classList.contains(extraDefinitionClassName)
+              );
+              if (filterEleList.length === 0) {
+                return;
+              }
+
+              restoreHTML(filterEleList);
+
+              const parser = new Parser(
+                this.settings.globalAbbreviations,
+                this.settings.metadataKeyword,
+                {
+                  extra: true,
+                }
+              );
+              parser.readAbbreviationsFromCache(ctx.frontmatter);
+
+              let sourceContent = fileData || "";
+              if (!sourceContent) {
+                const file = this.getActiveFile(ctx.sourcePath);
+                if (file) {
+                  sourceContent = await this.app.vault.cachedRead(file);
+                }
+              }
+
+              sourceContent.split("\n").forEach((line, index) => {
+                parser.handler(line, index + 1);
+              });
+
+              handlePreviewMarkdownExtra(
+                ctx,
+                filterEleList,
+                ctx.sourcePath === this.settings.globalFile
+                  ? parser.abbreviations
+                  : this.globalFileAbbreviations.concat(parser.abbreviations),
+                this.getAffixList(),
+                this.settings.detectCJK
+              );
+            } else {
+              const eleList = container.findAll(elementListSelector);
+              if (eleList.length === 0) {
+                return;
+              }
+
+              restoreHTML(eleList);
+
+              let frontmatter: undefined | FrontMatterCache = ctx.frontmatter;
+              if (this.settings.metadataKeyword) {
+                if (!frontmatter) {
+                  //? It may be Tables or Callouts rendered in Live Preview.
+                  if (
+                    container.classList.contains("table-cell-wrapper") ||
+                    container.classList.contains("markdown-rendered")
+                  ) {
+                    const file = this.getActiveFile(ctx.sourcePath);
+                    if (file) {
+                      frontmatter =
+                        this.app.metadataCache.getFileCache(file)?.frontmatter;
+                    }
+                  }
+                }
+              }
+
+              const abbrList = this.getAbbrList(frontmatter);
+              handlePreviewMarkdown(
+                eleList,
+                ctx.sourcePath === this.settings.globalFile
+                  ? abbrList
+                  : this.globalFileAbbreviations.concat(abbrList),
+                this.getAffixList(),
+                this.settings.detectCJK
+              );
+            }
+          },
+          (container) => {
+            const pList = container.findAll(pListSelector);
+            for (const p of pList) {
+              p.classList.remove(extraDefinitionClassName);
+            }
+
+            const eleList = container.findAll(elementListSelector);
+            restoreHTML(eleList);
+          }
         );
+
+        this.readingComponents.push(child);
+        context.addChild(child);
+        child.register(() => {
+          this.readingComponents = this.readingComponents.filter(
+            (item) => !item.equal(child)
+          );
+        });
       }
+
+      child.render();
+      const currentPath = context.sourcePath;
+      this.readingComponents.forEach((rc) => {
+        if (rc.isSamePath(currentPath)) {
+          rc.updateContext(context);
+        }
+      });
     });
 
     // Listen for metadata changes
@@ -169,14 +224,14 @@ export class AbbrPlugin extends Plugin {
       this.app.metadataCache.on(
         "changed",
         debounce(
-          (file) => {
+          (file, data) => {
             //! Delay trigger rerender
             if (
               this.settings.metadataKeyword &&
               file &&
               file.path === this.getActiveFile()?.path
             ) {
-              this.rerenderPreviewMarkdown(file);
+              this.rerenderReadingAbbreviations(file, data);
             }
           },
           250,
@@ -282,7 +337,14 @@ export class AbbrPlugin extends Plugin {
     this.addSettingTab(new AbbrSettingTab(this.app, this));
   }
 
-  onunload() {}
+  onunload() {
+    this.unloadReadingComponents();
+  }
+
+  private unloadReadingComponents() {
+    this.readingComponents.forEach((child) => child.detach());
+    this.readingComponents = [];
+  }
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
@@ -354,12 +416,30 @@ export class AbbrPlugin extends Plugin {
    * @param file
    */
   private rerenderPreviewMarkdown(file?: TFile) {
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (view) {
-      if (!file || file === view.file) {
-        view.previewMode.rerender(true);
+    const leaves = this.app.workspace.getLeavesOfType("markdown");
+    leaves.forEach((leaf) => {
+      if (leaf.view instanceof MarkdownView) {
+        const view = leaf.view;
+        if (!file || file === view.file) {
+          const oldScroll = view.previewMode.getScroll();
+          view.previewMode.rerender(true);
+          const newScroll = view.previewMode.getScroll();
+          if (newScroll !== oldScroll) {
+            window.setTimeout(() => {
+              view.previewMode.applyScroll(oldScroll);
+            }, 200);
+          }
+        }
       }
-    }
+    });
+  }
+
+  private rerenderReadingAbbreviations(file: TFile, fileData: string) {
+    this.readingComponents.forEach((rc) => {
+      if (rc.isSamePath(file.path)) {
+        rc.render(fileData);
+      }
+    });
   }
 
   async getPluginData(): Promise<AbbrPluginData> {
