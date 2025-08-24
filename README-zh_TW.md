@@ -218,7 +218,7 @@ abbr:
 
 控制是否啟用 Markdown Extra 語法功能。
 
-此外，您還可以向編輯檢視中顯示一個裝飾器，用於標識 Markdown Extra 語法的定義。裝飾器的內容可以使用兩個變數：`${abbr}` 和 `${tooltip}`，用於將當前定義的某些資訊引入內容。例如，對於 `→ ${abbr}`：
+此外，您還可以在編輯中顯示一個裝飾器，用於標識 Markdown Extra 語法的定義。裝飾器的內容可以使用兩個變數：`${abbr}` 和 `${tooltip}`，用於將當前定義的某些資訊引入內容。例如，對於 `→ ${abbr}`：
 
 ![decorator-example](images/definition-decorator.jpg)
 
