@@ -259,7 +259,7 @@ export class MarkBuffer {
     let i = 0;
     for (const ch of [...text]) {
       this.charHandler(i, ch);
-      i = i + ch.length;
+      i += ch.length;
     }
 
     this.pushMark();
