@@ -534,7 +534,7 @@ export class AbbrPlugin extends Plugin {
   }
 
   private async showAbbreviationListModal() {
-    let abbrList: AbbreviationInstance[] = [];
+    let abbrList: AbbreviationInstance[];
     let selectedText = "";
 
     const file = this.getActiveFile();
