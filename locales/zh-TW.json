@@ -21,9 +21,9 @@
     "copied": "內容已複製！",
     "copyWarn": "警告：複製的內容為空！",
     "copyError": "錯誤：無法複製內容！",
-    "metadataAdded": "已新增元資料縮略語：{abbr}。",
-    "metadataDeleted": "已刪除元資料縮略語：{abbr}。",
-    "metadataError": "錯誤：元資料關鍵詞為空！",
+    "metadataAdded": "已新增後設資料縮略語：{abbr}。",
+    "metadataDeleted": "已刪除後設資料縮略語：{abbr}。",
+    "metadataError": "錯誤：後設資料關鍵詞為空！",
     "globalAdded": "已新增全域性縮略語：{abbr}。",
     "globalDeleted": "已刪除全域性縮略語：{abbr}。",
     "formatWarn": "警告：縮略語格式不正確！",
@@ -34,7 +34,7 @@
   },
   "input": {
     "editTitle": "編輯縮略語 ({type})",
-    "addTitle": "新增元資料縮略語"
+    "addTitle": "新增後設資料縮略語"
   },
   "list": {
     "empty": "未找到縮略語。",
@@ -57,12 +57,12 @@
     "add": "新增到全域性縮略語",
     "copyText": "複製縮寫",
     "copyTooltip": "複製全稱",
-    "copyMetadata": "複製元資料格式定義",
+    "copyMetadata": "複製後設資料格式定義",
     "copyExtra": "複製 Extra 格式定義",
     "copyHtml": "複製 HTML 格式定義"
   },
   "setting": {
-    "metadataKeyword": "元資料關鍵詞",
+    "metadataKeyword": "後設資料關鍵詞",
     "metadataKeywordDesc": "從{placeholder}中讀取縮略語資訊的鍵名。",
     "metadataKeywordPlaceholder": "輸入關鍵詞",
     "properties": "屬性",

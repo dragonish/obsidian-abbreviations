@@ -16,7 +16,7 @@
 
 #### 屬性
 
-外掛透過讀取筆記[屬性（元資料）](https://help.obsidian.md/Editing+and+formatting/Properties)中的指定欄位獲取縮略語。您可以使用[字串](#字串)列表或[鍵值對](#鍵值對)列表來定義縮略語。
+外掛透過讀取筆記[屬性（後設資料）](https://help.obsidian.md/Editing+and+formatting/Properties)中的指定欄位獲取縮略語。您可以使用[字串](#字串)列表或[鍵值對](#鍵值對)列表來定義縮略語。
 
 ##### 字串
 
@@ -117,7 +117,7 @@ RAM.
 
 ### 新增縮略語
 
-快速將縮略語新增到[屬性（元資料）](https://help.obsidian.md/Editing+and+formatting/Properties)。
+快速將縮略語新增到[屬性（後設資料）](https://help.obsidian.md/Editing+and+formatting/Properties)。
 
 ### 複製並格式化內容
 
@@ -171,7 +171,7 @@ Using style sheets, you can keep your `CSS` presentation layer and `HTML` conten
 
 ### 縮略語列表
 
-列出當前檔案中所有縮略語，然後選擇一個並跳轉到其定義位置（對於 Markdown Extra 語法定義的縮略語），或直接編輯它（對於元資料或全域性縮略語）。
+列出當前檔案中所有縮略語，然後選擇一個並跳轉到其定義位置（對於 Markdown Extra 語法定義的縮略語），或直接編輯它（對於後設資料或全域性縮略語）。
 
 ### 管理全域性縮略語
 
@@ -179,7 +179,7 @@ Using style sheets, you can keep your `CSS` presentation layer and `HTML` conten
 
 ## 設定
 
-### 元資料關鍵詞
+### 後設資料關鍵詞
 
 此外掛允許您自定義從[屬性](https：//help.obsidian.md/Editing+and+formatting/Properties)中讀取縮略語的關鍵詞，預設值為 `abbr`。
 
