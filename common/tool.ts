@@ -42,8 +42,9 @@ export function isSpecialOrWhitespace(char: string) {
     return true;
   }
 
-  // Check for letters, numbers, CJK characters
-  if (/^[\p{L}\p{N}\p{Ideographic}]$/u.test(char)) {
+  // Check for letters, numbers, CJK characters, and symbols
+  const codePoint = char.codePointAt(0);
+  if (codePoint && /^[\p{L}\p{N}\p{Ideographic}\p{So}§\p{Variation_Selector}]$/u.test(String.fromCodePoint(codePoint))) {
     return false;
   }
 
@@ -62,7 +63,7 @@ export function isWord(text: string) {
     return false;
   }
 
-  for (const ch of text) {
+  for (const ch of [...text]) {
     if (isSpecialOrWhitespace(ch)) {
       return false;
     }

@@ -32,7 +32,7 @@ describe("common/tool", function () {
 
   it("isSpecialOrWhitespace", function () {
     const list1 =
-      " 	\"'`!~@#$%^*()_+=,.:;<>/?\\|[]{}，。“”（）《》，。：；？【】「」〔〕〖〗『』℃°\t\n";
+      " 	\"'`!~@#$%^*()_+=,.:;<>/?\\|[]{}，。“”（）《》，。：；？【】「」〔〕〖〗『』\t\n";
     for (const item of list1) {
       expect(isSpecialOrWhitespace(item)).to.be.true;
     }
@@ -43,15 +43,26 @@ describe("common/tool", function () {
     for (const item of list2) {
       expect(isSpecialOrWhitespace(item)).to.be.false;
     }
+
+    const list3 = "★➹§⛔◀";
+    for (const item of list3) {
+      expect(isSpecialOrWhitespace(item)).to.be.false;
+    }
+
+    expect(isSpecialOrWhitespace("℃")).to.be.false;
+    expect(isSpecialOrWhitespace("°")).to.be.false;
+    expect(isSpecialOrWhitespace("🛍️")).to.be.false;
+    expect(isSpecialOrWhitespace("💬")).to.be.false;
+    expect(isSpecialOrWhitespace("✈️")).to.be.false;
   });
 
   it("isWord", function () {
-    const list1 = ["0", "test", "a&b", "a-b", "国國ひカ한"];
+    const list1 = ["0", "test", "a&b", "a-b", "国國ひカ한", "➹✈️★"];
     for (const item of list1) {
       expect(isWord(item)).to.be.true;
     }
 
-    const list2 = ["", " ", " test", "test ", "a b", "a+b"];
+    const list2 = ["", " ", " test", "test ", "a b", "a+b", "➹✈️ ★"];
     for (const item of list2) {
       expect(isWord(item)).to.be.false;
     }

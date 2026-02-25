@@ -361,5 +361,16 @@ describe("common/mark", function () {
         position: 24,
       },
     ]);
+
+    expect(mark.handler("🛍️long emoji")).to.deep.eq([
+      {
+        text: "🛍️long",
+        position: 0,
+      },
+      {
+        text: "emoji",
+        position: 8,
+      },
+    ]);
   });
 });

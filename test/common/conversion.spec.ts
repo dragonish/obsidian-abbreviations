@@ -356,5 +356,47 @@ describe("common/conversion", function () {
       { marks: [], definition: null },
       { marks: [], definition: null },
     ]);
+
+    const conversion11 = new Conversion(
+      [
+        {
+          key: "🛍️long",
+          title: "Test",
+          type: "global",
+        },
+      ],
+      true,
+    );
+    const res11: unknown[] = [];
+    const content11 = ["🛍️long 🛍️long emoji"];
+    content11.forEach((line, index) => {
+      conversion11.handler(line, index + 1, (marks, definition) => {
+        res11.push({
+          marks,
+          definition,
+        });
+      });
+    });
+    expect(res11).to.deep.eq([
+      {
+        marks: [
+          {
+            index: 0,
+            text: "🛍️long",
+            title: "Test",
+            type: "global",
+            key: "🛍️long",
+          },
+          {
+            index: 8,
+            text: "🛍️long",
+            title: "Test",
+            type: "global",
+            key: "🛍️long",
+          },
+        ],
+        definition: null,
+      },
+    ]);
   });
 });

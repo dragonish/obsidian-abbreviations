@@ -71,6 +71,12 @@ export class MarkBuffer {
   }
 
   private charHandler(index: number, char: string) {
+    const codePoint = char.codePointAt(0);
+    if (!codePoint) {
+      return;
+    }
+    char = String.fromCodePoint(codePoint);
+
     if (this.mode === "inlineCode") {
       //? No need to worry about whether the prefix characters are escaped
       if (char === "`") {
@@ -250,8 +256,10 @@ export class MarkBuffer {
   handler(text: string): MarkWord[] {
     this.init();
 
-    for (let i = 0; i < text.length; i++) {
-      this.charHandler(i, text[i]);
+    let i = 0;
+    for (const ch of [...text]) {
+      this.charHandler(i, ch);
+      i = i + ch.length;
     }
 
     this.pushMark();
