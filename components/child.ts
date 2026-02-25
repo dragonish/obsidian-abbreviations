@@ -3,7 +3,7 @@ import { MarkdownRenderChild, MarkdownPostProcessorContext } from "obsidian";
 type DecorationCallback = (
   container: HTMLElement,
   ctx: MarkdownPostProcessorContext,
-  fileData?: string
+  fileData?: string,
 ) => void;
 
 type CancelDecorationCallback = (container: HTMLElement) => void;
@@ -21,7 +21,7 @@ export class ReadingChild extends MarkdownRenderChild {
     containerEl: HTMLElement,
     context: MarkdownPostProcessorContext,
     decorationCallback: DecorationCallback,
-    cancelDecorationCallback: CancelDecorationCallback
+    cancelDecorationCallback: CancelDecorationCallback,
   ) {
     super(containerEl);
     this.container = containerEl;
@@ -83,7 +83,7 @@ export class ReadingChild extends MarkdownRenderChild {
   private deepEqualContext(
     obj1: unknown,
     obj2: unknown,
-    visited = new Set()
+    visited = new Set(),
   ): boolean {
     if (obj1 === obj2) {
       return true;
@@ -117,7 +117,7 @@ export class ReadingChild extends MarkdownRenderChild {
         !this.deepEqualContext(
           obj1[key as keyof typeof obj1],
           obj2[key as keyof typeof obj2],
-          visited
+          visited,
         )
       ) {
         return false;

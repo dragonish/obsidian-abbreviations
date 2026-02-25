@@ -21,7 +21,7 @@ describe("common/format", function () {
 
     expect(lineMarkupFormatter("", [])).to.be.empty;
     expect(lineMarkupFormatter("This is a test string.", [])).to.eq(
-      "This is a test string."
+      "This is a test string.",
     );
 
     expect(
@@ -31,7 +31,7 @@ describe("common/format", function () {
           text: "TEST",
           title: "A test",
         },
-      ])
+      ]),
     ).to.eq('This is a <abbr title="A test">TEST</abbr> string.');
 
     expect(
@@ -46,9 +46,9 @@ describe("common/format", function () {
           text: "TEST",
           title: "A test",
         },
-      ])
+      ]),
     ).to.eq(
-      '<abbr title="A this">THIS</abbr> is a <abbr title="A test">TEST</abbr> string.'
+      '<abbr title="A this">THIS</abbr> is a <abbr title="A test">TEST</abbr> string.',
     );
 
     expect(
@@ -63,9 +63,9 @@ describe("common/format", function () {
           text: "HTML",
           title: "HyperText Markup Language",
         },
-      ])
+      ]),
     ).to.eq(
-      'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.'
+      'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.',
     );
   });
 
@@ -96,7 +96,7 @@ describe("common/format", function () {
     ].join("\n");
 
     expect(
-      contentFormatter(content1, abbrs, "abbr", false).split("\n")
+      contentFormatter(content1, abbrs, "abbr", false).split("\n"),
     ).to.deep.eq([
       "#Test",
       "",
@@ -114,7 +114,7 @@ describe("common/format", function () {
     ].join("\n");
 
     expect(
-      contentFormatter(content2, abbrs, "abbr", false, ["s"]).split("\n")
+      contentFormatter(content2, abbrs, "abbr", false, ["s"]).split("\n"),
     ).to.deep.eq([
       "#Test",
       "",
@@ -135,7 +135,7 @@ describe("common/format", function () {
     ].join("\n");
 
     expect(
-      contentFormatter(content3, [], "abbr", false).split("\n")
+      contentFormatter(content3, [], "abbr", false).split("\n"),
     ).to.deep.eq([
       "#Test",
       "",
@@ -143,7 +143,7 @@ describe("common/format", function () {
     ]);
 
     expect(
-      contentFormatter(content3, [], "abbrs", false).split("\n")
+      contentFormatter(content3, [], "abbrs", false).split("\n"),
     ).to.deep.eq(["#Test", "", "You can use CSS to style your HTML."]);
 
     const content4 = [
@@ -165,7 +165,7 @@ describe("common/format", function () {
         "",
         'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.',
         "",
-      ]
+      ],
     );
 
     const content5 = [
@@ -188,7 +188,7 @@ describe("common/format", function () {
         "",
         'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.',
         "",
-      ]
+      ],
     );
 
     const content6 = [
@@ -213,7 +213,7 @@ describe("common/format", function () {
         'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.',
         "",
         "",
-      ]
+      ],
     );
 
     const content7 = [
@@ -237,7 +237,7 @@ describe("common/format", function () {
         "",
         'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.',
         "",
-      ]
+      ],
     );
 
     const content8 = [
@@ -263,7 +263,7 @@ describe("common/format", function () {
         'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.',
         "  ",
         "  ",
-      ]
+      ],
     );
 
     const content9 = [
@@ -285,7 +285,7 @@ describe("common/format", function () {
         "",
         'You can use <abbr title="Cascading Style Sheets">CSS</abbr> to style your <abbr title="HyperText Markup Language">HTML</abbr>.',
         "",
-      ]
+      ],
     );
 
     const content10 = [
@@ -306,7 +306,7 @@ describe("common/format", function () {
     ].join("\n");
 
     expect(
-      contentFormatter(content10, [], "abbr", true).split("\n")
+      contentFormatter(content10, [], "abbr", true).split("\n"),
     ).to.deep.eq([
       "#Test",
       "",

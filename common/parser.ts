@@ -22,7 +22,7 @@ export class Parser extends Base {
   constructor(
     abbreviations: AbbreviationInfo[],
     abbreviationKeyword: string,
-    parseOption: ParseOption
+    parseOption: ParseOption,
   ) {
     super();
 
@@ -46,7 +46,7 @@ export class Parser extends Base {
   readAbbreviationsFromCache(frontmatterCache?: Record<string, unknown>) {
     const list = calcAbbrListFromFrontmatter(
       frontmatterCache,
-      this.abbreviationKeyword
+      this.abbreviationKeyword,
     );
     this.abbreviations.push(...list);
   }
@@ -119,7 +119,7 @@ export class Parser extends Base {
             if (metadata) {
               const list = calcAbbrListFromFrontmatter(
                 metadata,
-                this.abbreviationKeyword
+                this.abbreviationKeyword,
               );
               this.abbreviations.push(...list);
             }

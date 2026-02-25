@@ -25,7 +25,7 @@ export class AbbreviationManagerModal extends Modal {
 export function manageGlobalAbbreviations(
   plugin: AbbrPlugin,
   containerEl: HTMLElement,
-  header: () => void
+  header: () => void,
 ) {
   const { i18n } = plugin;
   containerEl.empty();
@@ -41,7 +41,7 @@ export function manageGlobalAbbreviations(
           .onChange((value) => {
             plugin.settings.globalAbbreviations[index].key = value.trim();
             plugin.saveSettings();
-          })
+          }),
       )
       .addText((text) =>
         text
@@ -50,7 +50,7 @@ export function manageGlobalAbbreviations(
           .onChange((value) => {
             plugin.settings.globalAbbreviations[index].title = value.trim();
             plugin.saveSettings();
-          })
+          }),
       )
       .addButton((button) =>
         button
@@ -60,7 +60,7 @@ export function manageGlobalAbbreviations(
             plugin.settings.globalAbbreviations.splice(index, 1);
             await plugin.saveSettings();
             manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
-          })
+          }),
       );
   });
 
@@ -76,6 +76,6 @@ export function manageGlobalAbbreviations(
         });
         await plugin.saveSettings();
         manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
-      })
+      }),
   );
 }

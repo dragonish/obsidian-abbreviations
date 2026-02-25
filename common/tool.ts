@@ -44,7 +44,12 @@ export function isSpecialOrWhitespace(char: string) {
 
   // Check for letters, numbers, CJK characters, and symbols
   const codePoint = char.codePointAt(0);
-  if (codePoint && /^[\p{L}\p{N}\p{Ideographic}\p{So}§\p{Variation_Selector}]$/u.test(String.fromCodePoint(codePoint))) {
+  if (
+    codePoint &&
+    /^[\p{L}\p{N}\p{Ideographic}\p{So}§\p{Variation_Selector}]$/u.test(
+      String.fromCodePoint(codePoint),
+    )
+  ) {
     return false;
   }
 
@@ -180,8 +185,8 @@ export function getAffixList(affixes: string): string[] {
       affixes
         .split(",")
         .map((affix) => affix.trim())
-        .filter((item) => item)
-    )
+        .filter((item) => item),
+    ),
   );
 }
 
@@ -191,7 +196,7 @@ export function getAffixList(affixes: string): string[] {
  * @returns
  */
 export function getAbbreviationInstance(
-  input: MetadataAbbrType
+  input: MetadataAbbrType,
 ): AbbreviationInstance | null {
   if (typeof input === "string") {
     const val = input.trim();
@@ -286,7 +291,7 @@ export function selectNonOverlappingItems(list: QueryItem[]): MarkInstance[] {
       }
       return lastIndex;
     },
-    0
+    0,
   );
 
   for (let i = highestPriorityIndex; i >= 0; i--) {
@@ -346,7 +351,7 @@ export function queryAbbreviationTitle(
   abbrList: AbbreviationInstance[],
   lineStart = 1,
   affixList: string[] = [],
-  detectCJK = false
+  detectCJK = false,
 ): null | MarkInstance | MarkInstance[] {
   let fullRes: MarkInstance | null = null;
   let affixFullRes: MarkInstance | null = null;
@@ -491,7 +496,7 @@ export function isAbbreviationsEmpty(abbr: AbbreviationInstance[]): boolean {
  */
 export function calcAbbrListFromFrontmatter(
   frontmatter?: Record<string, unknown>,
-  keyword?: string
+  keyword?: string,
 ): AbbreviationInstance[] {
   const abbrList: AbbreviationInstance[] = [];
   if (keyword && typeof frontmatter === "object" && frontmatter) {
@@ -516,7 +521,7 @@ export function calcAbbrListFromFrontmatter(
 export function findAbbrIndexFromFrontmatter(
   abbr: AbbreviationInstance,
   frontmatter: Record<string, unknown>,
-  keyword: string
+  keyword: string,
 ): number {
   if (Array.isArray(frontmatter[keyword])) {
     const list = frontmatter[keyword] as MetadataAbbrType[];
@@ -541,7 +546,7 @@ export function findAbbrIndexFromFrontmatter(
  */
 export function findAbbrIndexFromGlobal(
   abbr: AbbreviationInstance,
-  globalAbbreviations: AbbreviationInfo[]
+  globalAbbreviations: AbbreviationInfo[],
 ): number {
   let index = globalAbbreviations.length - 1;
   while (index >= 0) {

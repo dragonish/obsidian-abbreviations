@@ -116,7 +116,7 @@ export class AbbrPlugin extends Plugin {
               const filterEleList = eleList.filter(
                 (ele) =>
                   ele.nodeName !== "P" ||
-                  !ele.classList.contains(extraDefinitionClassName)
+                  !ele.classList.contains(extraDefinitionClassName),
               );
               if (filterEleList.length === 0) {
                 return;
@@ -129,7 +129,7 @@ export class AbbrPlugin extends Plugin {
                 this.settings.metadataKeyword,
                 {
                   extra: true,
-                }
+                },
               );
               parser.readAbbreviationsFromCache(ctx.frontmatter);
 
@@ -152,7 +152,7 @@ export class AbbrPlugin extends Plugin {
                   ? parser.abbreviations
                   : this.globalFileAbbreviations.concat(parser.abbreviations),
                 this.getAffixList(),
-                this.settings.detectCJK
+                this.settings.detectCJK,
               );
             } else {
               const eleList = container.findAll(elementListSelector);
@@ -186,7 +186,7 @@ export class AbbrPlugin extends Plugin {
                   ? abbrList
                   : this.globalFileAbbreviations.concat(abbrList),
                 this.getAffixList(),
-                this.settings.detectCJK
+                this.settings.detectCJK,
               );
             }
           },
@@ -198,14 +198,14 @@ export class AbbrPlugin extends Plugin {
 
             const eleList = container.findAll(elementListSelector);
             restoreHTML(eleList);
-          }
+          },
         );
 
         this.readingComponents.push(child);
         context.addChild(child);
         child.register(() => {
           this.readingComponents = this.readingComponents.filter(
-            (item) => !item.equal(child)
+            (item) => !item.equal(child),
           );
         });
       }
@@ -235,20 +235,20 @@ export class AbbrPlugin extends Plugin {
             }
           },
           250,
-          true
-        )
-      )
+          true,
+        ),
+      ),
     );
 
     // Listen for editor mode changes
     this.registerEvent(
       this.app.workspace.on(
         "active-leaf-change",
-        this.handleModeChange.bind(this)
-      )
+        this.handleModeChange.bind(this),
+      ),
     );
     this.registerEvent(
-      this.app.workspace.on("layout-change", this.handleModeChange.bind(this))
+      this.app.workspace.on("layout-change", this.handleModeChange.bind(this)),
     );
 
     // Listen for file changes
@@ -257,25 +257,25 @@ export class AbbrPlugin extends Plugin {
         if (file.path === this.settings.globalFile) {
           this.parseGlobalFile();
         }
-      })
+      }),
     );
     this.registerEvent(
       this.app.vault.on("delete", (file) => {
         if (file.path === this.settings.globalFile) {
           this.globalFileAbbreviations = [];
         }
-      })
+      }),
     );
 
     // Dom context menu
     const acm = new AbbreviationContextMenu(
       this,
-      this.abbreviationActionHandler.bind(this)
+      this.abbreviationActionHandler.bind(this),
     );
     this.registerDomEvent(
       this.app.workspace.containerEl,
       "contextmenu",
-      acm.readingViewDomHandlers.bind(acm)
+      acm.readingViewDomHandlers.bind(acm),
     );
     this.registerEditorExtension(acm.editorViewDomHandlers());
 
@@ -366,7 +366,7 @@ export class AbbrPlugin extends Plugin {
         constructor(view: EditorView) {
           super(view, getPluginData);
         }
-      }
+      },
     );
   }
 
@@ -390,7 +390,7 @@ export class AbbrPlugin extends Plugin {
   private debouncedSaveSettings = debounce(
     this.rerenderPreviewMarkdown.bind(this),
     1000,
-    true
+    true,
   );
 
   private getAbbrList(frontmatter?: FrontMatterCache): AbbreviationInstance[] {
@@ -404,7 +404,7 @@ export class AbbrPlugin extends Plugin {
 
     const readList = calcAbbrListFromFrontmatter(
       frontmatter,
-      this.settings.metadataKeyword
+      this.settings.metadataKeyword,
     );
     abbrList.push(...readList);
 
@@ -491,7 +491,7 @@ export class AbbrPlugin extends Plugin {
         this.settings.metadataKeyword,
         this.settings.useMarkdownExtraSyntax,
         this.getAffixList(),
-        this.settings.detectCJK
+        this.settings.detectCJK,
       );
 
       this.copyContent(formatContent);
@@ -528,7 +528,7 @@ export class AbbrPlugin extends Plugin {
         this.app,
         this,
         selectedText,
-        this.addAbbreviationToFrontmatter.bind(this)
+        this.addAbbreviationToFrontmatter.bind(this),
       ).open();
     }
   }
@@ -548,7 +548,7 @@ export class AbbrPlugin extends Plugin {
           this.settings.metadataKeyword,
           {
             extra: true,
-          }
+          },
         );
         parser.readAbbreviationsFromCache(frontmatter);
 
@@ -574,7 +574,7 @@ export class AbbrPlugin extends Plugin {
           ? abbrList
           : this.globalFileAbbreviations.concat(abbrList),
         selectedText,
-        this.abbreviationActionHandler.bind(this)
+        this.abbreviationActionHandler.bind(this),
       ).open();
     }
   }
@@ -597,7 +597,7 @@ export class AbbrPlugin extends Plugin {
             frontmatter[metadataKeyword] = [item];
           }
           this.sendNotification(
-            this.i18n.t("notification.metadataAdded", { abbr })
+            this.i18n.t("notification.metadataAdded", { abbr }),
           );
         }
       });
@@ -609,7 +609,7 @@ export class AbbrPlugin extends Plugin {
   private modifyAbbreviationInFrontmatter(
     abbr: AbbreviationInstance,
     newKey: string,
-    newTitle: string
+    newTitle: string,
   ) {
     try {
       this.strictCheckAbbreviationFormat(newKey);
@@ -620,7 +620,7 @@ export class AbbrPlugin extends Plugin {
           const index = findAbbrIndexFromFrontmatter(
             abbr,
             frontmatter,
-            metadataKeyword
+            metadataKeyword,
           );
           if (index > -1) {
             const item = `${newKey}: ${newTitle}`;
@@ -644,12 +644,12 @@ export class AbbrPlugin extends Plugin {
           const index = findAbbrIndexFromFrontmatter(
             abbr,
             frontmatter,
-            metadataKeyword
+            metadataKeyword,
           );
           if (index > -1) {
             (frontmatter[metadataKeyword] as unknown[]).splice(index, 1);
             this.sendNotification(
-              this.i18n.t("notification.metadataDeleted", { abbr: abbr.key })
+              this.i18n.t("notification.metadataDeleted", { abbr: abbr.key }),
             );
           }
         }
@@ -662,7 +662,7 @@ export class AbbrPlugin extends Plugin {
   private modifyAbbreviationInGlobal(
     abbr: AbbreviationInstance,
     newKey: string,
-    newTitle: string
+    newTitle: string,
   ) {
     if (!isWord(newKey)) {
       this.sendFormatWarn();
@@ -671,7 +671,7 @@ export class AbbrPlugin extends Plugin {
 
     const index = findAbbrIndexFromGlobal(
       abbr,
-      this.settings.globalAbbreviations
+      this.settings.globalAbbreviations,
     );
     if (index > -1) {
       this.settings.globalAbbreviations[index] = {
@@ -687,20 +687,20 @@ export class AbbrPlugin extends Plugin {
   private deleteAbbreviationFromGlobal(abbr: AbbreviationInstance) {
     const index = findAbbrIndexFromGlobal(
       abbr,
-      this.settings.globalAbbreviations
+      this.settings.globalAbbreviations,
     );
     if (index > -1) {
       this.settings.globalAbbreviations.splice(index, 1);
       this.saveSettings();
       this.sendNotification(
-        this.i18n.t("notification.globalDeleted", { abbr: abbr.key })
+        this.i18n.t("notification.globalDeleted", { abbr: abbr.key }),
       );
     }
   }
 
   private async abbreviationActionHandler(
     abbr: AbbreviationInstance,
-    action: MenuActionType
+    action: MenuActionType,
   ) {
     if (action === "edit") {
       if (abbr.type === "extra") {
@@ -715,7 +715,7 @@ export class AbbrPlugin extends Plugin {
             //! Toggle reading view to editing view.
             if (isReadingView) {
               (this.app as ObsidianApp).commands.executeCommandById(
-                "markdown:toggle-preview"
+                "markdown:toggle-preview",
               );
             }
           }
@@ -725,7 +725,7 @@ export class AbbrPlugin extends Plugin {
         }
       } else if (abbr.type === "global-file") {
         const file = this.app.vault.getFileByPath(
-          this.settings.globalFile || ""
+          this.settings.globalFile || "",
         );
         if (!file) {
           this.sendNotification(this.i18n.t("notification.fileNotExistError"));
@@ -745,7 +745,7 @@ export class AbbrPlugin extends Plugin {
                 //! Toggle reading view to editing view.
                 if (isReadingView) {
                   (this.app as ObsidianApp).commands.executeCommandById(
-                    "markdown:toggle-preview"
+                    "markdown:toggle-preview",
                   );
                 }
               }
@@ -774,7 +774,7 @@ export class AbbrPlugin extends Plugin {
                 this.modifyAbbreviationInGlobal(abbr, abbrKey, abbrTitle);
               }
             }
-          }
+          },
         ).open();
       }
     } else if (action === "global") {
@@ -784,7 +784,7 @@ export class AbbrPlugin extends Plugin {
       });
       await this.saveSettings();
       this.sendNotification(
-        this.i18n.t("notification.globalAdded", { abbr: abbr.key })
+        this.i18n.t("notification.globalAdded", { abbr: abbr.key }),
       );
     } else if (action.includes("copy")) {
       let payload = "";
@@ -803,7 +803,7 @@ export class AbbrPlugin extends Plugin {
           break;
         case "copy-html":
           payload = `<abbr title="${escapeHtml(abbr.title)}">${escapeHtml(
-            abbr.key
+            abbr.key,
           )}</abbr>`;
           break;
       }
@@ -855,7 +855,7 @@ export class AbbrPlugin extends Plugin {
   }
 
   private checkFrontmatter(
-    frontmatter: unknown
+    frontmatter: unknown,
   ): frontmatter is Record<string, unknown> {
     if (typeof frontmatter === "object" && frontmatter) {
       return true;

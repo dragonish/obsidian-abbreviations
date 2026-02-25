@@ -14,7 +14,7 @@ describe("common/parser", function () {
     const parser2 = new Parser(
       [{ key: "TEST", title: "test value" }],
       "abbr",
-      {}
+      {},
     );
     expect(parser2.abbreviations).to.deep.eq([
       {
@@ -33,7 +33,7 @@ describe("common/parser", function () {
         { key: "TEST", title: "test value" },
       ],
       "abbr",
-      {}
+      {},
     );
     expect(parser4.abbreviations).to.deep.eq([
       {

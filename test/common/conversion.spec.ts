@@ -30,7 +30,7 @@ describe("common/conversion", function () {
         res1.push({
           marks,
           definition,
-        })
+        }),
       );
     });
     expect(res1).to.deep.eq([
@@ -85,7 +85,7 @@ describe("common/conversion", function () {
         res2.push({
           marks,
           definition,
-        })
+        }),
       );
       res2.push();
     });
@@ -141,7 +141,7 @@ describe("common/conversion", function () {
         res3.push({
           marks,
           definition,
-        })
+        }),
       );
     });
     expect(res3).to.deep.eq([

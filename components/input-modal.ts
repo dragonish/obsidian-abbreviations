@@ -6,7 +6,7 @@ type ModalActionType = "edit" | "delete";
 type SubmitCallback = (
   abbr: string,
   tooltip: string,
-  action?: ModalActionType
+  action?: ModalActionType,
 ) => void;
 
 export class AbbreviationInputModal extends Modal {
@@ -19,7 +19,7 @@ export class AbbreviationInputModal extends Modal {
     app: App,
     plugin: AbbrPlugin,
     selectedTextOrAbbr: string | AbbreviationInstance,
-    onSubmit: SubmitCallback
+    onSubmit: SubmitCallback,
   ) {
     super(app);
     this.plugin = plugin;

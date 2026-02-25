@@ -22,7 +22,7 @@ export class Conversion extends Base {
     abbreviations: AbbreviationInstance[],
     skipExtraDefinition: boolean,
     affixList: string[] = [],
-    detectCJK = false
+    detectCJK = false,
   ) {
     super();
 
@@ -48,8 +48,8 @@ export class Conversion extends Base {
     lineStart: number,
     callback: (
       marks: MarkInstance[],
-      definition: AbbreviationInfo | null
-    ) => void
+      definition: AbbreviationInfo | null,
+    ) => void,
   ): void {
     if (lineStart === 1 && text === METADATA_BORDER) {
       this.state = "metadata";
@@ -117,7 +117,7 @@ export class Conversion extends Base {
           this.abbreviations,
           lineStart,
           this.affixList,
-          this.detectCJK
+          this.detectCJK,
         );
 
         if (Array.isArray(abbrTitle)) {

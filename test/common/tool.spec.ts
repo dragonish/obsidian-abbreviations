@@ -205,14 +205,14 @@ describe("common/tool", function () {
 
   it("parseExtraAbbreviation", function () {
     expect(
-      parseExtraAbbreviation("*[HTML]: HyperText Markup Language")
+      parseExtraAbbreviation("*[HTML]: HyperText Markup Language"),
     ).to.deep.eq({
       key: "HTML",
       title: "HyperText Markup Language",
     });
 
     expect(
-      parseExtraAbbreviation("*[HTML]:   HyperText Markup Language  ")
+      parseExtraAbbreviation("*[HTML]:   HyperText Markup Language  "),
     ).to.deep.eq({
       key: "HTML",
       title: "HyperText Markup Language",
@@ -254,31 +254,35 @@ describe("common/tool", function () {
 
     expect(
       isExtraDefinitions(
-        ["[OS1]: Test1", "[OS2]: Test2", "*[OS3]: Test3"].join("\n")
-      )
+        ["[OS1]: Test1", "[OS2]: Test2", "*[OS3]: Test3"].join("\n"),
+      ),
     ).to.be.true;
 
     expect(isExtraDefinitions(["*[OS1]: Test1", "A line."].join("\n"))).to.be
       .false;
 
     expect(
-      isExtraDefinitions(["[OS1]: Test1", "[OS2]: Test2", "A line."].join("\n"))
-    ).to.be.false;
-
-    expect(
-      isExtraDefinitions(["[OS1]: Test1", "A line.", "[OS2]: Test2"].join("\n"))
+      isExtraDefinitions(
+        ["[OS1]: Test1", "[OS2]: Test2", "A line."].join("\n"),
+      ),
     ).to.be.false;
 
     expect(
       isExtraDefinitions(
-        ["A line.", "[OS1]: Test1", "[OS2]: Test2", "*[OS3]: Test3"].join("\n")
-      )
+        ["[OS1]: Test1", "A line.", "[OS2]: Test2"].join("\n"),
+      ),
     ).to.be.false;
 
     expect(
       isExtraDefinitions(
-        ["[OS1]: Test1", "[OS2]: Test2", "*[OS3]: Test3", "A line."].join("\n")
-      )
+        ["A line.", "[OS1]: Test1", "[OS2]: Test2", "*[OS3]: Test3"].join("\n"),
+      ),
+    ).to.be.false;
+
+    expect(
+      isExtraDefinitions(
+        ["[OS1]: Test1", "[OS2]: Test2", "*[OS3]: Test3", "A line."].join("\n"),
+      ),
     ).to.be.false;
   });
 
@@ -295,7 +299,7 @@ describe("common/tool", function () {
 
   it("getAbbreviationInstance", function () {
     expect(
-      getAbbreviationInstance("HTML: HyperText Markup Language")
+      getAbbreviationInstance("HTML: HyperText Markup Language"),
     ).to.deep.eq({
       key: "HTML",
       title: "HyperText Markup Language",
@@ -309,7 +313,7 @@ describe("common/tool", function () {
     });
 
     expect(
-      getAbbreviationInstance({ HTML: "HyperText Markup Language" })
+      getAbbreviationInstance({ HTML: "HyperText Markup Language" }),
     ).to.deep.eq({
       key: "HTML",
       title: "HyperText Markup Language",
@@ -331,7 +335,7 @@ describe("common/tool", function () {
     expect(findAllIndexes("This is a test string.", "")).to.be.empty;
     expect(findAllIndexes("This is a test string.", "test")).to.deep.eq([10]);
     expect(
-      findAllIndexes("This is a test string for testing.", "test")
+      findAllIndexes("This is a test string for testing.", "test"),
     ).to.deep.eq([10, 26]);
   });
 
@@ -345,8 +349,8 @@ describe("common/tool", function () {
         {
           index: 0,
           text: "test",
-        }
-      )
+        },
+      ),
     ).to.eq("same");
 
     expect(
@@ -358,8 +362,8 @@ describe("common/tool", function () {
         {
           index: 0,
           text: "t",
-        }
-      )
+        },
+      ),
     ).to.eq("contain");
 
     expect(
@@ -371,8 +375,8 @@ describe("common/tool", function () {
         {
           index: 0,
           text: "test",
-        }
-      )
+        },
+      ),
     ).to.eq("included");
 
     expect(
@@ -384,8 +388,8 @@ describe("common/tool", function () {
         {
           index: 3,
           text: "ate",
-        }
-      )
+        },
+      ),
     ).to.eq("intersection");
 
     expect(
@@ -397,8 +401,8 @@ describe("common/tool", function () {
         {
           index: 7,
           text: "test",
-        }
-      )
+        },
+      ),
     ).to.eq("intersection");
 
     expect(
@@ -410,8 +414,8 @@ describe("common/tool", function () {
         {
           index: 4,
           text: "test",
-        }
-      )
+        },
+      ),
     ).to.eq("unrelated");
   });
 
@@ -428,7 +432,7 @@ describe("common/tool", function () {
           text: "test",
           abbrPos: -1,
         },
-      ])
+      ]),
     ).to.deep.eq([
       {
         type: "metadata",
@@ -457,7 +461,7 @@ describe("common/tool", function () {
           text: "ate",
           abbrPos: 9,
         },
-      ])
+      ]),
     ).to.deep.eq([
       {
         type: "metadata",
@@ -495,7 +499,7 @@ describe("common/tool", function () {
           text: "sta",
           abbrPos: 9,
         },
-      ])
+      ]),
     ).to.deep.eq([
       {
         type: "metadata",
@@ -526,7 +530,7 @@ describe("common/tool", function () {
           text: "test",
           abbrPos: 9,
         },
-      ])
+      ]),
     ).to.deep.eq([
       {
         type: "extra",
@@ -667,7 +671,7 @@ describe("common/tool", function () {
         type: "global",
         index: 0,
         text: "HTMLs",
-      }
+      },
     );
     expect(queryAbbreviationTitle("CSSes", abbrList1, 1, affixList)).to.deep.eq(
       {
@@ -676,10 +680,10 @@ describe("common/tool", function () {
         type: "metadata",
         index: 0,
         text: "CSSes",
-      }
+      },
     );
     expect(
-      queryAbbreviationTitle("CSSes", abbrList1, 30, affixList)
+      queryAbbreviationTitle("CSSes", abbrList1, 30, affixList),
     ).to.deep.eq({
       key: "CSS",
       title: "Cross Site Scripting",
@@ -716,10 +720,10 @@ describe("common/tool", function () {
         index: 0,
         text: "HTMs",
         position: 34,
-      }
+      },
     );
     expect(
-      queryAbbreviationTitle("HTMes", abbrList2, 36, affixList)
+      queryAbbreviationTitle("HTMes", abbrList2, 36, affixList),
     ).to.deep.eq({
       key: "HTM",
       type: "extra",
@@ -780,7 +784,7 @@ describe("common/tool", function () {
     expect(queryAbbreviationTitle("我是一名北大学子", abbrList1, 1, [], false))
       .to.be.null;
     expect(
-      queryAbbreviationTitle("我是一名北大学子", abbrList1, 1, [], true)
+      queryAbbreviationTitle("我是一名北大学子", abbrList1, 1, [], true),
     ).to.deep.eq([
       {
         key: "北大",
@@ -804,7 +808,7 @@ describe("common/tool", function () {
       },
     ];
     expect(
-      queryAbbreviationTitle("我是一名北大学子", abbrList2, 1, [], true)
+      queryAbbreviationTitle("我是一名北大学子", abbrList2, 1, [], true),
     ).to.deep.eq([
       {
         key: "北大学",
@@ -829,7 +833,7 @@ describe("common/tool", function () {
       },
     ];
     expect(
-      queryAbbreviationTitle("我是一名北大学子", abbrList3, 1, [], true)
+      queryAbbreviationTitle("我是一名北大学子", abbrList3, 1, [], true),
     ).to.deep.eq([
       {
         key: "北大学",
@@ -846,8 +850,8 @@ describe("common/tool", function () {
         abbrList3,
         1,
         [],
-        true
-      )
+        true,
+      ),
     ).to.deep.eq([
       {
         key: "北大学",

@@ -29,12 +29,12 @@ export class AbbrSettingTab extends PluginSettingTab {
           .onChange((value) => {
             this.plugin.settings.metadataKeyword = value.trim();
             this.plugin.saveSettings();
-          })
+          }),
       );
 
     const metadataKeywordDesc = createFragment();
     const metadataKeywordDescTuple = i18n.getPlaceholderTuple(
-      "setting.metadataKeywordDesc"
+      "setting.metadataKeywordDesc",
     );
     metadataKeywordDesc.append(
       metadataKeywordDescTuple[0],
@@ -42,7 +42,7 @@ export class AbbrSettingTab extends PluginSettingTab {
         href: "https://help.obsidian.md/Editing+and+formatting/Properties",
         text: i18n.t("setting.properties"),
       }),
-      metadataKeywordDescTuple[1]
+      metadataKeywordDescTuple[1],
     );
     metadataKeywordSetting.descEl.appendChild(metadataKeywordDesc);
 
@@ -71,7 +71,7 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     const detectCJKDesc = createFragment();
     const detectCJKDescTuple = i18n.getPlaceholderTuple(
-      "setting.detectCJKDesc"
+      "setting.detectCJKDesc",
     );
     detectCJKDesc.append(
       detectCJKDescTuple[0],
@@ -79,7 +79,7 @@ export class AbbrSettingTab extends PluginSettingTab {
         text: "CJK",
         title: "Chinese, Japanese, Korean",
       }),
-      detectCJKDescTuple[1]
+      detectCJKDescTuple[1],
     );
     detectCJKSetting.descEl.appendChild(detectCJKDesc);
 
@@ -101,17 +101,17 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     const useMarkdownExtraSyntaxDesc = createFragment();
     const useMarkdownExtraSyntaxDescTuple = i18n.getPlaceholderTuple(
-      "setting.useMarkdownExtraSyntaxDesc"
+      "setting.useMarkdownExtraSyntaxDesc",
     );
     useMarkdownExtraSyntaxDesc.append(
       useMarkdownExtraSyntaxDescTuple[0],
       createEl("b", {
         text: "*[W3C]: World Wide Web Consortium",
       }),
-      useMarkdownExtraSyntaxDescTuple[1]
+      useMarkdownExtraSyntaxDescTuple[1],
     );
     useMarkdownExtraSyntaxSetting.descEl.appendChild(
-      useMarkdownExtraSyntaxDesc
+      useMarkdownExtraSyntaxDesc,
     );
 
     //* useExtraDefinitionDecorator
@@ -171,7 +171,7 @@ export class AbbrSettingTab extends PluginSettingTab {
 
     const globalAbbreviationsDesc = createFragment();
     const globalAbbreviationsDescTuple = i18n.getPlaceholderTuple(
-      "setting.globalAbbreviationsDesc"
+      "setting.globalAbbreviationsDesc",
     );
     globalAbbreviationsDesc.append(
       globalAbbreviationsDescTuple[0],
@@ -179,7 +179,7 @@ export class AbbrSettingTab extends PluginSettingTab {
         href: "https://help.obsidian.md/Editing+and+formatting/Properties",
         text: i18n.t("setting.properties"),
       }),
-      globalAbbreviationsDescTuple[1]
+      globalAbbreviationsDescTuple[1],
     );
     globalAbbreviationsSetting.descEl.appendChild(globalAbbreviationsDesc);
 
@@ -243,7 +243,7 @@ export class AbbrSettingTab extends PluginSettingTab {
       createEl("b", {
         text: "s, es, less",
       }),
-      affixesDescTuple[1]
+      affixesDescTuple[1],
     );
     affixesSetting.descEl.appendChild(affixesDesc);
   }

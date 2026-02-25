@@ -5,7 +5,7 @@ import { abbrClassName, extraDefinitionLineClassName } from "../common/data";
 
 type MenuActionCallback = (
   abbr: AbbreviationInstance,
-  action: MenuActionType
+  action: MenuActionType,
 ) => void;
 
 export class AbbreviationContextMenu {
@@ -76,7 +76,7 @@ export class AbbreviationContextMenu {
             return true;
           } else {
             const line = target.closest<HTMLElement>(
-              "." + extraDefinitionLineClassName
+              "." + extraDefinitionLineClassName,
             );
             if (line) {
               const abbrKey = line.dataset.abbrKey;
@@ -116,7 +116,7 @@ export class AbbreviationContextMenu {
         .setTitle(
           i18n.t("menu.type", {
             type: isDefinition ? "definition" : abbr.type,
-          })
+          }),
         )
         .setIcon("type")
         .setDisabled(true);
@@ -150,7 +150,7 @@ export class AbbreviationContextMenu {
           .setIcon("square-pen")
           .onClick(() => {
             this.menuAction(abbr, "edit");
-          })
+          }),
       );
     }
 

@@ -71,12 +71,12 @@ export class AbbrEditorViewPlugin implements PluginValue {
       update.docChanged ||
       update.viewportChanged ||
       update.transactions.some((tr) =>
-        tr.effects.some((e) => e.is(updateEditorMode))
+        tr.effects.some((e) => e.is(updateEditorMode)),
       )
     ) {
       this.updateDecorations(
         update.view,
-        update.state.field(editorLivePreviewField)
+        update.state.field(editorLivePreviewField),
       );
     }
   }
@@ -98,7 +98,7 @@ export class AbbrEditorViewPlugin implements PluginValue {
         {
           metadata: true,
           extra: pluginData.useMarkdownExtraSyntax,
-        }
+        },
       );
 
       for (let i = 1; i < doc.lines + 1; i++) {
@@ -119,7 +119,7 @@ export class AbbrEditorViewPlugin implements PluginValue {
       }
 
       const resAbbreviations = pluginData.globalFileAbbreviations.concat(
-        parser.abbreviations
+        parser.abbreviations,
       );
 
       if (!isAbbreviationsEmpty(resAbbreviations)) {
@@ -127,7 +127,7 @@ export class AbbrEditorViewPlugin implements PluginValue {
           resAbbreviations,
           pluginData.useMarkdownExtraSyntax,
           pluginData.suffixes,
-          pluginData.detectCJK
+          pluginData.detectCJK,
         );
 
         for (let i = 1; i < doc.lines + 1; i++) {
@@ -152,9 +152,8 @@ export class AbbrEditorViewPlugin implements PluginValue {
                   pluginData.extraDefinitionDecoratorContent
                     .replaceAll("${abbr}", definition.key)
                     .replaceAll("${tooltip}", definition.title);
-                attributes[
-                  "data-decorator-opacity"
-                ] = `${pluginData.extraDefinitionDecoratorOpacity}%`;
+                attributes["data-decorator-opacity"] =
+                  `${pluginData.extraDefinitionDecoratorOpacity}%`;
               }
 
               const lineDeco = Decoration.line({
@@ -205,7 +204,7 @@ export class AbbrEditorViewPlugin implements PluginValue {
         view.dom.findAll(elementListSelector),
         resAbbreviations,
         pluginData.suffixes,
-        pluginData.detectCJK
+        pluginData.detectCJK,
       );
     } else {
       view.dispatch({

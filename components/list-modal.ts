@@ -3,7 +3,7 @@ import type { AbbrPlugin } from "./plugin";
 
 type ActionCallback = (
   abbr: AbbreviationInstance,
-  action: ListActionType
+  action: ListActionType,
 ) => void;
 
 export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstance> {
@@ -19,7 +19,7 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
     plugin: AbbrPlugin,
     abbrList: AbbreviationInstance[],
     selectedText: string,
-    onAction: ActionCallback
+    onAction: ActionCallback,
   ) {
     super(app);
     this.plugin = plugin;
@@ -53,22 +53,22 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
 
   renderSuggestion(
     match: FuzzyMatch<AbbreviationInstance>,
-    el: HTMLElement
+    el: HTMLElement,
   ): void {
     const { i18n } = this.plugin;
     const mainItem = el.createDiv("abbreviations-plugin-list-item-main");
 
     const suggestion = mainItem.createSpan(
-      "abbreviations-plugin-list-item-suggestion"
+      "abbreviations-plugin-list-item-suggestion",
     );
     renderResults(
       suggestion,
       `${match.item.key}: ${match.item.title}`,
-      match.match
+      match.match,
     );
 
     const buttons = mainItem.createSpan(
-      "abbreviations-plugin-list-item-buttons"
+      "abbreviations-plugin-list-item-buttons",
     );
     if (match.item.type === "metadata" || match.item.type === "extra") {
       buttons

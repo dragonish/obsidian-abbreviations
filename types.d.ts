@@ -72,8 +72,10 @@ interface AbbrPluginSettings {
   globalFile?: string;
 }
 
-interface AbbrPluginData
-  extends Omit<AbbrPluginSettings, "detectAffixes" | "affixes"> {
+interface AbbrPluginData extends Omit<
+  AbbrPluginSettings,
+  "detectAffixes" | "affixes"
+> {
   frontmatterCache?: Record<string, unknown>;
   suffixes?: string[];
   globalFileAbbreviations: AbbreviationInstance[];

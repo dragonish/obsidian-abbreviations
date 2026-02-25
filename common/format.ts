@@ -27,7 +27,7 @@ export function escapeHtml(str: string) {
  */
 export function lineMarkupFormatter(
   content: string,
-  marks: MarkItem[]
+  marks: MarkItem[],
 ): string {
   const results: string[] = [];
   let lastIndex = 0;
@@ -37,7 +37,7 @@ export function lineMarkupFormatter(
       results.push(content.substring(lastIndex, mark.index));
     }
     results.push(
-      `<abbr title="${escapeHtml(mark.title)}">${escapeHtml(mark.text)}</abbr>`
+      `<abbr title="${escapeHtml(mark.title)}">${escapeHtml(mark.text)}</abbr>`,
     );
     lastIndex = mark.index + mark.text.length;
   });
@@ -65,7 +65,7 @@ export function contentFormatter(
   metadataKeyword: string,
   useMarkdownExtraSyntax: boolean,
   affixList?: string[],
-  detectCJK = false
+  detectCJK = false,
 ): string {
   const results: string[] = [];
   const parser = new Parser(globalAbbreviations, metadataKeyword, {
@@ -90,7 +90,7 @@ export function contentFormatter(
     parser.abbreviations,
     useMarkdownExtraSyntax,
     affixList,
-    detectCJK
+    detectCJK,
   );
 
   let lastDefinitionState = false;
