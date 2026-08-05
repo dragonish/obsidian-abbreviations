@@ -129,7 +129,6 @@ export class Conversion extends Base {
             });
           }
         } else if (abbrTitle) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { index: _index, text: _text, ...other } = abbrTitle;
           results.push({
             index: word.position,

@@ -306,7 +306,6 @@ export function selectNonOverlappingItems(list: QueryItem[]): MarkInstance[] {
     }
 
     if (add) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { abbrPos: _abbrPos, ...other } = list[i];
       res.push({
         ...other,
@@ -326,7 +325,6 @@ export function selectNonOverlappingItems(list: QueryItem[]): MarkInstance[] {
     }
 
     if (add) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { abbrPos: _abbrPos, ...other } = list[j];
       res.push({
         ...other,
