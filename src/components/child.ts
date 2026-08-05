@@ -4,7 +4,7 @@ type DecorationCallback = (
   container: HTMLElement,
   ctx: MarkdownPostProcessorContext,
   fileData?: string,
-) => void;
+) => Promise<void> | void;
 
 type CancelDecorationCallback = (
   container: HTMLElement,
@@ -46,15 +46,15 @@ export class ReadingChild extends MarkdownRenderChild {
     return ele == this.container;
   }
 
-  render(fileData?: string): void {
+  async render(fileData?: string) {
     if (this.container) {
-      this.decorationCallback(this.container, this.context, fileData);
+      await this.decorationCallback(this.container, this.context, fileData);
     }
   }
 
-  detach(): void {
+  async detach() {
     if (this.container) {
-      this.cancelDecorationCallback(this.container);
+      await this.cancelDecorationCallback(this.container);
     }
     this.container = null;
   }
@@ -63,7 +63,7 @@ export class ReadingChild extends MarkdownRenderChild {
     return this.sourcePath === path;
   }
 
-  updateContext(context: MarkdownPostProcessorContext) {
+  async updateContext(context: MarkdownPostProcessorContext) {
     if (this.container) {
       const sectionInfo = context.getSectionInfo(this.container);
       if (sectionInfo) {
@@ -71,12 +71,12 @@ export class ReadingChild extends MarkdownRenderChild {
         if (this.line !== newLine) {
           this.context = context;
           this.line = newLine;
-          this.render();
+          await this.render();
         } else if (
           !this.deepEqualContext(this.context.frontmatter, context.frontmatter)
         ) {
           this.context = context;
-          this.render();
+          await this.render();
         }
       }
     }

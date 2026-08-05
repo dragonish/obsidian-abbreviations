@@ -63,7 +63,10 @@ export class AbbrEditorViewPlugin implements PluginValue {
 
   constructor(view: EditorView, getPluginData: () => Promise<AbbrPluginData>) {
     this.getPluginData = getPluginData;
-    this.updateDecorations(view, view.state.field(editorLivePreviewField));
+    this.updateDecorations(
+      view,
+      view.state.field(editorLivePreviewField),
+    ).catch(() => {});
   }
 
   update(update: ViewUpdate) {
@@ -77,7 +80,7 @@ export class AbbrEditorViewPlugin implements PluginValue {
       this.updateDecorations(
         update.view,
         update.state.field(editorLivePreviewField),
-      );
+      ).catch(() => {});
     }
   }
 

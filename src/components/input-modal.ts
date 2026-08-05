@@ -7,7 +7,7 @@ type SubmitCallback = (
   abbr: string,
   tooltip: string,
   action?: ModalActionType,
-) => void;
+) => Promise<void> | void;
 
 export class AbbreviationInputModal extends Modal {
   private plugin: AbbrPlugin;
@@ -31,10 +31,14 @@ export class AbbreviationInputModal extends Modal {
     this.onSubmit = onSubmit;
   }
 
-  private submitModal(abbr: string, tip: string, action?: ModalActionType) {
+  private async submitModal(
+    abbr: string,
+    tip: string,
+    action?: ModalActionType,
+  ) {
     if (abbr) {
       this.close();
-      this.onSubmit(abbr, tip, action);
+      await this.onSubmit(abbr, tip, action);
     }
   }
 
@@ -86,7 +90,7 @@ export class AbbreviationInputModal extends Modal {
         text.inputEl.addEventListener("keyup", (evt) => {
           if (isUserTriggered && evt.key === "Enter") {
             abbr = text.getValue().trim();
-            this.submitModal(abbr, tip, "edit");
+            this.submitModal(abbr, tip, "edit").catch(() => {});
           }
         });
       })
@@ -100,7 +104,7 @@ export class AbbreviationInputModal extends Modal {
           .inputEl.addEventListener("keyup", (evt) => {
             if (evt.key === "Enter") {
               tip = text.getValue().trim();
-              this.submitModal(abbr, tip, "edit");
+              this.submitModal(abbr, tip, "edit").catch(() => {});
             }
           });
       });
@@ -111,9 +115,9 @@ export class AbbreviationInputModal extends Modal {
       buttonSetting.addButton((btn) => {
         btn
           .setButtonText(i18n.t("button.delete"))
-          .setWarning()
-          .onClick(() => {
-            this.submitModal(abbr, tip, "delete");
+          .setDestructive()
+          .onClick(async () => {
+            await this.submitModal(abbr, tip, "delete");
           });
       });
     }
@@ -122,8 +126,8 @@ export class AbbreviationInputModal extends Modal {
       btn
         .setButtonText(i18n.t("button.submit"))
         .setCta()
-        .onClick(() => {
-          this.submitModal(abbr, tip, "edit");
+        .onClick(async () => {
+          await this.submitModal(abbr, tip, "edit");
         });
     });
   }

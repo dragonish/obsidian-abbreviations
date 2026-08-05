@@ -86,8 +86,8 @@ export class AbbrPlugin extends Plugin {
       this.createAbbrViewPlugin(this.getPluginData.bind(this)),
     ]);
 
-    this.app.workspace.onLayoutReady(() => {
-      this.parseGlobalFile();
+    this.app.workspace.onLayoutReady(async () => {
+      await this.parseGlobalFile();
     });
 
     // Register markdown post processor
@@ -210,11 +210,11 @@ export class AbbrPlugin extends Plugin {
         });
       }
 
-      child.render();
+      await child.render();
       const currentPath = context.sourcePath;
       this.readingComponents.forEach((rc) => {
         if (rc.isSamePath(currentPath)) {
-          rc.updateContext(context);
+          rc.updateContext(context).catch(() => {});
         }
       });
     });
@@ -253,9 +253,9 @@ export class AbbrPlugin extends Plugin {
 
     // Listen for file changes
     this.registerEvent(
-      this.app.vault.on("modify", (file) => {
+      this.app.vault.on("modify", async (file) => {
         if (file.path === this.settings.globalFile) {
-          this.parseGlobalFile();
+          await this.parseGlobalFile();
         }
       }),
     );
@@ -297,8 +297,8 @@ export class AbbrPlugin extends Plugin {
     this.addCommand({
       id: "copy-with-format",
       name: this.i18n.t("command.copy"),
-      callback: () => {
-        this.copyAndFormatContent();
+      callback: async () => {
+        await this.copyAndFormatContent();
       },
     });
     this.addCommand({
@@ -318,8 +318,8 @@ export class AbbrPlugin extends Plugin {
     this.addCommand({
       id: "list-abbreviations",
       name: this.i18n.t("command.list"),
-      callback: () => {
-        this.showAbbreviationListModal();
+      callback: async () => {
+        await this.showAbbreviationListModal();
       },
     });
     this.addCommand({
@@ -330,8 +330,8 @@ export class AbbrPlugin extends Plugin {
       },
     });
 
-    this.addRibbonIcon("text-search", this.i18n.t("command.list"), () => {
-      this.showAbbreviationListModal();
+    this.addRibbonIcon("text-search", this.i18n.t("command.list"), async () => {
+      await this.showAbbreviationListModal();
     });
 
     this.addSettingTab(new AbbrSettingTab(this.app, this));
@@ -342,7 +342,9 @@ export class AbbrPlugin extends Plugin {
   }
 
   private unloadReadingComponents() {
-    this.readingComponents.forEach((child) => child.detach());
+    this.readingComponents.forEach((child) => {
+      child.detach().catch(() => {});
+    });
     this.readingComponents = [];
   }
 
@@ -437,7 +439,7 @@ export class AbbrPlugin extends Plugin {
   private rerenderReadingAbbreviations(file: TFile, fileData: string) {
     this.readingComponents.forEach((rc) => {
       if (rc.isSamePath(file.path)) {
-        rc.render(fileData);
+        rc.render(fileData).catch(() => {});
       }
     });
   }
@@ -494,7 +496,7 @@ export class AbbrPlugin extends Plugin {
         this.settings.detectCJK,
       );
 
-      this.copyContent(formatContent);
+      await this.copyContent(formatContent);
     }
   }
 
@@ -583,12 +585,12 @@ export class AbbrPlugin extends Plugin {
     new AbbreviationManagerModal(this.app, this).open();
   }
 
-  private addAbbreviationToFrontmatter(abbr: string, tooltip: string) {
+  private async addAbbreviationToFrontmatter(abbr: string, tooltip: string) {
     try {
       this.strictCheckAbbreviationFormat(abbr);
       const metadataKeyword = this.strictGetMetadataKeyword();
       const file = this.strictGetActiveFile();
-      this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+      await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
         if (this.checkFrontmatter(frontmatter)) {
           const item = `${abbr}: ${tooltip}`;
           if (Array.isArray(frontmatter[metadataKeyword])) {
@@ -606,7 +608,7 @@ export class AbbrPlugin extends Plugin {
     }
   }
 
-  private modifyAbbreviationInFrontmatter(
+  private async modifyAbbreviationInFrontmatter(
     abbr: AbbreviationInstance,
     newKey: string,
     newTitle: string,
@@ -615,7 +617,7 @@ export class AbbrPlugin extends Plugin {
       this.strictCheckAbbreviationFormat(newKey);
       const metadataKeyword = this.strictGetMetadataKeyword();
       const file = this.strictGetActiveFile();
-      this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+      await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
         if (this.checkFrontmatter(frontmatter)) {
           const index = findAbbrIndexFromFrontmatter(
             abbr,
@@ -635,11 +637,11 @@ export class AbbrPlugin extends Plugin {
     }
   }
 
-  private deleteAbbreviationFromFrontmatter(abbr: AbbreviationInstance) {
+  private async deleteAbbreviationFromFrontmatter(abbr: AbbreviationInstance) {
     try {
       const metadataKeyword = this.strictGetMetadataKeyword();
       const file = this.strictGetActiveFile();
-      this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+      await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
         if (this.checkFrontmatter(frontmatter)) {
           const index = findAbbrIndexFromFrontmatter(
             abbr,
@@ -659,7 +661,7 @@ export class AbbrPlugin extends Plugin {
     }
   }
 
-  private modifyAbbreviationInGlobal(
+  private async modifyAbbreviationInGlobal(
     abbr: AbbreviationInstance,
     newKey: string,
     newTitle: string,
@@ -678,20 +680,20 @@ export class AbbrPlugin extends Plugin {
         key: newKey,
         title: newTitle,
       };
-      this.saveSettings();
+      await this.saveSettings();
     } else {
       this.sendNotFoundWarn();
     }
   }
 
-  private deleteAbbreviationFromGlobal(abbr: AbbreviationInstance) {
+  private async deleteAbbreviationFromGlobal(abbr: AbbreviationInstance) {
     const index = findAbbrIndexFromGlobal(
       abbr,
       this.settings.globalAbbreviations,
     );
     if (index > -1) {
       this.settings.globalAbbreviations.splice(index, 1);
-      this.saveSettings();
+      await this.saveSettings();
       this.sendNotification(
         this.i18n.t("notification.globalDeleted", { abbr: abbr.key }),
       );
@@ -760,18 +762,22 @@ export class AbbrPlugin extends Plugin {
           this.app,
           this,
           abbr,
-          (abbrKey, abbrTitle, ac) => {
+          async (abbrKey, abbrTitle, ac) => {
             if (ac === "delete") {
               if (abbr.type === "metadata") {
-                this.deleteAbbreviationFromFrontmatter(abbr);
+                await this.deleteAbbreviationFromFrontmatter(abbr);
               } else if (abbr.type === "global") {
-                this.deleteAbbreviationFromGlobal(abbr);
+                await this.deleteAbbreviationFromGlobal(abbr);
               }
             } else if (ac === "edit") {
               if (abbr.type === "metadata") {
-                this.modifyAbbreviationInFrontmatter(abbr, abbrKey, abbrTitle);
+                await this.modifyAbbreviationInFrontmatter(
+                  abbr,
+                  abbrKey,
+                  abbrTitle,
+                );
               } else if (abbr.type === "global") {
-                this.modifyAbbreviationInGlobal(abbr, abbrKey, abbrTitle);
+                await this.modifyAbbreviationInGlobal(abbr, abbrKey, abbrTitle);
               }
             }
           },
@@ -809,7 +815,7 @@ export class AbbrPlugin extends Plugin {
       }
 
       if (payload) {
-        this.copyContent(payload);
+        await this.copyContent(payload);
       } else {
         this.sendNotification(this.i18n.t("notification.copyWarn"));
       }
