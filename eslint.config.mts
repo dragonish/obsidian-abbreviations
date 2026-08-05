@@ -39,6 +39,7 @@ export default defineConfig(
       "@typescript-eslint/no-unsafe-argument": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "obsidianmd/ui/sentence-case": "off",
+      "obsidianmd/settings-tab/prefer-setting-definitions": "off",
       "no-undef": "off",
     },
   },
