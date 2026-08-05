@@ -502,7 +502,9 @@ export function calcAbbrListFromFrontmatter(
       const list = frontmatter[keyword] as MetadataAbbrType[];
       list.forEach((item) => {
         const abbrInfo = getAbbreviationInstance(item);
-        abbrInfo && abbrList.push(abbrInfo);
+        if (abbrInfo) {
+          abbrList.push(abbrInfo);
+        }
       });
     }
   }
