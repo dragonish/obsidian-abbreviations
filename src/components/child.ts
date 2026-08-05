@@ -6,7 +6,9 @@ type DecorationCallback = (
   fileData?: string,
 ) => void;
 
-type CancelDecorationCallback = (container: HTMLElement) => void;
+type CancelDecorationCallback = (
+  container: HTMLElement,
+) => Promise<void> | void;
 
 export class ReadingChild extends MarkdownRenderChild {
   public context: MarkdownPostProcessorContext;
