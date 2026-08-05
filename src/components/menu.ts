@@ -1,7 +1,7 @@
 import { Menu } from "obsidian";
 import { EditorView } from "@codemirror/view";
 import type { AbbrPlugin } from "./plugin";
-import { abbrClassName, extraDefinitionLineClassName } from "../common/data";
+import { abbrClassName, extraDefinitionLineClassName } from "../utils/data";
 
 type MenuActionCallback = (
   abbr: AbbreviationInstance,

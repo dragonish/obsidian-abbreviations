@@ -1,9 +1,9 @@
 import "mocha";
 import { expect } from "chai";
-import { type Parser as ParserType } from "../../common/parser";
+import { type Parser as ParserType } from "../../src/utils/parser";
 import { loadWithMockedObsidian } from "../helpers/obsidianMock";
 
-const parserModule = loadWithMockedObsidian("../../common/parser");
+const parserModule = loadWithMockedObsidian("../../src/utils/parser");
 const Parser = parserModule.Parser as typeof ParserType;
 
 describe("common/parser", function () {

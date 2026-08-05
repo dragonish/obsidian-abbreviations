@@ -14,7 +14,7 @@ import {
   pListSelector,
   elementListSelector,
   extraDefinitionClassName,
-} from "../common/data";
+} from "../utils/data";
 import {
   calcAbbrListFromFrontmatter,
   findAbbrIndexFromFrontmatter,
@@ -22,9 +22,9 @@ import {
   getAffixList,
   isWord,
   isExtraDefinitions,
-} from "../common/tool";
-import { Parser } from "../common/parser";
-import { contentFormatter, escapeHtml } from "../common/format";
+} from "../utils/tool";
+import { Parser } from "../utils/parser";
+import { contentFormatter, escapeHtml } from "../utils/format";
 import {
   AbbrEditorViewPlugin,
   abbrDecorationsField,

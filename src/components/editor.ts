@@ -16,10 +16,10 @@ import {
   sourceDecoratorClassName,
   elementListSelector,
   METADATA_BORDER,
-} from "../common/data";
-import { Parser } from "../common/parser";
-import { Conversion } from "../common/conversion";
-import { isAbbreviationsEmpty } from "../common/tool";
+} from "../utils/data";
+import { Parser } from "../utils/parser";
+import { Conversion } from "../utils/conversion";
+import { isAbbreviationsEmpty } from "../utils/tool";
 
 /** A StateEffect for updating decorations */
 const updateAbbrDecorations = StateEffect.define<DecorationSet>();

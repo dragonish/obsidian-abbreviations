@@ -2,7 +2,7 @@ import "mocha";
 import { expect } from "chai";
 import { loadWithMockedObsidian } from "../helpers/obsidianMock";
 
-const metadataModule = loadWithMockedObsidian("../../common/metadata");
+const metadataModule = loadWithMockedObsidian("../../src/utils/metadata");
 
 describe("common/metadata", function () {
   it("getMetadata", function () {

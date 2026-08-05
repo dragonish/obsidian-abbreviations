@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import { MarkBuffer } from "../../common/mark";
+import { MarkBuffer } from "../../src/utils/mark";
 
 describe("common/mark", function () {
   it("MarkBuffer", function () {

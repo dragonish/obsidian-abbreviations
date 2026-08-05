@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import { Conversion } from "../../common/conversion";
+import { Conversion } from "../../src/utils/conversion";
 
 describe("common/conversion", function () {
   it("Conversion.handler", function () {

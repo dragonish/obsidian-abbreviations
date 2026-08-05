@@ -1,11 +1,11 @@
 module.exports = {
   ui: "bdd",
   spec: [
-    "test/common/tool.spec.ts",
-    "test/common/mark.spec.ts",
-    "test/common/metadata.spec.ts",
-    "test/common/parser.spec.ts",
-    "test/common/conversion.spec.ts",
+    "test/utils/tool.spec.ts",
+    "test/utils/mark.spec.ts",
+    "test/utils/metadata.spec.ts",
+    "test/utils/parser.spec.ts",
+    "test/utils/conversion.spec.ts",
     "test/**/**.spec.ts",
   ],
   import: "tsx",

@@ -18,7 +18,7 @@ import {
   calcAbbrListFromFrontmatter,
   findAbbrIndexFromFrontmatter,
   findAbbrIndexFromGlobal,
-} from "../../common/tool";
+} from "../../src/utils/tool";
 
 describe("common/tool", function () {
   it("isWhitespace", function () {

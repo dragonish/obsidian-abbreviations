@@ -48,17 +48,16 @@ pnpm run build
   ```plain
     src/
       main.ts           # Plugin entry point, lifecycle management
-      settings.ts       # Settings interface and defaults
-      commands/         # Command implementations
+      components/       # Element components
         command1.ts
         command2.ts
-      ui/              # UI components, modals, views
-        modal.ts
-        view.ts
-      utils/           # Utility functions, helpers
+      locales/          # International content
+        index.ts
+        en.json
+      utils/            # Utility functions, helpers
         helpers.ts
         constants.ts
-      types.ts         # TypeScript interfaces and types
+      types.d.ts        # TypeScript interfaces and types
   ```
 
 - **Do not commit build artifacts**: Never commit `node_modules/`, `main.js`, or other generated files to version control.

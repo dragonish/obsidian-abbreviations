@@ -1,6 +1,6 @@
 import { App, Modal, Setting } from "obsidian";
 import type { AbbrPlugin } from "./plugin";
-import { isWord } from "../common/tool";
+import { isWord } from "../utils/tool";
 
 type ModalActionType = "edit" | "delete";
 type SubmitCallback = (

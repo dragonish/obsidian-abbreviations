@@ -2,7 +2,7 @@ import "mocha";
 import { expect } from "chai";
 import { loadWithMockedObsidian } from "../helpers/obsidianMock";
 
-const formatModule = loadWithMockedObsidian("../../common/format");
+const formatModule = loadWithMockedObsidian("../../src/utils/format");
 
 describe("common/format", function () {
   it("escapeHtml", function () {
