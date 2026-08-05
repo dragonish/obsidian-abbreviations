@@ -8,7 +8,8 @@
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
     "version": "node version-bump.mjs && git add manifest.json versions.json",
     "test": "mocha",
-    "release": "commit-and-tag-version -t \"\""
+    "release": "commit-and-tag-version -t \"\"",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "dragonish",
