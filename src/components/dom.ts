@@ -45,7 +45,7 @@ function replaceWordWithAbbr(
     const words = getWords(text);
     words.forEach((word) => {
       if (word.isSpecial) {
-        fragment.appendChild(document.createTextNode(word.text));
+        fragment.appendChild(activeDocument.createTextNode(word.text));
       } else {
         const abbrTitle = queryAbbreviationTitle(
           word.text,
@@ -60,7 +60,7 @@ function replaceWordWithAbbr(
           for (const item of abbrTitle) {
             if (item.index > lastIndex) {
               fragment.appendChild(
-                document.createTextNode(
+                activeDocument.createTextNode(
                   word.text.substring(lastIndex, item.index),
                 ),
               );
@@ -83,7 +83,7 @@ function replaceWordWithAbbr(
 
           if (lastIndex < word.text.length) {
             fragment.appendChild(
-              document.createTextNode(word.text.substring(lastIndex)),
+              activeDocument.createTextNode(word.text.substring(lastIndex)),
             );
           }
         } else if (abbrTitle) {
@@ -99,7 +99,7 @@ function replaceWordWithAbbr(
           });
           fragment.appendChild(abbr);
         } else {
-          fragment.appendChild(document.createTextNode(word.text));
+          fragment.appendChild(activeDocument.createTextNode(word.text));
         }
       }
     });
@@ -181,7 +181,7 @@ function restoreAbbrToText(node: Node) {
       element.classList.contains(abbrClassName)
     ) {
       const text = element.textContent || "";
-      const textNode = document.createTextNode(text);
+      const textNode = activeDocument.createTextNode(text);
       element.parentNode?.replaceChild(textNode, element);
     }
   }
