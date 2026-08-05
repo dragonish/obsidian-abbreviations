@@ -39,11 +39,6 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
   "commit-and-tag-version": {
     "skip": {
       "changelog": true
