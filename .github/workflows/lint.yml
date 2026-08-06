@@ -29,3 +29,4 @@ jobs:
       - run: pnpm install
       - run: pnpm run build --if-present
       - run: pnpm run lint
+      - run: pnpm run test
