@@ -1,8 +1,8 @@
 import { noCallThru } from "proxyquire";
-import * as yaml from "js-yaml";
+import { parse } from "yaml";
 
 const mockParseYaml = (yamlStr: string) => {
-  return yaml.load(yamlStr);
+  return parse(yamlStr);
 };
 
 export const loadWithMockedObsidian = (modulePath: string) => {
