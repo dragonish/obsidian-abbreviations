@@ -34,8 +34,6 @@ export default defineConfig(
   ...obsidianmd.configs.recommended,
   {
     rules: {
-      "@typescript-eslint/no-unused-expressions": "off",
-      "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "obsidianmd/ui/sentence-case": "off",
