@@ -6,7 +6,7 @@ import { abbrClassName, extraDefinitionLineClassName } from "../utils/data";
 type MenuActionCallback = (
   abbr: AbbreviationInstance,
   action: MenuActionType,
-) => void;
+) => Promise<void> | void;
 
 export class AbbreviationContextMenu {
   private plugin: AbbrPlugin;
@@ -148,8 +148,8 @@ export class AbbreviationContextMenu {
         item
           .setTitle(i18n.t("menu.edit"))
           .setIcon("square-pen")
-          .onClick(() => {
-            this.menuAction(abbr, "edit");
+          .onClick(async () => {
+            await this.menuAction(abbr, "edit");
           }),
       );
     }
@@ -159,8 +159,8 @@ export class AbbreviationContextMenu {
         item
           .setTitle(i18n.t("menu.add"))
           .setIcon("square-plus")
-          .onClick(() => {
-            this.menuAction(abbr, "global");
+          .onClick(async () => {
+            await this.menuAction(abbr, "global");
           });
       });
     }
@@ -170,8 +170,8 @@ export class AbbreviationContextMenu {
       item
         .setTitle(i18n.t("menu.copyText"))
         .setIcon("copy")
-        .onClick(() => {
-          this.menuAction(abbr, "copy-text");
+        .onClick(async () => {
+          await this.menuAction(abbr, "copy-text");
         });
     });
     if (abbr.title) {
@@ -179,8 +179,8 @@ export class AbbreviationContextMenu {
         item
           .setTitle(i18n.t("menu.copyTooltip"))
           .setIcon("copy")
-          .onClick(() => {
-            this.menuAction(abbr, "copy-title");
+          .onClick(async () => {
+            await this.menuAction(abbr, "copy-title");
           });
       });
     }
@@ -188,24 +188,24 @@ export class AbbreviationContextMenu {
       item
         .setTitle(i18n.t("menu.copyMetadata"))
         .setIcon("copy")
-        .onClick(() => {
-          this.menuAction(abbr, "copy-metadata");
+        .onClick(async () => {
+          await this.menuAction(abbr, "copy-metadata");
         });
     });
     menu.addItem((item) => {
       item
         .setTitle(i18n.t("menu.copyExtra"))
         .setIcon("copy")
-        .onClick(() => {
-          this.menuAction(abbr, "copy-extra");
+        .onClick(async () => {
+          await this.menuAction(abbr, "copy-extra");
         });
     });
     menu.addItem((item) => {
       item
         .setTitle(i18n.t("menu.copyHtml"))
         .setIcon("copy")
-        .onClick(() => {
-          this.menuAction(abbr, "copy-html");
+        .onClick(async () => {
+          await this.menuAction(abbr, "copy-html");
         });
     });
 

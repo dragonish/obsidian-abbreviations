@@ -4,7 +4,7 @@ import type { AbbrPlugin } from "./plugin";
 type ActionCallback = (
   abbr: AbbreviationInstance,
   action: ListActionType,
-) => void;
+) => Promise<void>;
 
 export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstance> {
   private plugin: AbbrPlugin;
@@ -48,7 +48,7 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
   }
 
   onChooseItem(abbr: AbbreviationInstance): void {
-    this.action(abbr, "edit");
+    this.action(abbr, "edit").catch(() => {});
   }
 
   renderSuggestion(
@@ -77,9 +77,9 @@ export class AbbreviationListModal extends FuzzySuggestModal<AbbreviationInstanc
           text: i18n.t("list.global"),
           title: i18n.t("list.globalTip"),
         })
-        .onClickEvent((ev) => {
+        .onClickEvent(async (ev) => {
           ev.stopPropagation();
-          this.action(match.item, "global");
+          await this.action(match.item, "global");
           this.close();
         });
     }
