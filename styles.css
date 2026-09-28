@@ -148,6 +148,40 @@ p.abbreviations-plugin-extra-definition {
   opacity: 100%;
 }
 
+.abbreviations-plugin-card {
+  background-color: var(--setting-items-background, var(--background-secondary));
+  border: var(--setting-items-border-width, 1px) solid
+    var(--setting-items-border-color, var(--background-modifier-border));
+  border-radius: var(--setting-items-radius, var(--radius-m));
+  padding: var(--size-4-4);
+  margin-bottom: var(--size-4-2);
+}
+
+.abbreviations-plugin-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--size-4-2);
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+}
+
+.abbreviations-plugin-card-header > button {
+  flex: 0 0 auto;
+}
+
+.abbreviations-plugin-card-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-3);
+}
+
+.abbreviations-plugin-card-fields input[type="text"] {
+  flex: 1 1 8em;
+  min-width: 0;
+}
+
 .abbreviations-plugin-list-item-main {
   display: flex;
   align-items: center;

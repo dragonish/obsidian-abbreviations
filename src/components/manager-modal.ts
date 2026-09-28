@@ -1,4 +1,4 @@
-import { App, Modal, Setting } from "obsidian";
+import { App, ButtonComponent, Modal, Setting, TextComponent } from "obsidian";
 import type { AbbrPlugin } from "./plugin";
 
 export class AbbreviationManagerModal extends Modal {
@@ -32,36 +32,41 @@ export function manageGlobalAbbreviations(
   header();
 
   plugin.settings.globalAbbreviations.forEach((abbr, index) => {
-    new Setting(containerEl)
-      .setName(i18n.t("text.abbrLabel"))
-      .addText((text) =>
-        text
-          .setPlaceholder(i18n.t("text.abbrPlaceholder"))
-          .setValue(abbr.key)
-          .onChange(async (value) => {
-            plugin.settings.globalAbbreviations[index].key = value.trim();
-            await plugin.saveSettings();
-          }),
-      )
-      .addText((text) =>
-        text
-          .setPlaceholder(i18n.t("text.tipPlaceholder"))
-          .setValue(abbr.title)
-          .onChange(async (value) => {
-            plugin.settings.globalAbbreviations[index].title = value.trim();
-            await plugin.saveSettings();
-          }),
-      )
-      .addButton((button) =>
-        button
-          .setButtonText(i18n.t("button.delete"))
-          .setDestructive()
-          .onClick(async () => {
-            plugin.settings.globalAbbreviations.splice(index, 1);
-            await plugin.saveSettings();
-            manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
-          }),
-      );
+    const card = containerEl.createDiv({ cls: "abbreviations-plugin-card" });
+
+    const cardHeader = card.createDiv({
+      cls: "abbreviations-plugin-card-header",
+    });
+    cardHeader.createSpan({
+      text: `${i18n.t("text.abbrLabel")} ${index + 1}`,
+    });
+
+    new ButtonComponent(cardHeader)
+      .setButtonText(i18n.t("button.delete"))
+      .setDestructive()
+      .onClick(async () => {
+        plugin.settings.globalAbbreviations.splice(index, 1);
+        await plugin.saveSettings();
+        manageGlobalAbbreviations(plugin, containerEl, header); //! Rerender
+      });
+
+    const fields = card.createDiv({ cls: "abbreviations-plugin-card-fields" });
+
+    new TextComponent(fields)
+      .setPlaceholder(i18n.t("text.abbrPlaceholder"))
+      .setValue(abbr.key)
+      .onChange(async (value) => {
+        plugin.settings.globalAbbreviations[index].key = value.trim();
+        await plugin.saveSettings();
+      });
+
+    new TextComponent(fields)
+      .setPlaceholder(i18n.t("text.tipPlaceholder"))
+      .setValue(abbr.title)
+      .onChange(async (value) => {
+        plugin.settings.globalAbbreviations[index].title = value.trim();
+        await plugin.saveSettings();
+      });
   });
 
   new Setting(containerEl).addButton((button) =>
