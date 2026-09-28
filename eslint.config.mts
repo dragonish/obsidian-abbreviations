@@ -8,7 +8,6 @@ export default defineConfig(
     "dist",
     "eslint.config.mts",
     "esbuild.config.mjs",
-    "version-bump.mjs",
     "versions.json",
     "main.js",
     "test/",

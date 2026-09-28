@@ -7,6 +7,10 @@
     {
       "filename": "./manifest.json",
       "type": "json"
+    },
+    {
+      "filename": "./versions.json",
+      "updater": "./scripts/versions-updater.cjs"
     }
   ]
 }
